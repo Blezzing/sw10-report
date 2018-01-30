@@ -1,0 +1,50 @@
+\input{misc/preamble.tex}
+\begin{document}
+
+\includepdf{misc/title.pdf}
+\input{misc/aauPage.tex}
+
+\chapter*{Preface}
+%reading instructions
+
+\tableofcontents
+
+\chapter{Introduction}
+%what are we doing
+\input{chapters/introduction/meta.tex}
+\input{chapters/introduction/motivation.tex}
+\input{chapters/introduction/relatedWorks.tex}
+\input{chapters/introduction/problemStatement.tex}
+
+\chapter{Design}
+%discussions about design decisions, and conclusions
+\input{chapters/design/meta.tex}
+
+\chapter{Implementation}
+%implementation details that are interesting
+\input{chapters/implementation/meta.tex}
+
+\chapter{Evaluation}
+%this is pretty amazing, as it works fast too
+\input{chapters/evaluation/meta.tex}
+\input{chapters/evaluation/test.tex}
+\input{chapters/evaluation/performance.tex}
+
+\chapter{Reflection}
+%hvordan gik det
+\input{chapters/reflection/reflection.tex}
+
+\chapter{Conclusion}
+%opgørelsen
+\input{chapters/conclusion/conclusion.tex}
+
+\chapter{Future Work}
+%hvordan kan man gøre det endnu bedre?
+\input{chapters/futureWork/futureWork.tex}
+
+\printbibliography
+
+\part{Appendix}
+\appendix
+
+\end{document}
