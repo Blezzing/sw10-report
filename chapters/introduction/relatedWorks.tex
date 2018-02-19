@@ -1,10 +1,22 @@
 \section{Related Works}
-Meta about what else exist?
+We consider related abstraction libraries in the domain of heterogeneous computing. This is done to identify relevant key points that can help define the library we are developing.
+
+The libraries are being considering in regards to:
+\begin{description}
+\item[Goals] \hfill \\
+To identify the motivation for the library and to understand the motivation behind its design choices.
+\item[Programming Model] \hfill \\
+To identify the programming model of a library to see what aproaches have been tried, and what have been made possible so far.
+\item[Cognitive Dimensions of Notations] \hfill \\
+To get a general idea of strengths and weaknesses of the library.
+\item[Key Points] \hfill \\
+To identify relevant points to note from a library, that should be considered when designing our library.
+\end{description}
+
+\todo[inline]{Argumenter for hvorfor vi har valgt at se på disse libraries}
  
 \subsection{SkelCL}
-SkelCL (Skeleton Computing Language) is a library which aim is to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster.
-https://link.springer.com/chapter/10.1007%2F978-3-642-39958-9_24 - paper
-https://skelcl.github.io/ - webpage
+SkelCL (Skeleton Computing Language) is a library which aim is to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon \cite{skelclWebsite} and \cite{skelclPaper}.
 
 \subsubsection{Goals}
 The developers of SkelCL believes that programming for GPUs result in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically is reliant on low level programming aproaches as seen with OpenCL and CUDA. 
@@ -23,10 +35,8 @@ using namespace skelcl;
 int main() {
   skelcl::init();
 
-  Zip<int(int,int)> mult("int func(int x, int y)
-                            { return x*y; }");
-  Reduce<int(int)>   sum("int func(int x, int y)
-                            { return x+y; }", "0");
+  Zip<int(int,int)> mult("int func(int x, int y){ return x*y; }");
+  Reduce<int(int)> sum("int func(int x, int y){ return x+y; }", "0");
 
   Vector<int> a(1024);
   Vector<int> b(1024);
@@ -49,4 +59,55 @@ A key point of OpenCL is the data containers it provide, namely vectors and matr
 
 Another key point of SkelCL is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} that OpenCL provides describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can instead be seen as self contained entities. The programmer instead have specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
 
+\subsection{Bolt}
+Bolt is a library providing abstractions for heterogeneous computing. This section is based on Bolt's documentation\cite{boltDoc} and github page\cite{boltGithub}.
 
+An unique feature of Bolt is the possibility to run its algoritms on either CPU or GPU without modifications in the code.
+
+\subsubsection{Goals}
+Bolt is designed to provide high performance library implementations for common algorithms, following the structure of STL. It is intended to make heterogeneous development easier.
+
+It is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
+
+\subsubsection{Programming Model}
+Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
+
+An example is shown in Listing \ref{code:boltExample1}, where we sort a device vector. This is identical to the method shown in Listing \ref{code:boltExample2}, where a a std::vector is sorted with std::sort.
+\begin{lstlisting}[caption={Bolt sort example}, label={code:boltExample1}]
+//vector construction
+bolt::cl::device_vector<int> input(1024);
+
+//vector fill ommited
+
+//inplace sort
+bolt::cl::sort(input.begin(), input.end());
+\end{lstlisting}
+
+\begin{lstlisting}[caption={STL sort example}, label={code:boltExample2}]
+//vector construction
+std::vector<int> input(1024);
+
+//vector fill ommited
+
+//inplace sort
+std::sort(input.begin(), input.end());
+\end{lstlisting}
+
+\subsubsection{Implementation}
+\todo[inline]{Bolt is a library... Er ikke sikker på om det kræver speciel kompilerings process.
+
+Bolt targets... almindelige cpuer og alt der kan køre c++ amp, eller openCL.
+}
+
+\subsubsection{Cognitive Dimensions of Notations}
+\todo[inline]{we could evaluate all criterion here}
+
+\subsubsection{Key Points}
+The key points of Bolt is:
+
+\begin{itemize}
+\item The immitation of STL.
+\item The capability of single code base working on both CPU and GPU.
+\end{itemize}
+
+The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.

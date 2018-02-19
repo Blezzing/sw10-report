@@ -219,5 +219,5 @@ TSWLatexianTemp*
 # expex forward references with \gathertags
 *-tags.tex
 
-# ignore report pdf
+# the report
 master.pdf
