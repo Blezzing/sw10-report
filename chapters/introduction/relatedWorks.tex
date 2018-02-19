@@ -1,17 +1,29 @@
 \section{Related Works}
-/* meta here */
+We consider related abstraction libraries in the domain of heterogeneous computing. This is done to identify relevant key points that can help define the library we are developing.
+
+The libraries are being considering in regards to:
+\begin{description}
+\item[Goals] \hfill \\
+To identify the motivation for the library and to understand the motivation behind its design choices.
+\item[Programming Model] \hfill \\
+To identify the programming model of a library to see what aproaches have been tried, and what have been made possible so far.
+\item[Cognitive Dimensions of Notations] \hfill \\
+To get a general idea of strengths and weaknesses of the library.
+\item[Key Points] \hfill \\
+To identify relevant points to note from a library, that should be considered when designing our library.
+\end{description}
+
+\todo[inline]{Argumenter for hvorfor vi har valgt at se på disse libraries}
 
 \subsection{Bolt}
-/* meta here */
+Bolt is a library providing abstractions for heterogeneous computing. This section is based on Bolt's documentation\cite{boltDoc} and github page\cite{boltGithub}.
+
+An unique feature of Bolt is the possibility to run its algoritms on either CPU or GPU without modifications in the code.
+
 \subsubsection{Goals}
 Bolt is designed to provide high performance library implementations for common algorithms, following the structure of STL. It is intended to make heterogeneous development easier.
 
 It is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
-
-\subsubsection{Implementation}
-Bolt is a...
-
-Bolt targets...
 
 \subsubsection{Programming Model}
 Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
@@ -37,7 +49,21 @@ std::vector<int> input(1024);
 std::sort(input.begin(), input.end());
 \end{lstlisting}
 
+\subsubsection{Implementation}
+\todo[inline]{Bolt is a library... Er ikke sikker på om det kræver speciel kompilerings process.
 
+Bolt targets... almindelige cpuer og alt der kan køre c++ amp, eller openCL.
+}
 
 \subsubsection{Cognitive Dimensions of Notations}
+\todo[inline]{we could evaluate all criterion here}
 
+\subsubsection{Key Points}
+The key points of Bolt is:
+
+\begin{itemize}
+\item The immitation of STL.
+\item The capability of single code base working on both CPU and GPU.
+\end{itemize}
+
+The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
