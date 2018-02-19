@@ -1,2 +1,52 @@
 \section{Related Works}
-What else exist?
+Meta about what else exist?
+ 
+\subsection{SkelCL}
+SkelCL (Skeleton Computing Language) is a library which aim is to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster.
+https://link.springer.com/chapter/10.1007%2F978-3-642-39958-9_24 - paper
+https://skelcl.github.io/ - webpage
+
+\subsubsection{Goals}
+The developers of SkelCL believes that programming for GPUs result in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically is reliant on low level programming aproaches as seen with OpenCL and CUDA. 
+
+To avoid the pitfalls of the traditional low level aproaches, the library SkelCL provide abstractions in the form of algorithmic patterns, parallel container data types, and handling of transfers between host and device. 
+
+SkelCl can be used on single GPU systems, but is mainly aimed at systems woth multipe GPUs and provide a feature called \textit{data (re)distributions} which manages data among the available GPUs.
+
+\subsubsection{Programming model}
+The programming model is centered around \textit{parallel skeletons}, which is pre-implemented high level patterns that can be customized for a given problem. The available skeletons are \textit{map}, \textit{zip}, \textit{reduce}, \textit{scan}, \textit{mapOverlap}, end \textit{allpairs}.
+
+A computation of the dot product of two vectors in SkelCL is shown in listing \ref{code:skelclSample}. After SkelCL is initialised, line three, the skeletons can be constructed. The \texttt{Zip} and \texttt{Reduce} have been used and are specified by a the provided paremeters; \texttt{<int(int,int)>} indicates that the function expects two integers and a single integer will be returned. The given string specifies the function of the skeleton. In line 12 the calculation is performed based on the constructed skeletons.
+
+\begin{lstlisting}[caption={Computation of the dot product of two vectors}, label=code:skelclSample] 
+using namespace skelcl;
+int main() {
+  skelcl::init();
+
+  Zip<int(int,int)> mult("int func(int x, int y)
+                            { return x*y; }");
+  Reduce<int(int)>   sum("int func(int x, int y)
+                            { return x+y; }", "0");
+
+  Vector<int> a(1024);
+  Vector<int> b(1024);
+  init(a.begin(), a.end()); init(b.begin(), b.end());
+
+  Vector<int> c = sum( mult(a, b) );
+
+  std::cout << "dot product: " << c.front() << std::endl;
+}
+\end{lstlisting}
+
+\subsubsection{Implementation}
+SkelCL is a library that is built upon OpenCL. This allows host and kernel code to be contained within one source file, as opposed to the traditional OpenCL approach.
+
+\subsubsection{Cognitive Dimensions of Notations}
+\todo[inline]{Empty for now}
+
+\subsubsection{Key points}
+A key point of OpenCL is the data containers it provide, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers are allocated or deallocated on the host, it is automatically also allocated or dealocated on the device(s). Futhermore, memory transfers between host and device are handled implicitly.
+
+Another key point of SkelCL is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} that OpenCL provides describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can instead be seen as self contained entities. The programmer instead have specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
+
+
