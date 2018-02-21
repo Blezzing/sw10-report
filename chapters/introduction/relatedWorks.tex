@@ -24,13 +24,50 @@ Thrust is a template library indended to allow developers to implement high perf
 Thrust is intended to make high performance application development as easy as possible. It is designed to be similar to STL, with intention of being concise, readable, and efficient. It is inteded to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by BLAS. It is also intended to be interoperable with CUDA.
 
 \subsubsection{Programming Model}
+Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
+
+We here show how saxpy can be implemented in Thrust, and the usage of iterators to manage data access is shown.
+\begin{lstlisting}
+size_t N = 1024;
+int a = 10;
+
+//cuda classifier on lambdaz
+auto func = [=]__device__(int x, int y){return a * x + y;};
+
+//initialize host vectors
+thrust::host_vector<int> x(N);
+thrust::host_vector<int> y(N);
+
+//fill with random data
+std::generate(x.begin(), x.end(), rand);
+std::generate(y.begin(), y.end(), rand);
+
+//copy to device
+thrust::device_vector<int> d_x = x;
+thrust::device_vector<int> d_y = y;
+
+//perform saxpy
+thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_y.begin(), func);
+
+//copy results back to host vector
+y = d_y;
+\end{lstlisting}
 
 \subsubsection{Implementation}
+Thrust is a library with abstractions build on top of CUDA.
 
 \subsubsection{Cognitive Dimensions of Notations}
 
 \subsubsection{Key Points}
+The key points of Thrust is:
 
+\begin{itemize}
+\item API immitating STL.
+\item Being purely a library on top of CUDA.
+\item Allowing mixing with CUDA code. 
+\end{itemize}
+
+The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
 
 \subsection{SkelCL}
 SkelCL (Skeleton Computing Language) is a library which aim is to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon the information available on their website \cite{skelclWebsite} and their paper \cite{skelclPaper}.
