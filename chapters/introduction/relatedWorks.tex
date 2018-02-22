@@ -26,8 +26,10 @@ Thrust is intended to make high performance application development as easy as p
 \subsubsection{Programming Model}
 Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
 
-We here show how saxpy can be implemented in Thrust, and the usage of iterators to manage data access is shown.
-\begin{lstlisting}
+In listing \ref{code:thrustSaxpy} we show how saxpy can be implemented in Thrust, and the usage of iterators to manage data access is shown.
+
+The execution of saxpy is done in line \ref{code:thrustSaxpy:execute}, and shows how we use iterators to define input and output location.
+\begin{lstlisting}[caption={Thrust saxpy example}, label={code:thrustSaxpy}]
 size_t N = 1024;
 int a = 10;
 
@@ -37,6 +39,7 @@ auto func = [=]__device__(int x, int y){return a * x + y;};
 //initialize host vectors
 thrust::host_vector<int> x(N);
 thrust::host_vector<int> y(N);
+thrust::host_vector<int> z(N);
 
 //fill with random data
 std::generate(x.begin(), x.end(), rand);
@@ -47,10 +50,10 @@ thrust::device_vector<int> d_x = x;
 thrust::device_vector<int> d_y = y;
 
 //perform saxpy
-thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_y.begin(), func);
+thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_y.begin(), func); ~\label{code:thrustSaxpy:execute}~
 
 //copy results back to host vector
-y = d_y;
+z = d_y;
 \end{lstlisting}
 
 \subsubsection{Implementation}
@@ -183,10 +186,43 @@ The usage of the containers is based on iterators, as STL is, and can be very ve
 % ---=== C++ AMP ===--- %
 
 \subsection{C++ AMP}
+https://msdn.microsoft.com/en-us/library/hh265137.aspx
 
 \subsubsection{Goals}
 
 \subsubsection{Programming model}
+saxpy
+\begin{lstlisting}[caption={C++ AMP saxpy example}, label={code:cppampSaxpy}]
+const size_t N = 1024;
+int a = 10;
+
+//source objects
+std::array<int, N> x;
+std::array<int, N> y;
+std::array<int, N> z;
+
+//fill with random data
+std::generate(x.begin(), x.end(), rand);
+std::generate(y.begin(), y.end(), rand);
+
+//create C++ AMP objects.
+array_view<const int, 1> x_v(size, x);
+array_view<const int, 1> y_v(size, y);
+array_view<int, 1> z_v(size, z);
+z_v.discard_data();
+
+parallel_for_each(
+    //define the compute domain
+    sum.extent,
+
+    //code to run on each thread on accelerator
+    [=](index<1> idx) restrict(amp){
+        z_v[idx] = a * x_v[idx] + y_v[idx];
+    }
+)
+
+//z now holds the result
+\end{lstlisting}
 
 \subsubsection{Implementation}
 
