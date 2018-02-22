@@ -1,4 +1,19 @@
 \section{Motivation}\label{cha:motivation}
-In our SW9 project we experienced that it is difficult to get started with OpenCL/CUDA development. There are multiple new concepts to learn, such as the programming model with kernels, and the memory model of the GPU. This means that a developer who believe, that the performance of an application can be improved by utilizing a GPU, need to learn all of this before being able to test his theory. This is difficult and we want to be able to initially abstract away all most of the GPU computing model until the developer is ready to learn it.
+%Hvorfor er gpgpu fedt
+With the development in GPGPU development it have been shown, that some heavy computational problems can be solved drastically faster using GPUs as accelerators. This have led to the development of multiple frameworks and tools to enable development on this platform.
+
+%Hvad lavede vi sidste semester, og hvad fandt vi ud af
+In our previous semester\cite{sw9Report}, we analyzed existing languages enabling GPGPU development. The goal of that project was to find representants of various different language groups, and to compare their development experiences. We concluded that GPGPU development generally is very difficult, as it require adapting to a new programming model, which gives in a very steep learning curve for the developer. This leads to a lot of time spent learning the programming model, rather than solving problems. In some cases GPU acceleration is not the correct answer, which means that a developer have wasted her time learning this programming model.
+
+%brug dette når vi argumenterer for c++
+%Another conclusion made in the previous project, was that when absolute performance was the goal, the best option seemed to be using CUDA or OpenCL. The higher abstractions provided by the other languages generally had a performance cost. 
+
+%Hvorfor tænker vi at det er et problem cuda/opencl?
+
+%Hvad tænker vi at man kan gøre ved det?
+We want to create a framework, using high abstraction at the cost of some performance, that allow the developer to develop accelerated application without the knowledge of the underlying programming model. This should make it clear whether there is potential performance to gain by utilizing GPU acceleration. If performance was gained, it would indicate that there is even more performance to gain, due to the performance cost of our abstractions. The developer can then decide to spend time learning the programming model of a low level API, such as CUDA or OpenCL, knowing that her time is well spent.
+
+%the old one
+%In our SW9 project we experienced that it is difficult to get started with OpenCL/CUDA development. There are multiple new concepts to learn, such as the programming model with kernels, and the memory model of the GPU. This means that a developer who believe, that the performance of an application can be improved by utilizing a GPU, need to learn all of this before being able to test his theory. This is difficult and we want to be able to initially abstract away all most of the GPU computing model until the developer is ready to learn it.
 
 \todo[inline]{find andre der har svært ved dette, eller nogen der kan bakke vores problem påstand op.}
