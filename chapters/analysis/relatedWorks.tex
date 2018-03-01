@@ -131,35 +131,48 @@ It is designed to provide an application that can execute on either a CPU or any
 \subsubsection{Programming Model}
 Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
 
-An example is shown in Listing \ref{code:boltExample1}, where we sort a device vector. This is identical to the method shown in Listing \ref{code:boltExample2}, where a a std::vector is sorted with std::sort.
-\begin{lstlisting}[caption={Bolt sort example}, label={code:boltExample1}]
-//vector construction
-bolt::cl::device_vector<int> input(1024);
+It have functions for modifying STL containers, and then the library decides whether the computation should happen on the host or the device, involving any copy needed to do so.
 
-//vector fill ommited
+The example shown in listing \ref[{code:boltSaxpy}], shows how well the library interfaces with an STL vector.
 
-//inplace sort
-bolt::cl::sort(input.begin(), input.end());
-\end{lstlisting}
+From line \ref{code:boltSaxpy:cppamp} until the next comment it is shown how the function is defined and implemented done with the C++ Amp backend. It is done with a c++11 lambda and C++ Amp's restrict classifier.
 
-\begin{lstlisting}[caption={STL sort example}, label={code:boltExample2}]
-//vector construction
-std::vector<int> input(1024);
+From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a functor is needed. The functor is then defined inside a BOLT_FUNCTOR macro to statically generate relevant OpenCL code.
 
-//vector fill ommited
+\begin{lstlisting}[caption={Bolt saxpy example}, label={code:boltSaxpy}]
+const size_t N = 1024;
+int a = 10;
 
-//inplace sort
-std::sort(input.begin(), input.end());
+std::vector<int> x(N);
+std::vector<int> y(N);
+std::vector<int> z(N);
+
+std::generate(x.begin(), x.end(), rand);
+std::generate(y.begin(), y.end(), rand);
+
+//bolt with c++ amp backend ~\label{code:boltSaxpy:cppamp}~
+auto saxpyLambda = [=] (float xx, float yy) restrict(cpu,amp) {
+  return a * xx + yy;
+};
+bolt::transform(x.begin(), x.end(), y.begin(), z.begin, saxpyLambda);
+
+//bolt with opencl backend ~\label{code:boltSaxpy:opencl}~
+BOLT_FUNCTOR(SaxpyFunctor,
+  struct SaxpyFunctor{
+    int _a;
+    SaxpyFunctor(int a): _a(a) {};
+    float operator() (const int& xx, const int& yy){
+      return _a * xx + yy;
+    };
+  };
+);
+boltcl::transform(x.begin(), x.end(), y.begin(), z.begin, SaxpyFunctor(a));
 \end{lstlisting}
 
 \subsubsection{Implementation}
-\todo[inline]{Bolt is a library... Er ikke sikker på om det kræver speciel kompilerings process.
-
-Bolt targets... almindelige cpuer og alt der kan køre c++ amp, eller openCL.
-}
-
-\subsubsection{Cognitive Dimensions of Notations}
-\todo[inline]{we could evaluate all criterion here}
+Bolt is a library on top of either C++ Amp or OpenCL. The API is the same, while the supported features changes depending on what implementation is selected.
+As shown in the example, only the C++ Amp backend supports c++11 lambdas, which reduces the amount of work needed by the developer, compared to the functor.
+%https://www.slideshare.net/hsafoundation/bolt-for-hsa-by-ben-sanders
 
 \subsubsection{Key Points}
 The key points of Bolt is:
@@ -212,9 +225,6 @@ Even though SYCL provides a higher abstraction level compared to regular \textit
 \subsubsection{Implementation}
 Primarily targets \textit{OpenCL}, but can also target other backends as it is translated to \textit{SPIR-V}, which an imediate representation.
 
-\subsubsection{Cognitive Dimensions of Notations}
-\todo[inline]{Empty for now}
-
 \subsubsection{Key Points}
 A key point of \textit{SYCL} to make note of is its way of specifying data that should be available for host and devices. By placing data in the buffers and specifying how the data should be accessed, shown in listing \ref{code:saxpySycl} as \texttt{read} and \texttt{discard\_write}, the availability of data is clear. 
 
@@ -263,8 +273,6 @@ parallel_for_each(
 
 \subsubsection{Implementation}
 
-\subsubsection{Cognitive Dimensions of Notations}
-
 \subsubsection{Key Points}
 
 % ---=== PACXX ===--- %
@@ -302,9 +310,6 @@ int main() {
 
 \subsubsection{Implementation}
 \textit{PACXX} utilizes \textit{LLVM} to genereate \textit{PTX} code at runtime. \textit{PACXX} is multi-staged.
-
-\subsubsection{Cognitive Dimensions of Notations}
-\todo{At some point}
 
 \subsubsection{Key Points}
 \textit{PACXX} abstacts most of the traditional GPU devopment away since the programmer can now write device code in \textit{C++14}.
