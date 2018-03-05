@@ -1,5 +1,5 @@
 \section{Related Works}
-We consider related abstraction libraries in the domain of heterogeneous computing. This is done to identify relevant key points that can help define the library we will be developing.
+We consider related abstraction libraries in the domain of heterogeneous computing. This is done to identify relevant key points that can help define the framework we will be developing.
 
 In our previous project, we compared multiple languages supporting development targeting the GPU\cite{sw9Report}. We observed how CUDA and OpenCL was the frameworks that offered the most explicit device control, and as such can be the choice for people with knowledge of how to fine tune a GPGPU application. As we intend to make a framework that should be able to be replaced by a low level programming model, and CUDA or OpenCL seem to be the dominant options, we want to get an overview of other frameworks targeting the host language of CUDA and OpenCL, being C and C++.
 
@@ -22,13 +22,13 @@ It is a research project that attempts to make GPU development easier by combini
 The libraries are being considering in regards to:
 \begin{description}
 \item[Goals] \hfill \\
-To identify the motivation for the library and to understand the motivation behind its design choices.
+To identify the motivation for the framework and to understand the motivation behind its design choices.
 \item[Programming Model] \hfill \\
-To identify the programming model of a library to see which aproaches have been tried, and what is currently possible. To give a demonstration of the programming model, an implementation of the \textit{SAXPY} computation is presented for each. We chose \textit{SAXPY} due to its simplicity.
+To identify the programming model of a framework to see which aproaches have been tried, and what is currently possible. To give a demonstration of the programming model, an implementation of the \textit{SAXPY} computation is presented for each. We chose \textit{SAXPY} due to its simplicity.
 \item[Implementation] \hfill \\
 To identify the means of facilitating the programming model, showing how it can be done.
 \item[Key Points] \hfill \\
-To identify relevant points to note from a library, that should be considered when designing our library.
+To identify relevant points to note from a framework, that should be considered when designing our framework.
 \end{description}
 
 \subsection{Thrust}
