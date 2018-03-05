@@ -1,6 +1,24 @@
 \section{Related Works}
 We consider related abstraction libraries in the domain of heterogeneous computing. This is done to identify relevant key points that can help define the library we will be developing.
 
+In our previous project, we compared multiple languages supporting development targeting the GPU\cite{sw9Report}. We observed how CUDA and OpenCL was the frameworks that offered the most explicit device control, and as such can be the choice for people with knowledge of how to fine tune a GPGPU application. As we intend to make a framework that should be able to be replaced by a low level programming model, and CUDA or OpenCL seem to be the dominant options, we want to get an overview of other frameworks targeting the host language of CUDA and OpenCL, being C and C++.
+
+The frameworks we examine are:
+\begin{description}
+\item[Thrust] \hfill \\
+Being promoted by NVIDIA, developer of CUDA, as a high level interface to GPU Programming, it is interesting to us\cite{thrustNvidia}.
+\item[C++ Amp] \hfill \\
+Being promoted by Microsoft, developer of DirectX, as a C++ language extension to enable data-parallel acceleration, it is interesting to us\cite{microsoftCppAMP}.
+\item[SYCL] \hfill \\
+Being promoted by Khronos Group, developer of OpenCL, as a abstraction layer that allow use of OpenCL as a platform with standard C++ on both host and device\cite{khronosSYCL}.
+\item[Bolt] \hfill \\
+It is developed by the HSA Foundation to provide a high level library to provide abstractions on top of low level programming models. As the goal is similar to ours it is interesting\cite{boltDoc}.
+\item[SkelCL] \hfill \\
+It is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons. As the goal is similar to ours it is interesting\cite{skelclPaper}.
+\item[PACXX] \hfill \\
+It is a research project that attempts to make GPU development easier by combining host and device code in standard C++. As the goal is similar to ours it is interesting\cite{pacxxPaper}.
+\end{description}
+
 The libraries are being considering in regards to:
 \begin{description}
 \item[Goals] \hfill \\
@@ -12,9 +30,6 @@ To identify the means of facilitating the programming model, showing how it can 
 \item[Key Points] \hfill \\
 To identify relevant points to note from a library, that should be considered when designing our library.
 \end{description}
-
-\todo[inline]{Argumenter for hvorfor vi har valgt at se på disse libraries}
-
 
 \subsection{Thrust}
 \textit{Thrust} is a template library indended to allow developers to implement high performance applications with minimal programming effort. This section is based on \textit{Thrust}'s overview document\cite{thrustOverview} and \textit{Github} page\cite{thrustGithub}.
@@ -81,20 +96,19 @@ The programming model is centered around \textit{parallel skeletons}, which is p
 An implementation of the \textit{SAXPY} computation in \textit{SkelCL} is shown in listing \ref{code:skelclSample}. After \textit{SkelCL} is initialised, which happens at line three, skeletons can be constructed. The \texttt{Zip} skeleton have been used and are specified by the provided paremeters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line 13 the calculation is performed based on the constructed skeletons.
 
 \begin{lstlisting}[caption={The \textit{SAXPY} computation in \textit{SkelCL}.}, label=code:skelclSample] 
-using namespace skelcl;
-int main() {
-  skelcl::init();
+size_t N = 1024;
+int a = 10;
 
-  Zip<float(float,float)> saxpy("float func(float x, float y, float a){ return a*x + y; }");
+skelcl::init();
 
-  Vector<float> X(1024);      
-  Vector<float> Y(1024);
-  init(X.begin(), X.end()); 
-  init(Y.begin(), Y.end());
-  float a = 2.5f;
+Zip<float(float,float)> saxpy("int func(int x, int y, int a){return a * x + y;}");
 
-  saxpy( out(Y), X, Y, a );
-}
+skelcl::Vector<int> X(N);      
+skelcl::Vector<int> Y(N);
+skelcl::init(X.begin(), X.end()); 
+skelcl::init(Y.begin(), Y.end());
+
+saxpy(out(Y), X, Y, a);
 \end{lstlisting}
 
 \subsubsection{Implementation}
