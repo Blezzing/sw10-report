@@ -175,12 +175,9 @@ As shown in the example, only the C++ Amp backend supports c++11 lambdas, which 
 %https://www.slideshare.net/hsafoundation/bolt-for-hsa-by-ben-sanders
 
 \subsubsection{Key Points}
-The key points of Bolt is:
+Being able to use the same algorithms on both STL containers, and Bolts containers can provide an easier transition.
 
-\begin{itemize}
-\item The immitation of STL.
-\item The capability of single code base working on both CPU and GPU.
-\end{itemize}
+Being a library on top of other frameworks results in some code artefacts. With C++ Amp as target, the use of the restrict classifier on lambdas seem unergonomic. With OpenCL as target, it is the use of BOLT_FUNCTOR as a macro to overcome the language gap between C++ and OpenCL C. Both examples show that workarounds to support the target sometimes will show up in the API. 
 
 The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
 
