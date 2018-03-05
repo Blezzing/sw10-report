@@ -6,7 +6,7 @@ The libraries are being considering in regards to:
 \item[Goals] \hfill \\
 To identify the motivation for the library and to understand the motivation behind its design choices.
 \item[Programming Model] \hfill \\
-To identify the programming model of a library to see which aproaches have been tried, and what is currently possible.
+To identify the programming model of a library to see which aproaches have been tried, and what is currently possible. To give a demonstration of the programming model, an implementation of the \textit{SAXPY} computation is presented for each. We chose \textit{SAXPY} due to its simplicity.
 \item[Implementation] \hfill \\
 To identify the means of facilitating the programming model, showing how it can be done.
 \item[Cognitive Dimensions of Notations] \hfill \\
@@ -16,8 +16,6 @@ To identify relevant points to note from a library, that should be considered wh
 \end{description}
 
 \todo[inline]{Argumenter for hvorfor vi har valgt at se på disse libraries}
-\todo[inline]{Sig at vi demonstrerer med saxpy og hvorfor vi har valgt saxpy.\\  - Temp presentation below}
-To give a demonstration of the libraries, and their programming model, an implementation of the SAXPY computation is presented for each. We chose SAXPY due to its relative simplicity and parellel nature.
 
 
 
@@ -76,6 +74,8 @@ The key points of Thrust is:
 
 The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
 
+% ---=== SkelCL ===--- %
+
 \subsection{SkelCL}
 SkelCL (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon the information available on their website \cite{skelclWebsite} and their paper \cite{skelclPaper}.
 
@@ -89,23 +89,22 @@ SkelCl can be used on single GPU systems, but is mainly aimed at systems worth m
 \subsubsection{Programming Model}
 The programming model is centered around \textit{parallel skeletons}, which is pre-implemented high level patterns that can be customized for a given problem. The available skeletons are \textit{map}, \textit{zip}, \textit{reduce}, \textit{scan}, \textit{mapOverlap}, end \textit{allpairs}.
 
-A computation of the dot product of two vectors in SkelCL is shown in listing \ref{code:skelclSample}. After SkelCL is initialised, line three, the skeletons can be constructed. The \texttt{Zip} and \texttt{Reduce} have been used and are specified by the provided paremeters; \texttt{<int(int,int)>} indicates that the function expects two integers and a single integer will be returned. The given string specifies the function of the skeleton. In line 12 the calculation is performed based on the constructed skeletons.
+A computation of the \textit{SAXPY} computation in SkelCL is shown in listing \ref{code:skelclSample}. After SkelCL is initialised, which happens at line three, skeletons can be constructed. The \texttt{Zip} skeleton have been used and are specified by the provided paremeters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line 13 the calculation is performed based on the constructed skeletons.
 
 \begin{lstlisting}[caption={Computation of the dot product of two vectors}, label=code:skelclSample] 
 using namespace skelcl;
 int main() {
   skelcl::init();
 
-  Zip<int(int,int)> mult("int func(int x, int y){ return x*y; }");
-  Reduce<int(int)> sum("int func(int x, int y){ return x+y; }", "0");
+  Zip<float(float,float)> saxpy("float func(float x, float y, float a){ return a*x + y; }");
 
-  Vector<int> a(1024);
-  Vector<int> b(1024);
-  init(a.begin(), a.end()); init(b.begin(), b.end());
+  Vector<float> X(1024);      
+  Vector<float> Y(1024);
+  init(X.begin(), X.end()); 
+  init(Y.begin(), Y.end());
+  float a = 2.5f;
 
-  Vector<int> c = sum( mult(a, b) );
-
-  std::cout << "dot product: " << c.front() << std::endl;
+  saxpy( out(Y), X, Y, a );
 }
 \end{lstlisting}
 
@@ -119,6 +118,8 @@ SkelCL is a library that is built upon OpenCL. This allows host and kernel code 
 A key point of OpenCL is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers are allocated or deallocated on the host, it is automatically also allocated or dealocated on the device(s). Futhermore, memory transfers between host and device are handled implicitly.
 
 Another key point of SkelCL is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} that OpenCL provides describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. The programmer has to specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
+
+% ---=== Bolt ===--- %
 
 \subsection{Bolt}
 Bolt is a library providing abstractions for heterogeneous computing. This section is based on Bolt's documentation\cite{boltDoc} and github page\cite{boltGithub}.
@@ -232,47 +233,52 @@ Another point to note, that is different than the approaches of the other librar
 % ---=== C++ AMP ===--- %
 
 \subsection{C++ AMP}
-https://msdn.microsoft.com/en-us/library/hh265137.aspx
+AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be excecuted on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} was initially developed by Microsoft as a library and an open standard for implementing parallelism in \textit{C++}, which have led to the announcement from the HSA Foundation about an AMP compiler built with \textit{Clang} and \textit{LLVM}, that outputs to \textit{OpenCL} instead of DirectX11. The information discussed in this section was gained from Microsoft's \textit{C++ AMP} page \cite{microsoftCppAMP}.
 
 \subsubsection{Goals}
+The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the C++ language. Microsoft implemented the spacification based upon \textit{DirectX 11}, and the HSA Foundation later did it for OpenCL.
 
 \subsubsection{Programming model}
-saxpy
-\begin{lstlisting}[caption={C++ AMP saxpy example}, label={code:cppampSaxpy}]
+The major thing to note about the programming model of \textit{C++ AMP} is that kernel functions is here expressed in C++ as labdas. 
+
+To construct matrices, a developer will create an array, and wrap it with the \textit{C++ AMP} provided \texttt{array\_view}. To show an example, with an array, \texttt{int matrix[] = \{1, 2, 3, 4\};}, it can be viewed as having multiple dimensions by writing \texttt{array\_view<int, 2> mat(2, 2, matrix);}. Here it was specified that the array should be seen as a matrix of integers with two dimensions. It is then specified that \texttt{mat} have two rows with two elements each, and that it should use the data contained withing \texttt{matrix}.
+
+Listing \ref{code:cppampSaxpy} show \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though we here only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that we want to use \texttt{z\_v} purely as an output container, and that we dont want to waste time transferring it to device since the contents will be overwritten anyway.
+At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The given lambda are marked with the \textit{C++ AMP} provided \texttt{restrict(amp)} which states that the lambda should be excecuted on device and that only a subset \textit{C++} functionality is available for excecution.
+\begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
 const size_t N = 1024;
 int a = 10;
 
-//source objects
 std::array<int, N> x;
 std::array<int, N> y;
 std::array<int, N> z;
 
-//fill with random data
 std::generate(x.begin(), x.end(), rand);
 std::generate(y.begin(), y.end(), rand);
 
-//create C++ AMP objects.
-array_view<const int, 1> x_v(size, x);
+array_view<const int, 1> x_v(size, x);~\label{code:cppampSaxpy:viewsStart}~
 array_view<const int, 1> y_v(size, y);
-array_view<int, 1> z_v(size, z);
-z_v.discard_data();
+array_view<int, 1> z_v(size, z);~\label{code:cppampSaxpy:viewsEnd}~
+z_v.discard_data();~\label{code:cppampSaxpy:discard}~
 
-parallel_for_each(
-    //define the compute domain
-    sum.extent,
+parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
+    z_v.extent,
 
-    //code to run on each thread on accelerator
     [=](index<1> idx) restrict(amp){
         z_v[idx] = a * x_v[idx] + y_v[idx];
     }
 )
-
-//z now holds the result
 \end{lstlisting}
 
 \subsubsection{Implementation}
+\textit{C++ AMP} enables parallelism based on \textit{DirectX11}.
 
 \subsubsection{Key Points}
+
+
+The idea of \texttt{array\_view} that interprets one dimensional arrays is interesting. 
+
+
 
 % ---=== PACXX ===--- %
 
