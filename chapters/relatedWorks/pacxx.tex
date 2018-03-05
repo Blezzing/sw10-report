@@ -1,0 +1,38 @@
+\section{PACXX}
+\textit{PACXX} is a unified programming model that uses a custom compiler based on \textit{Clang} and \textit{LLVM}. It is a research project created by Michael Haidl and Sergei Gorlatch both from University of Muensterm Germany. The information in this section is based upon their \textit{PACXX} paper released in 2014 \cite{pacxxPaper}. \textit{PACXX} is not officially released yet, but the compiler can be found on \textit{Github} \cite{pacxxGithub}.
+
+\subsection{Goals}
+The \textit{PACXX} paper states that the \textit{OpenCL} and \textit{CUDA} are error-prone since with these approaches, host code is writen in \textit{C}/\textit{C++} with a restricted, \textit{C}-like API to handle menory management and device specific code is written as device specific code with a parallel programming model. The aim of \textit{PACXX} is to avoid the praditional pitfalls of GPU programming by unifying host and device code and thereby allowing the programmer to stay, express herself using \textit{C++14} and \textit{STL} features.
+
+\subsection{Programming Model}
+As the aim of \textit{PACXX} suggests, the programming model is similar to a regular \textit{C++} approach, such that the developer would will not have to change mindset when programming. There are some exceptions note; The programmer still need to evaluate the threads and blocks she want to use. The programmer must use the \texttt{kernel} class that \textit{PACXX} provides to construct the kernel function. Lastly, \textit{PACXX} genereates and compiles device code at runtime, and there are no restrictins as to whan a kernel function can call, but all related code must be known at runtime. This means that functions from pre-compiled libraries cannot be used by a kernel function.
+
+Listing \ref{code:saxpyPACXX} shows a \textit{SAXPY} implementation using \textit{PACXX}. A lambda function called \texttt{SAXPY} is created on line 6, which describes \textit{SAXPY}. The thread id will be fetched, as seen on line 7, and then the elements corresponding to that thread of each vector will be used for the \textit{SAXPY} computation. The amount of threads and blocks are determined at line 12 and 13. Then, at line 15, the kernel function is constructed using the \textit{PACXX} provided \texttt{kernel} class. The \textit{SAXPY} computation is excecuted at line 16.
+
+\begin{lstlisting}[caption={\textit{SAXPY} implementation made with \textit{PACXX}.}, label={code:saxpyPACXX}]
+int main() {
+  size_t = 1 << 24;
+  int a = 2;
+  std::vector<int> x(n), y(n), z(n);
+
+  auto saxpy = [](const int& a, const vector<int>& x, const vecotr<int>& y, vector<int>& z) {
+    auto i = Thread::get().global.x;
+    if (i >= x.size()) return;
+    z[i] = x[i] * a + y[i];
+  };
+
+  size_t threads = 128;
+  size_t blocks = (n + (threads * 2 - 1)) / (threads * 2);
+
+  auto saxpy_gpu = kernel(saxpy, {{blocks}, {threads}});
+  saxpy_gpu(a, x, y, z);
+}
+\end{lstlisting}
+
+\subsection{Implementation}
+\textit{PACXX} utilizes \textit{LLVM} to genereate \textit{PTX} code at runtime. \textit{PACXX} is multi-staged.
+
+\subsection{Key Points}
+\textit{PACXX} abstacts most of the traditional GPU devopment away since the programmer can now write device code in \textit{C++14}.
+
+\textit{PACXX} ueses \textit{LLVM} to generate and compile code, \textit{PTX}, at runtime. This is interesting since provides more apportunities and freedom for abstractions that a static library would.

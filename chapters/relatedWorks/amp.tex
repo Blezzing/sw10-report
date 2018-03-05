@@ -1,0 +1,45 @@
+\section{C++ AMP}
+AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be excecuted on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} was initially developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}, which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang} and \textit{LLVM} that outputs to \textit{OpenCL} instead of DirectX11. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
+
+\subsection{Goals}
+The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the spacification based upon \textit{DirectX 11}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
+
+\subsection{Programming model}
+The major thing to note about the programming model of \textit{C++ AMP} is that kernel functions is here expressed in \textit{C++} as labdas. 
+
+To construct matrices, a developer will create an array, and wrap it with the \textit{C++ AMP} provided \texttt{array\_view}. To show an example, with an array, \texttt{int matrix[] = \{1, 2, 3, 4\};}, it can be viewed as having multiple dimensions by writing \texttt{array\_view<int, 2> mat(2, 2, matrix);}. Here it was specified that the array should be seen as a matrix of integers with two dimensions. It is then specified that \texttt{mat} have two rows with two elements each, and that it should use the data contained withing \texttt{matrix}.
+
+Listing \ref{code:cppampSaxpy} show \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though we here only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that we want to use \texttt{z\_v} purely as an output container, and that we dont want to waste resources transferring it to device since the contents will be overwritten anyway.
+At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The given lambda are marked with the \textit{C++ AMP} provided \texttt{restrict(amp)} which states that the lambda should be excecuted on device and that only a subset \textit{C++} functionality is available for excecution.
+\begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
+const size_t N = 1024;
+int a = 10;
+
+std::array<int, N> x;
+std::array<int, N> y;
+std::array<int, N> z;
+
+std::generate(x.begin(), x.end(), rand);
+std::generate(y.begin(), y.end(), rand);
+
+array_view<const int, 1> x_v(size, x);~\label{code:cppampSaxpy:viewsStart}~
+array_view<const int, 1> y_v(size, y);
+array_view<int, 1> z_v(size, z);~\label{code:cppampSaxpy:viewsEnd}~
+z_v.discard_data();~\label{code:cppampSaxpy:discard}~
+
+parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
+    z_v.extent,
+
+    [=](index<1> idx) restrict(amp){
+        z_v[idx] = a * x_v[idx] + y_v[idx];
+    }
+)
+\end{lstlisting}
+
+\subsection{Implementation}
+\textit{C++ AMP} enables parallelism based on \textit{DirectX11}.
+
+\subsection{Key Points}
+A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. This decision might have been made since DirectX11 is developed and maintained by \textit{Microsoft} as well.
+
+\textit{C++ AMP} abstracts hurdles of traditional low-level approaches away. This enables he developer to express herself with \textit{C++} instead of switching to another language. There are a few restriction though, such as the need for \textit{array\_view} and that lambdas for device use are restricted to a subset of \textit{C++}.

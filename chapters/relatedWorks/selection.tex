@@ -1,0 +1,31 @@
+
+\section{Selection of Related Works}
+In our previous project, we compared multiple languages supporting development targeting the GPU\cite{sw9Report}. We observed how \textit{CUDA} and \textit{OpenCL} was the frameworks that offered the most explicit device control, and as such can be the choice for people with knowledge of how to fine tune a GPGPU application. As we intend to make a framework that should be able to be replaced by a low level programming model, and \textit{CUDA} or \textit{OpenCL} seem to be the dominant options, we want to get an overview of other frameworks targeting the host language of \textit{CUDA} and \textit{OpenCL}, being \textit{C} and \textit{C++}.
+
+The frameworks we examine are:
+\begin{description}
+\item[Thrust] \hfill \\
+Being promoted by \textit{NVIDIA}, developer of \textit{CUDA}, as a high level interface to GPU Programming, it is interesting to us\cite{thrustNvidia}.
+\item[C++ Amp] \hfill \\
+Being promoted by \textit{Microsoft}, developer of \textit{DirectX}, as a \textit{C++} language extension to enable data-parallel acceleration, it is interesting to us\cite{microsoftCppAMP}.
+\item[SYCL] \hfill \\
+Being promoted by \textit{Khronos Group}, developer of \textit{OpenCL}, as a abstraction layer that allow use of \textit{OpenCL} as a platform with standard \textit{C++} on both host and device\cite{khronosSYCL}.
+\item[Bolt] \hfill \\
+It is developed by the \textit{HSA Foundation} to provide a high level library to provide abstractions on top of low level programming models. As the goal is similar to ours it is interesting\cite{boltDoc}.
+\item[SkelCL] \hfill \\
+It is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons. As the goal is similar to ours it is interesting\cite{skelclPaper}.
+\item[PACXX] \hfill \\
+It is a research project that attempts to make GPU development easier by combining host and device code in standard \textit{C++}. As the goal is similar to ours it is interesting\cite{pacxxPaper}.
+\end{description}
+
+The libraries are being considering in regards to:
+\begin{description}
+\item[Goals] \hfill \\
+To identify the motivation for the framework and to understand the motivation behind its design choices.
+\item[Programming Model] \hfill \\
+To identify the programming model of a framework to see which aproaches have been tried, and what is currently possible. To give a demonstration of the programming model, an implementation of the \textit{SAXPY} computation is presented for each. We chose \textit{SAXPY} due to its simplicity.
+\item[Implementation] \hfill \\
+To identify the means of facilitating the programming model, showing how it can be done.
+\item[Key Points] \hfill \\
+To identify relevant points to note from a framework, that should be considered when designing our framework.
+\end{description}

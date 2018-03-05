@@ -1,0 +1,43 @@
+\section{SYCL}
+\textit{SYCL} is a high-level programming language that provide an abstraction layer for \textit{OpenCL} and it is developed by \textit{Khronos Group}. This section describes \textit{SYCL} based on the information available at the \textit{Khronos Group} website \cite{khronosSYCL}.
+
+\subsection{Goals}
+As opposed to regular \textit{OpenCL} devlopment, \textit{SYCL} enables the host and device code to be contained within a single source. \textit{SYCL} exposes the \textit{OpenCL} feature-set with a higher abstraction level, as well as most modern \textit{C++} features. 
+
+The \textit{Khronos Group} aim to follow the current \textit{C++} standard developments and integrate it with \textit{OpenCL} features.
+
+\subsection{Programming model}
+\textit{OpenCL} has commands for memory object creation, copying, mapping and synchronisation. \textit{SYCL} wraps these as a \textit{command group} that can manage these commands. Listing \ref{code:saxpySycl} shows a sample with an implementation of the \textit{SAXPY} computation. \textit{SYCL} need to know which variables should be available for device use, and this is indicated by firstly setting up host storage as seen through line one to three. These variables, \texttt{x}, \texttt{y}, and \texttt{z}, are then placed in a buffer, as seen on lines five to seven, which marks the data to be shared between host and device and initializes the queue. Next, at lines nine and ten, the available decises are registered by initializing the \texttt{device\_selector}. At line 12 the buffer elements are submited by the \texttt{cgh} handler, and at following three lines it is specified how each buffer element should be accessed; \texttt{x} and \texttt{y} is set with the \textit{read} access mode and \texttt{z} is set with the \textit{discard\_write} access mode. The actual execution of \textit{SAXPY} is specified at lines 17 and 18.
+
+\begin{lstlisting}[caption={\textit{SAXPY} implemented in \textit{SYCL}.}, label={code:saxpySycl}]
+sycl::float4 x = { 1.0, 2.0, 3.0, 4.0 };
+sycl::float4 y = { 2.0, 3.0, 4.0, 5.0 };
+sycl::float4 z = { 0.0, 0.0, 0.0, 0.0 };
+
+sycl::buffer<sycl::float4, 1> a_sycl(&x, sycl::range<1>(1));
+sycl::buffer<sycl::float4, 1> a_sycl(&y, sycl::range<1>(1));
+sycl::buffer<sycl::float4, 1> a_sycl(&z, sycl::range<1>(1));
+
+sycl::default_selector device_selector;
+sycl::queue queue(device_selector);
+
+queue.submit([&] (sycl::handler& cgh) {
+  auto x_acc = x_sycl.get_access<sycl::access::mode::read>(cgh);
+  auto y_acc = y_sycl.get_access<sycl::access::mode::read>(cgh);
+  auto z_acc = z_sycl.get_access<sycl::access::mode::discard_write>(cgh);
+
+  cgh.single_task<class saxpy>([=] () {
+    z_acc[0] = 2 * x_acc[0] + y_acc[0];
+  });
+});
+\end{lstlisting}
+
+Even though \textit{SYCL} provides a higher abstraction level compared to regular \textit{OpenCL}, low-level \textit{C++} and \textit{OpenCL} features are still available.
+
+\subsection{Implementation}
+Primarily targets \textit{OpenCL}, but can also target other backends as it is translated to \textit{SPIR-V}, which an imediate representation.
+
+\subsection{Key Points}
+A key point of \textit{SYCL} to make note of is its way of specifying data that should be available for host and devices. By placing data in the buffers and specifying how the data should be accessed, shown in listing \ref{code:saxpySycl} as \texttt{read} and \texttt{discard\_write}, the availability of data is clear. 
+
+Another point to note, that is different than the approaches of the other libraries, is that the parallel logic is structured similar to how a kernel function would be in \textit{OpenCL}/\textit{CUDA} instead of it being abstracted away.
