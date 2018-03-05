@@ -18,24 +18,23 @@ To identify relevant points to note from a library, that should be considered wh
 \todo[inline]{Argumenter for hvorfor vi har valgt at se på disse libraries}
 
 
-
 \subsection{Thrust}
-Thrust is a template library indended to allow developers to implement high performance applications with minimal programming effort. This section is based on Thrust's overview document\cite{thrustOverview} and github page\cite{thrustGithub}.
+\textit{Thrust} is a template library indended to allow developers to implement high performance applications with minimal programming effort. This section is based on \textit{Thrust}'s overview document\cite{thrustOverview} and \textit{Github} page\cite{thrustGithub}.
 
 \subsubsection{Goals}
-Thrust is intended to make high performance application development as easy as possible. It is designed to be similar to STL, with intention of being concise, readable, and efficient. It is inteded to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by BLAS. It is also intended to be interoperable with CUDA.
+\textit{Thrust} is intended to make high performance application development as easy as possible. It is designed to be similar to \textit{STL}, with intention of being concise, readable, and efficient. It is inteded to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by \textit{BLAS}. It is also intended to be interoperable with \textit{CUDA}.
 
 \subsubsection{Programming Model}
-Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
+\textit{Thrust} is modeled on \textit{STL} and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
 
-In listing \ref{code:thrustSaxpy} we show how saxpy can be implemented in Thrust, and the usage of iterators to manage data access is shown.
+Listing \ref{code:thrustSaxpy} shows how the \textit{SAXPY} computation can be implemented in \textit{Thrust}, and the usage of iterators to manage data access is shown.
 
-The execution of saxpy is done in line \ref{code:thrustSaxpy:execute}, and shows how we use iterators to define input and output location.
-\begin{lstlisting}[caption={Thrust saxpy example}, label={code:thrustSaxpy}]
+The execution of \textit{SAXPY} is done in line \ref{code:thrustSaxpy:execute}, and shows how iterators is used to define input and output locations.
+\begin{lstlisting}[caption={\textit{Thrust} \textit{SAXPY} example.}, label={code:thrustSaxpy}]
 size_t N = 1024;
 int a = 10;
 
-//cuda classifier on lambdaz
+//cuda classifier on lambda
 auto func = [=]__device__(int x, int y){return a * x + y;};
 
 //initialize host vectors
@@ -59,39 +58,31 @@ z = d_y;
 \end{lstlisting}
 
 \subsubsection{Implementation}
-Thrust is a library with abstractions build on top of CUDA.
-
-\subsubsection{Cognitive Dimensions of Notations}
+\textit{Thrust} is a library with abstractions build on top of \textit{CUDA}.
 
 \subsubsection{Key Points}
-The key points of Thrust is:
+The API of \textit{Thrust} is structured to immitate that of \textit{STL}, and the developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.
 
-\begin{itemize}
-\item API immitating STL.
-\item Being purely a library on top of CUDA.
-\item Allowing mixing with CUDA code. 
-\end{itemize}
-
-The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
+\textit{Thrust} is a header only implementation, meaning there is no need for a specialised compiler, and it builds upon \textit{CUDA}. This allows mixing \textit{Thrust} and \textit{CUDA} code if there is a need for specialised code.
 
 % ---=== SkelCL ===--- %
 
 \subsection{SkelCL}
-SkelCL (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon the information available on their website \cite{skelclWebsite} and their paper \cite{skelclPaper}.
+\textit{SkelCL} (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon the information available on their website \cite{skelclWebsite} and in their paper \cite{skelclPaper}.
 
 \subsubsection{Goals}
-The developers of SkelCL believe that programming for GPUs results in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically being reliant on low level programming aproaches as seen with OpenCL and CUDA. 
+The developers of \textit{SkelCL} believe that programming for GPUs results in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically being reliant on low-level programming aproaches as seen with \textit{OpenCL} and \textit{CUDA}. 
 
-To avoid the pitfalls of the traditional low level aproaches, the library SkelCL provides abstractions in the form of algorithmic patterns, parallel container data types, and handling of transfers between host and device. 
+To avoid the pitfalls of the traditional low-level aproaches, the library \textit{SkelCL} provides abstractions in the form of algorithmic patterns, parallel container data types, and handling of transfers between host and device. 
 
-SkelCl can be used on single GPU systems, but is mainly aimed at systems worth multipe GPUs and provide a feature called \textit{data (re)distributions} which manages data among the available GPUs.
+\textit{SkelCl} can be used on single GPU systems, but is mainly aimed at systems with multipe GPUs and provide a feature called \textit{data (re)distributions} which manages data among the available GPUs.
 
 \subsubsection{Programming Model}
 The programming model is centered around \textit{parallel skeletons}, which is pre-implemented high level patterns that can be customized for a given problem. The available skeletons are \textit{map}, \textit{zip}, \textit{reduce}, \textit{scan}, \textit{mapOverlap}, end \textit{allpairs}.
 
-A computation of the \textit{SAXPY} computation in SkelCL is shown in listing \ref{code:skelclSample}. After SkelCL is initialised, which happens at line three, skeletons can be constructed. The \texttt{Zip} skeleton have been used and are specified by the provided paremeters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line 13 the calculation is performed based on the constructed skeletons.
+An implementation of the \textit{SAXPY} computation in \textit{SkelCL} is shown in listing \ref{code:skelclSample}. After \textit{SkelCL} is initialised, which happens at line three, skeletons can be constructed. The \texttt{Zip} skeleton have been used and are specified by the provided paremeters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line 13 the calculation is performed based on the constructed skeletons.
 
-\begin{lstlisting}[caption={Computation of the dot product of two vectors}, label=code:skelclSample] 
+\begin{lstlisting}[caption={The \textit{SAXPY} computation in \textit{SkelCL}.}, label=code:skelclSample] 
 using namespace skelcl;
 int main() {
   skelcl::init();
@@ -109,40 +100,33 @@ int main() {
 \end{lstlisting}
 
 \subsubsection{Implementation}
-SkelCL is a library that is built upon OpenCL. This allows host and kernel code to be contained within one source file, as opposed to the traditional OpenCL approach.
-
-\subsubsection{Cognitive Dimensions of Notations}
-\todo[inline]{Empty for now}
+\textit{SkelCL} is a library that is built upon \textit{OpenCL}. This allows host and kernel code to be contained within one source file, as opposed to the traditional \textit{OpenCL} approach.
 
 \subsubsection{Key points}
-A key point of OpenCL is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers are allocated or deallocated on the host, it is automatically also allocated or dealocated on the device(s). Futhermore, memory transfers between host and device are handled implicitly.
+A key point of \textit{OpenCL} is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers are allocated or deallocated on the host, it is automatically also allocated or dealocated on the device(s). Futhermore, memory transfers between host and device are handled implicitly.
 
-Another key point of SkelCL is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} that OpenCL provides describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. The programmer has to specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
+Another key point of \textit{SkelCL} is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. The developer have to specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
 
 % ---=== Bolt ===--- %
 
 \subsection{Bolt}
-Bolt is a library providing abstractions for heterogeneous computing. This section is based on Bolt's documentation\cite{boltDoc} and github page\cite{boltGithub}.
-
-A unique feature of Bolt is the possibility to run its algoritms on either CPU or GPU without the same code.
+\textit{Bolt} is a library providing abstractions for heterogeneous computing. This section is based on \textit{Bolt}'s documentation\cite{boltDoc} and \textit{Github} page\cite{boltGithub}.
 
 \subsubsection{Goals}
-Bolt is designed to provide high performance library implementations for common algorithms, following the structure of STL. It is intended to make heterogeneous development easier.
-
-It is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
+\textit{Bolt} is aim to provide high performance library implementations for common algorithms, following the structure of \textit{STL}. It is intended to make heterogeneous development easieran, and is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
 
 \subsubsection{Programming Model}
-Bolt is modeled on STL and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
+\textit{Bolt} is modeled on \textit{STL} and as such, follows the model of calling functions with iterators as arguments to instruct where input and output is located.
 
-It have functions for modifying STL containers, and then the library decides whether the computation should happen on the host or the device, involving any copy needed to do so.
+It have functions for modifying \textit{STL} containers, and the library decides whether the computation should happen on host or device, involving any required copying.
 
-The example shown in listing \ref[{code:boltSaxpy}], shows how well the library interfaces with an STL vector.
+The example shown in Listing \ref{code:boltSaxpy}, shows how well the library interfaces with an \textit{STL} vector.
 
-From line \ref{code:boltSaxpy:cppamp} until the next comment it is shown how the function is defined and implemented done with the C++ Amp backend. It is done with a c++11 lambda and C++ Amp's restrict classifier.
+From line \ref{code:boltSaxpy:cppamp} until the next comment it is shown how the function is defined and implemented with the \textit{C++ AMP} backend. It is done with a \textit{C++11} lambda and \textit{C++ AMP}'s restrict classifier.
 
-From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a functor is needed. The functor is then defined inside a BOLT\_FUNCTOR macro to statically generate relevant OpenCL code.
+From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a functor is needed when using the \textit{OpenCL} backend. The functor is then defined inside a BOLT\_FUNCTOR macro to statically generate relevant \textit{OpenCL} code.
 
-\begin{lstlisting}[caption={Bolt saxpy example}, label={code:boltSaxpy}]
+\begin{lstlisting}[caption={Bolt \textit{SAXPY} example}, label={code:boltSaxpy}]
 const size_t N = 1024;
 int a = 10;
 
@@ -173,33 +157,31 @@ boltcl::transform(x.begin(), x.end(), y.begin(), z.begin, SaxpyFunctor(a));
 \end{lstlisting}
 
 \subsubsection{Implementation}
-Bolt is a library on top of either C++ Amp or OpenCL. The API is the same, while the supported features changes depending on what implementation is selected.
-As shown in the example, only the C++ Amp backend supports c++11 lambdas, which reduces the amount of work needed by the developer, compared to the functor.
+\textit{Bolt} is a library on top of either \textit{C++ AMP} or \textit{OpenCL}. The API is the same, while the supported features changes depending on what implementation is selected.
+As shown in the example, only the \textit{C++ AMP} backend supports \textit{C++11} lambdas, which reduces the amount of work needed by the developer, compared to the functor.
 %https://www.slideshare.net/hsafoundation/bolt-for-hsa-by-ben-sanders
 
 \subsubsection{Key Points}
-Being able to use the same algorithms on both STL containers, and Bolts containers can provide an easier transition.
+Being able to use the same algorithms on both \textit{STL} containers, and \textit{Bolts} containers can provide an easier transition.
 
-Being a library on top of other frameworks results in some code artefacts. With C++ Amp as target, the use of the restrict classifier on lambdas seem unergonomic. With OpenCL as target, it is the use of BOLT\_FUNCTOR as a macro to overcome the language gap between C++ and OpenCL C. Both examples show that workarounds to support the target sometimes will show up in the API. 
+Being a library on top of other frameworks results in some code artefacts. With \textit{C++ AMP} as target, the use of the restrict classifier on lambdas seem unergonomic. With \textit{OpenCL} as target, it is the use of \texttt{BOLT\_FUNCTOR} as a macro to overcome the language gap between \textit{C++} and \textit{OpenCL C}. Both examples show that workarounds to support the target sometimes will show up in the API. 
 
-The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
+The usage of the containers is based on iterators, as \textit{STL} is, and can be very verbose with multiple operations on the same container.
 
 % ---=== SYCL ===--- %
-//bolt with c++ amp backend ~\label{code:boltSaxpy:cppamp}~
-auto saxpyLambda = [=] (float xx, float yy) re
 
 \subsection{SYCL}
-\textit{SYCL} is a high-level programming language that provide an abstraction layer for \textit{OpenCL} and it is developed by Khronos group. This section describes \textit{SYCL} based on the information available at the Khronos website REF.
+\textit{SYCL} is a high-level programming language that provide an abstraction layer for \textit{OpenCL} and it is developed by \textit{Khronos Group}. This section describes \textit{SYCL} based on the information available at the \textit{Khronos Group} website \cite{khronosSYCL}.
 
 \subsubsection{Goals}
 As opposed to regular \textit{OpenCL} devlopment, \textit{SYCL} enables the host and device code to be contained within a single source. \textit{SYCL} exposes the \textit{OpenCL} feature-set with a higher abstraction level, as well as most modern \textit{C++} features. 
 
-The Khronos group aim to follow the current C++ standard developments and integrate it with OpenCL features.
+The \textit{Khronos Group} aim to follow the current \textit{C++} standard developments and integrate it with \textit{OpenCL} features.
 
 \subsubsection{Programming model}
-\textit{OpenCL} has commands for memory object creation, copying, mapping and synchronisation. \textit{SYCL} wraps these as a \textit{command group} that can manage these commands. Listing \ref{code:saxpySycl} shows a sample with an implementation of saxpy. \textit{SYCL} need to know which variables should be available for device use, and this is indicated by firstly setting up host storage as seen on line one to three. These variables, \texttt{x}, \texttt{y}, and \texttt{z}, are then placed in a buffer, as seen on lines five to seven, which marks them data to be shared between host and device and initializes the queue. Next, at lines nine and ten, the available decises are registered by initializing the \texttt{device\_selector}. At line 12 the buffer elements are submited by the \texttt{cgh} handler, and at following three lines it is specified how each buffer element should be accessed; \texttt{x} and \texttt{y} is set with the \textit{read} access mode and \texttt{z} is set with the \textit{discard\_write} access mode. The actual execution of saxpy is specified at lines 17 and 18.
+\textit{OpenCL} has commands for memory object creation, copying, mapping and synchronisation. \textit{SYCL} wraps these as a \textit{command group} that can manage these commands. Listing \ref{code:saxpySycl} shows a sample with an implementation of the \textit{SAXPY} computation. \textit{SYCL} need to know which variables should be available for device use, and this is indicated by firstly setting up host storage as seen through line one to three. These variables, \texttt{x}, \texttt{y}, and \texttt{z}, are then placed in a buffer, as seen on lines five to seven, which marks the data to be shared between host and device and initializes the queue. Next, at lines nine and ten, the available decises are registered by initializing the \texttt{device\_selector}. At line 12 the buffer elements are submited by the \texttt{cgh} handler, and at following three lines it is specified how each buffer element should be accessed; \texttt{x} and \texttt{y} is set with the \textit{read} access mode and \texttt{z} is set with the \textit{discard\_write} access mode. The actual execution of \textit{SAXPY} is specified at lines 17 and 18.
 
-\begin{lstlisting}[caption={Saxpy implemented in SYCL}, label={code:saxpySycl}]
+\begin{lstlisting}[caption={\textit{SAXPY} implemented in \textit{SYCL}.}, label={code:saxpySycl}]
 sycl::float4 x = { 1.0, 2.0, 3.0, 4.0 };
 sycl::float4 y = { 2.0, 3.0, 4.0, 5.0 };
 sycl::float4 z = { 0.0, 0.0, 0.0, 0.0 };
@@ -222,7 +204,7 @@ queue.submit([&] (sycl::handler& cgh) {
 });
 \end{lstlisting}
 
-Even though SYCL provides a higher abstraction level compared to regular \textit{OpenCL}, low-level \textit{C++} and \textit{OpenCL} features are still available.
+Even though \textit{SYCL} provides a higher abstraction level compared to regular \textit{OpenCL}, low-level \textit{C++} and \textit{OpenCL} features are still available.
 
 \subsubsection{Implementation}
 Primarily targets \textit{OpenCL}, but can also target other backends as it is translated to \textit{SPIR-V}, which an imediate representation.
@@ -235,17 +217,17 @@ Another point to note, that is different than the approaches of the other librar
 % ---=== C++ AMP ===--- %
 
 \subsection{C++ AMP}
-AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be excecuted on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} was initially developed by Microsoft as a library and an open standard for implementing parallelism in \textit{C++}, which have led to the announcement from the HSA Foundation about an AMP compiler built with \textit{Clang} and \textit{LLVM}, that outputs to \textit{OpenCL} instead of DirectX11. The information discussed in this section was gained from Microsoft's \textit{C++ AMP} page \cite{microsoftCppAMP}.
+AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be excecuted on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} was initially developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}, which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang} and \textit{LLVM} that outputs to \textit{OpenCL} instead of DirectX11. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
 
 \subsubsection{Goals}
-The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the C++ language. Microsoft implemented the spacification based upon \textit{DirectX 11}, and the HSA Foundation later did it for OpenCL.
+The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the spacification based upon \textit{DirectX 11}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
 
 \subsubsection{Programming model}
-The major thing to note about the programming model of \textit{C++ AMP} is that kernel functions is here expressed in C++ as labdas. 
+The major thing to note about the programming model of \textit{C++ AMP} is that kernel functions is here expressed in \textit{C++} as labdas. 
 
 To construct matrices, a developer will create an array, and wrap it with the \textit{C++ AMP} provided \texttt{array\_view}. To show an example, with an array, \texttt{int matrix[] = \{1, 2, 3, 4\};}, it can be viewed as having multiple dimensions by writing \texttt{array\_view<int, 2> mat(2, 2, matrix);}. Here it was specified that the array should be seen as a matrix of integers with two dimensions. It is then specified that \texttt{mat} have two rows with two elements each, and that it should use the data contained withing \texttt{matrix}.
 
-Listing \ref{code:cppampSaxpy} show \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though we here only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that we want to use \texttt{z\_v} purely as an output container, and that we dont want to waste time transferring it to device since the contents will be overwritten anyway.
+Listing \ref{code:cppampSaxpy} show \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though we here only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that we want to use \texttt{z\_v} purely as an output container, and that we dont want to waste resources transferring it to device since the contents will be overwritten anyway.
 At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The given lambda are marked with the \textit{C++ AMP} provided \texttt{restrict(amp)} which states that the lambda should be excecuted on device and that only a subset \textit{C++} functionality is available for excecution.
 \begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
 const size_t N = 1024;
@@ -276,26 +258,24 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 \textit{C++ AMP} enables parallelism based on \textit{DirectX11}.
 
 \subsubsection{Key Points}
+A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. This decision might have been made since DirectX11 is developed and maintained by \textit{Microsoft} as well.
 
-
-The idea of \texttt{array\_view} that interprets one dimensional arrays is interesting. 
-
-
+\textit{C++ AMP} abstracts hurdles of traditional low-level approaches away. This enables he developer to express herself with \textit{C++} instead of switching to another language. There are a few restriction though, such as the need for \textit{array\_view} and that lambdas for device use are restricted to a subset of \textit{C++}.
 
 % ---=== PACXX ===--- %
 
 \subsection{PACXX}
-PACXX is a unified programming model that uses a custom compiler based on Clang. It is a research project created by Michael Haidl and Sergei Gorlatch both from University of Muensterm Germany. The information in this section is based upon their \textit{PACXX} paper released in 2014 REF SOURCE. \textit{PACXX} is not officially released yet, but the compiler can be found on Github REF SOURCE.
+\textit{PACXX} is a unified programming model that uses a custom compiler based on \textit{Clang} and \textit{LLVM}. It is a research project created by Michael Haidl and Sergei Gorlatch both from University of Muensterm Germany. The information in this section is based upon their \textit{PACXX} paper released in 2014 \cite{pacxxPaper}. \textit{PACXX} is not officially released yet, but the compiler can be found on \textit{Github} \cite{pacxxGithub}.
 
 \subsubsection{Goals}
-The \textit{PACXX} paper states that the \textit{OpenCL} and \textit{CUDA} are error-prone since with these approaches, host code is writen in \textit{C}/\textit{C++} with a restructed, \textit{C}-like API to handle menory management and device specific code is written as device specific code with a parallel programming model. The aim of \textit{PACXX} is to avoid the praditional pitfalls of GPU programming by unifying host and device code and thereby allowing the programmer to stay, express herself using \textit{C++14} and STL features.
+The \textit{PACXX} paper states that the \textit{OpenCL} and \textit{CUDA} are error-prone since with these approaches, host code is writen in \textit{C}/\textit{C++} with a restricted, \textit{C}-like API to handle menory management and device specific code is written as device specific code with a parallel programming model. The aim of \textit{PACXX} is to avoid the praditional pitfalls of GPU programming by unifying host and device code and thereby allowing the programmer to stay, express herself using \textit{C++14} and \textit{STL} features.
 
 \subsubsection{Programming Model}
 As the aim of \textit{PACXX} suggests, the programming model is similar to a regular \textit{C++} approach, such that the developer would will not have to change mindset when programming. There are some exceptions note; The programmer still need to evaluate the threads and blocks she want to use. The programmer must use the \texttt{kernel} class that \textit{PACXX} provides to construct the kernel function. Lastly, \textit{PACXX} genereates and compiles device code at runtime, and there are no restrictins as to whan a kernel function can call, but all related code must be known at runtime. This means that functions from pre-compiled libraries cannot be used by a kernel function.
 
-Listing \ref{code:saxpyPACXX} shows a saxpy implementation using \textit{PACXX}. A lambda function called \texttt{saxpy} is created on line 6, which describes saxpy. The thread id will be fetched, as seen on line 7, and then the elements corresponding to that thread of each vector will be used for the saxpy computation. The amount of threads and blocks are determined at line 12 and 13. Then, at line 15, the kernel function is constructed using the \textit{PACXX} provided \texttt{kernel} class. The saxpy is excecuted at line 16.
+Listing \ref{code:saxpyPACXX} shows a \textit{SAXPY} implementation using \textit{PACXX}. A lambda function called \texttt{SAXPY} is created on line 6, which describes \textit{SAXPY}. The thread id will be fetched, as seen on line 7, and then the elements corresponding to that thread of each vector will be used for the \textit{SAXPY} computation. The amount of threads and blocks are determined at line 12 and 13. Then, at line 15, the kernel function is constructed using the \textit{PACXX} provided \texttt{kernel} class. The \textit{SAXPY} computation is excecuted at line 16.
 
-\begin{lstlisting}[caption={saxpy made with PACXX.}, label={code:saxpyPACXX}]
+\begin{lstlisting}[caption={\textit{SAXPY} implementation made with \textit{PACXX}.}, label={code:saxpyPACXX}]
 int main() {
   size_t = 1 << 24;
   int a = 2;
