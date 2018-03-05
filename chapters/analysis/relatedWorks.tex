@@ -140,7 +140,7 @@ The example shown in listing \ref[{code:boltSaxpy}], shows how well the library 
 
 From line \ref{code:boltSaxpy:cppamp} until the next comment it is shown how the function is defined and implemented done with the C++ Amp backend. It is done with a c++11 lambda and C++ Amp's restrict classifier.
 
-From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a functor is needed. The functor is then defined inside a BOLT_FUNCTOR macro to statically generate relevant OpenCL code.
+From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a functor is needed. The functor is then defined inside a BOLT\_FUNCTOR macro to statically generate relevant OpenCL code.
 
 \begin{lstlisting}[caption={Bolt saxpy example}, label={code:boltSaxpy}]
 const size_t N = 1024;
@@ -185,6 +185,8 @@ Being a library on top of other frameworks results in some code artefacts. With 
 The usage of the containers is based on iterators, as STL is, and can be very verbose with multiple operations on the same container.
 
 % ---=== SYCL ===--- %
+//bolt with c++ amp backend ~\label{code:boltSaxpy:cppamp}~
+auto saxpyLambda = [=] (float xx, float yy) re
 
 \subsection{SYCL}
 \textit{SYCL} is a high-level programming language that provide an abstraction layer for \textit{OpenCL} and it is developed by Khronos group. This section describes \textit{SYCL} based on the information available at the Khronos website REF.
