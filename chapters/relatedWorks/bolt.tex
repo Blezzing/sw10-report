@@ -2,12 +2,12 @@
 \textit{Bolt} is a library providing abstractions for heterogeneous computing. This section is based on \textit{Bolt}'s documentation\cite{boltDoc} and \textit{Github} page\cite{boltGithub}.
 
 \subsection{Goals}
-\textit{Bolt} is aim to provide high performance library implementations for common algorithms, following the structure of \textit{STL}. It is intended to make heterogeneous development easieran, and is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
+The aim of \textit{Bolt} is to provide high performance library implementations for common algorithms, following the structure of \textit{STL}. It is intended to make heterogeneous development easier, and is designed to provide an application that can execute on either a CPU or any OpenCL capable unit.
 
 \subsection{Programming Model}
 \textit{Bolt} is modeled on \textit{STL} and as such, follows the model of calling functions with iterators as arguments to instruct where input and output is located.
 
-It have functions for modifying \textit{STL} containers, and the library decides whether the computation should happen on host or device, involving any required copying.
+\textit{Bolt} provide functions for modifying \textit{STL} containers, and the library determines whether the computation should happen on host or device, involving any required copying.
 
 The example shown in Listing \ref{code:boltSaxpy}, shows how well the library interfaces with an \textit{STL} vector.
 
@@ -46,12 +46,12 @@ boltcl::transform(x.begin(), x.end(), y.begin(), z.begin, SaxpyFunctor(a));
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Bolt} is a library on top of either \textit{C++ AMP} or \textit{OpenCL}\cite{boltPresentation}. The API is the same, while the supported features changes depending on what implementation is selected.
-As shown in the example, only the \textit{C++ AMP} backend supports \textit{C++11} lambdas, which reduces the amount of work needed by the developer, compared to the functor.
+\textit{Bolt} is a library on top of either \textit{C++ AMP} or \textit{OpenCL}\cite{boltPresentation}. The API is the same, while the supported features changes depending on which implementation is selected.
+As shown in the example, only the \textit{C++ AMP} backend supports \textit{C++11} lambdas, which reduces the amount of work needed by the developer, compared to using a functor.
 
 \subsection{Key Points}
 Being able to use the same algorithms on both \textit{STL} containers, and \textit{Bolts} containers can provide an easier transition.
 
-Being a library on top of other frameworks results in some code artefacts. With \textit{C++ AMP} as target, the use of the restrict classifier on lambdas seem unergonomic. With \textit{OpenCL} as target, it is the use of \texttt{BOLT\_FUNCTOR} as a macro to overcome the language gap between \textit{C++} and \textit{OpenCL C}. Both examples show that workarounds to support the target sometimes will show up in the API. 
+Being a library on top of other frameworks results in some code artifacts. With \textit{C++ AMP} as target, the use of the restrict classifier on lambdas seem unergonomic. \texttt{BOLT\_FUNCTOR} as a macro is used to overcome the language gap between \textit{C++} and \textit{OpenCL C} when \textit{OpenCL} is set as targeted backend. Both examples show that workarounds to support the target backend sometimes will show up in the API. 
 
 The usage of the containers is based on iterators, as \textit{STL} is, and can be very verbose with multiple operations on the same container.

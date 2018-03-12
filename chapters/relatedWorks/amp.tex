@@ -1,16 +1,27 @@
 \section{C++ AMP}
-AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be excecuted on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} was initially developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}, which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang} and \textit{LLVM} that outputs to \textit{OpenCL} instead of DirectX11. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
+AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be executed on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} is developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}. Their choice of \textit{DirectX 11} is interesting since \textit{OpenCl} and \textit{CUDA} existed at the time. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
+
+% The commented text describes an implementation outputting OpenCL
+% which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang}\cite{clang} and \textit{LLVM}\cite{llvm} that outputs to \textit{OpenCL} instead of DirectX11.
 
 \subsection{Goals}
-The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the spacification based upon \textit{DirectX 11}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
+The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the specification based upon \textit{DirectX 11}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
 
 \subsection{Programming model}
-The major thing to note about the programming model of \textit{C++ AMP} is that kernel functions is here expressed in \textit{C++} as labdas. 
+A feature of \textit{C++ AMP} is that kernel functions is here expressed in \textit{C++} as restricted lambdas, meaning that a subset of \textit{C++} is available. 
 
-To construct matrices, a developer will create an array, and wrap it with the \textit{C++ AMP} provided \texttt{array\_view}. To show an example, with an array, \texttt{int matrix[] = \{1, 2, 3, 4\};}, it can be viewed as having multiple dimensions by writing \texttt{array\_view<int, 2> mat(2, 2, matrix);}. Here it was specified that the array should be seen as a matrix of integers with two dimensions. It is then specified that \texttt{mat} have two rows with two elements each, and that it should use the data contained withing \texttt{matrix}.
+Construction of matrices is done by first creating an array, and then wrap it with the \texttt{array\_view} that is provided by \textit{C++ AMP}. To show an example, an array is constructed below:
+\begin{lstlisting}
+int matrix[] = \{1, 2, 3, 4\}; 
+\end{lstlisting}
+To construct a matrix with two dimensions, the \texttt{matrix} array is wrapped with \texttt{array\_view}:
+\begin{lstlisting}
+array\_view<int, 2> mat(2, 2, matrix); 
+\end{lstlisting}
+Here the \texttt{<int, 2>} specifies that the \texttt{mat} matrix consist of integers and two dimensions. \texttt{(2, 2, matrix)} indicates that the \texttt{mat} matrix will have two rows and two columns, and will be populated with the data from the \texttt{matrix} array;
 
-Listing \ref{code:cppampSaxpy} show \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though we here only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that we want to use \texttt{z\_v} purely as an output container, and that we dont want to waste resources transferring it to device since the contents will be overwritten anyway.
-At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The given lambda are marked with the \textit{C++ AMP} provided \texttt{restrict(amp)} which states that the lambda should be excecuted on device and that only a subset \textit{C++} functionality is available for excecution.
+Listing \ref{code:cppampSaxpy} shows \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though this example only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that \texttt{z\_v} is used purely as an output container, and to avoid wasting resources transferring it to device since the contents will be overwritten.
+At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The lambda at line \ref{code:cppampSaxpy:lambda} are marked with \texttt{restrict(amp)} which states that the lambda should be executed on device and that only a subset \textit{C++} functionality is available for execution.
 \begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
 const size_t N = 1024;
 int a = 10;
@@ -30,7 +41,7 @@ z_v.discard_data();~\label{code:cppampSaxpy:discard}~
 parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
     z_v.extent,
 
-    [=](index<1> idx) restrict(amp){
+    [=](index<1> idx) restrict(amp){ ~\label{code:cppampSaxpy:lambda}~
         z_v[idx] = a * x_v[idx] + y_v[idx];
     }
 )
@@ -40,6 +51,6 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 \textit{C++ AMP} enables parallelism based on \textit{DirectX11}.
 
 \subsection{Key Points}
-A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. This decision might have been made since DirectX11 is developed and maintained by \textit{Microsoft} as well.
+A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. We assume that this decision might have been made due to DirectX11 being developed and maintained by \textit{Microsoft} as well.
 
-\textit{C++ AMP} abstracts hurdles of traditional low-level approaches away. This enables he developer to express herself with \textit{C++} instead of switching to another language. There are a few restriction though, such as the need for \textit{array\_view} and that lambdas for device use are restricted to a subset of \textit{C++}.
+\textit{C++ AMP} is meant to extend \textit{C++} with parallelism. While this allows a developer to write code for GPUs in \textit{C++}, there are still some quirks in the form of \textit{array\_view} and restricted lambdas.

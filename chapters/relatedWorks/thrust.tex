@@ -1,15 +1,15 @@
 \section{Thrust}
-\textit{Thrust} is a template library indended to allow developers to implement high performance applications with minimal programming effort. This section is based on \textit{Thrust}'s overview document\cite{thrustOverview} and \textit{Github} page\cite{thrustGithub}.
+\textit{Thrust} is a \textit{C++} library that allow developers to implement high performance applications with minimal programming effort. This section is based on \textit{Thrust}'s overview document\cite{thrustOverview} and \textit{Github} page\cite{thrustGithub}.
 
 \subsection{Goals}
-\textit{Thrust} is intended to make high performance application development as easy as possible. It is designed to be similar to \textit{STL}, with intention of being concise, readable, and efficient. It is inteded to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by \textit{BLAS}. It is also intended to be interoperable with \textit{CUDA}.
+The aim of \textit{Thrust} is to make high performance application development as easy as possible. It is designed to be similar to \textit{STL}, with the intention of being concise, readable, and efficient. It is intended to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by \textit{BLAS}. It is also intended to be interoperable with \textit{CUDA}.
 
 \subsection{Programming Model}
 \textit{Thrust} is modeled on \textit{STL} and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
 
 Listing \ref{code:thrustSaxpy} shows how the \textit{SAXPY} computation can be implemented in \textit{Thrust}, and the usage of iterators to manage data access is shown.
 
-The execution of \textit{SAXPY} is done in line \ref{code:thrustSaxpy:execute}, and shows how iterators is used to define input and output locations.
+The execution of \textit{SAXPY} is done in line \ref{code:thrustSaxpy:execute}, and shows how iterators are used to define input and output locations.
 \begin{lstlisting}[caption={\textit{Thrust} \textit{SAXPY} example.}, label={code:thrustSaxpy}]
 size_t N = 1024;
 int a = 10;
@@ -39,8 +39,9 @@ z = d_y;
 
 \subsection{Implementation}
 \textit{Thrust} is a library with abstractions build on top of \textit{CUDA}.
+\todo{Flesh this out}
 
 \subsection{Key Points}
-The API of \textit{Thrust} is structured to immitate that of \textit{STL}, and the developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.
+The API of \textit{Thrust} is structured to imitate that of \textit{STL}, and a \textit{C++} developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.
 
-\textit{Thrust} is a header only implementation, meaning there is no need for a specialised compiler, and it builds upon \textit{CUDA}. This allows mixing \textit{Thrust} and \textit{CUDA} code if there is a need for specialised code.
+\textit{Thrust} is a header only implementation, meaning there is no need for a specialized compiler, and it builds upon \textit{CUDA}. This allows mixing \textit{Thrust} and \textit{CUDA} code if there is a need for specialized code.

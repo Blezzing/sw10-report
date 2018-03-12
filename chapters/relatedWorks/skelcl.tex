@@ -1,23 +1,23 @@
 \section{SkelCL}
-\textit{SkelCL} (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is witten based upon the information available on their website \cite{skelclWebsite} and in their paper \cite{skelclPaper}.
+\textit{SkelCL} (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is written based upon the information available on their website \cite{skelclWebsite} and in their paper \cite{skelclPaper}.
 
 \subsection{Goals}
-The developers of \textit{SkelCL} believe that programming for GPUs results in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically being reliant on low-level programming aproaches as seen with \textit{OpenCL} and \textit{CUDA}. 
+The developers of \textit{SkelCL} states that programming for GPUs results in complex, lengthy and error prone programs. This is due to the process of writing GPU code typically being reliant on low-level programming approaches as seen with \textit{OpenCL} and \textit{CUDA}. 
 
-To avoid the pitfalls of the traditional low-level aproaches, the library \textit{SkelCL} provides abstractions in the form of algorithmic patterns, parallel container data types, and handling of transfers between host and device. 
+To avoid the pitfalls of the traditional low-level approaches, the library \textit{SkelCL} provides abstractions in the form of algorithmic patterns, parallel container data types, and handling of transfers between host and device. 
 
-\textit{SkelCl} can be used on single GPU systems, but is mainly aimed at systems with multipe GPUs and provide a feature called \textit{data (re)distributions} which manages data among the available GPUs.
+\textit{SkelCl} can be used on single GPU systems, but is mainly aimed at systems with multiple GPUs due to the feature called \textit{data (re)distributions} which manages data among the available GPUs.
 
 \subsection{Programming Model}
 The programming model is centered around \textit{parallel skeletons}, which is pre-implemented high level patterns that can be customized for a given problem. The available skeletons are \textit{map}, \textit{zip}, \textit{reduce}, \textit{scan}, \textit{mapOverlap}, end \textit{allpairs}.
 
-An implementation of the \textit{SAXPY} computation in \textit{SkelCL} is shown in listing \ref{code:skelclSample}. After \textit{SkelCL} is initialised, which happens at line three, skeletons can be constructed. The \texttt{Zip} skeleton have been used and are specified by the provided paremeters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line 13 the calculation is performed based on the constructed skeletons.
+An implementation of the \textit{SAXPY} computation in \textit{SkelCL} is shown in listing \ref{code:skelclSample}. After \textit{SkelCL} is initialized, which happens at line \ref{code:skelclSample:init}, skeletons can be constructed. The \texttt{Zip} skeleton is used and is specified by the provided parameters; \texttt{<float(float,float)>} indicates that the resulting \texttt{Zip} function expects two floats and a single float will be returned. The given string specifies the function of the skeleton. In line \ref{code:skelclSample:exec} the calculation is performed based on the constructed skeletons.
 
 \begin{lstlisting}[caption={The \textit{SAXPY} computation in \textit{SkelCL}.}, label=code:skelclSample] 
 size_t N = 1024;
 int a = 10;
 
-skelcl::init();
+skelcl::init(); ~\label{code:skelclSample:init}~
 
 Zip<float(float,float)> saxpy("int func(int x, int y, int a){return a * x + y;}");
 
@@ -26,13 +26,13 @@ skelcl::Vector<int> Y(N);
 skelcl::init(X.begin(), X.end()); 
 skelcl::init(Y.begin(), Y.end());
 
-saxpy(out(Y), X, Y, a);
+saxpy(out(Y), X, Y, a); ~\label{code:skelclSample:exec}~
 \end{lstlisting}
 
 \subsection{Implementation}
 \textit{SkelCL} is a library that is built upon \textit{OpenCL}. This allows host and kernel code to be contained within one source file, as opposed to the traditional \textit{OpenCL} approach.
 
 \subsection{Key points}
-A key point of \textit{OpenCL} is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers are allocated or deallocated on the host, it is automatically also allocated or dealocated on the device(s). Futhermore, memory transfers between host and device are handled implicitly.
+A key point of \textit{SkelCL} is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers is allocated or deallocated on the host, it is automatically also allocated or deallocated on the device(s). Furthermore, memory transfers between host and device are handled implicitly.
 
-Another key point of \textit{SkelCL} is how it is designed to function on systems with multiple GPUs. The \textit{disctribution mechanism} describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage what parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. The developer have to specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
+Another key point of \textit{SkelCL} is how it is designed to function on systems with multiple GPUs. The \textit{distribution mechanism} describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage which parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. A developer must specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
