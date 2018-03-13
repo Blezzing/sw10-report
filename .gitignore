@@ -220,5 +220,12 @@ TSWLatexianTemp*
 *-tags.tex
 
 # the report
+<<<<<<< HEAD
 .vscode/
 master.pdf
+=======
+master.pdf
+
+#vscode
+.vscode/*
+>>>>>>> Added vscode stuff to gitignore
