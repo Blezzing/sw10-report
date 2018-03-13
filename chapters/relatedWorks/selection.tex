@@ -1,31 +1,43 @@
 
 \section{Selection of Related Works}
-In our previous project, we compared multiple languages supporting development targeting the GPU\cite{sw9Report}. We observed how \textit{CUDA} and \textit{OpenCL} was the frameworks that offered the most explicit device control, and as such can be the choice for people with knowledge of how to fine tune a GPGPU application. As we intend to make a framework that should be able to be replaced by a low level programming model, and \textit{CUDA} or \textit{OpenCL} seem to be the dominant options, we want to get an overview of other frameworks targeting the host language of \textit{CUDA} and \textit{OpenCL}, being \textit{C} and \textit{C++}.
+In our previous semester project\cite{sw9Report}, we compared multiple languages supporting development targeting the GPU. We observed how \textit{CUDA} and \textit{OpenCL} are the frameworks that offer the most explicit device control, and as such can be the choice for developers with knowledge of how to fine tune a GPGPU application. 
 
-The frameworks we examine are:
+The goal of this project is to make a framework, that offers short implementation time and is replaceable by a low-level programming model, when the developer need more explicit control. We focus on frameworks supporting the host language of \textit{CUDA} and \textit{OpenCL}, being \textit{C} and \textit{C++}, as frameworks in these languages do not require the developer to learn a new language before transitioning to the low-level programming models. 
+
+The frameworks we examine in the rest of this chapter are:
 \begin{description}
 \item[Thrust] \hfill \\
-Being promoted by \textit{NVIDIA}, developer of \textit{CUDA}, as a high level interface to GPU Programming, it is interesting to us\cite{thrustNvidia}.
-\item[C++ Amp] \hfill \\
-Being promoted by \textit{Microsoft}, developer of \textit{DirectX}, as a \textit{C++} language extension to enable data-parallel acceleration, it is interesting to us\cite{microsoftCppAMP}.
+Thrust is promoted by \textit{NVIDIA}, who is the developers of \textit{CUDA}, as a high level interface to GPU Programming, it is interesting to us\cite{thrustNvidia}.
+\item[C++ AMP] \hfill \\
+C++ AMP is promoted by \textit{Microsoft}, who is the developers of \textit{DirectX}, as a \textit{C++} language extension to enable data-parallel acceleration, it is interesting to us\cite{microsoftCppAMP}.
 \item[SYCL] \hfill \\
-Being promoted by \textit{Khronos Group}, developer of \textit{OpenCL}, as a abstraction layer that allow use of \textit{OpenCL} as a platform with standard \textit{C++} on both host and device\cite{khronosSYCL}.
+SYCL is promoted by \textit{Khronos Group}, who is the developer of \textit{OpenCL}, as a abstraction layer that allow use of \textit{OpenCL} as a platform with standard \textit{C++} on both host and device\cite{khronosSYCL}.
 \item[Bolt] \hfill \\
-It is developed by the \textit{HSA Foundation} to provide a high level library to provide abstractions on top of low level programming models. As the goal is similar to ours it is interesting\cite{boltDoc}.
+Bolt is developed by the \textit{HSA Foundation} to provide a high level library to provide abstractions on top of low level programming models. The goal of simplifying GPGPU development is similar to ours\cite{boltDoc}.
 \item[SkelCL] \hfill \\
-It is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons. As the goal is similar to ours it is interesting\cite{skelclPaper}.
+SkelCL is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons. The goal of simplifying GPGPU development is similar to ours\cite{skelclPaper}.
 \item[PACXX] \hfill \\
-It is a research project that attempts to make GPU development easier by combining host and device code in standard \textit{C++}. As the goal is similar to ours it is interesting\cite{pacxxPaper}.
+PACXX is a research project that attempts to make GPU development easier by combining host and device code in standard \textit{C++}. The goal of simplifying GPGPU development is similar to ours\cite{pacxxPaper}.
 \end{description}
 
-The libraries are being considering in regards to:
+We consider the libraries in regards to:
 \begin{description}
 \item[Goals] \hfill \\
-To identify the motivation for the framework and to understand the motivation behind its design choices.
+Understanding the goals of a framework help us identify the motivation behind its design choices.
+
 \item[Programming Model] \hfill \\
-To identify the programming model of a framework to see which aproaches have been tried, and what is currently possible. To give a demonstration of the programming model, an implementation of the \textit{SAXPY} computation is presented for each. We chose \textit{SAXPY} due to its simplicity.
+Understanding the programming model of a framework helps us form an overview of which approaches have been tried, and what is currently possible. 
+
+To give a demonstration of the programming model, we implement the Single-Precision A * X plus Y, \textit{SAXPY}, algorithm. It is a simple calculation where the iterations of the main loop can be executed in any order, or parallel. The calculation is:
+\begin{lstlisting}
+for (int i = 0; i < N; i++){
+    result[i] = a * x[i] + y[i];
+}
+\end{lstlisting}
+
 \item[Implementation] \hfill \\
-To identify the means of facilitating the programming model, showing how it can be done.
+Understanding the implementation helps us understand how the programming model have been facilitated, and can give us insight of different approaches. While not all related works are open source, we can still get an architectural overview of their process.
+
 \item[Key Points] \hfill \\
-To identify relevant points to note from a framework, that should be considered when designing our framework.
+We put emphasis on the most critical points of the frameworks from our perspective, giving us some strong points to keep in mind when we design our own framework.
 \end{description}

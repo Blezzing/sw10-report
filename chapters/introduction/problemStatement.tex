@@ -1,27 +1,20 @@
 \section{Problem Statement}
-Based on our motivation in Chapter \ref{cha:motivation}, we describe our goal as a problem statement. Then we delimit it, and specify which tasks we need to perform to achieve it.
+Based on our motivation in Chapter \ref{cha:motivation}, we describe our goal as a problem statement. Then we specify which tasks we need to perform to achieve it, and delimit our goal.
 
+%"How can we",and if we can't, "Can we"
 \textit{How can we create and evaluate a framework, that allows developers without GPGPU development experience to gain initial benefit from GPU acceleration, before learning about a low level GPGPU programming model?}
 
-\subsection{Delimitation}
-The problem can be approached in various ways, but the following are not the priority of the project:
-%There are certain details in the problem, that can be expanded upon to much more elaborate solutions than what we will do in this project. They are:
-\begin{description}
-\item[Outperforming CUDA/OpenCL] \hfill \\
-While we do want to be performant, we do not attempt to be better performance wise than CUDA and OpenCL, as this would be unfeasable due to costs of abstraction.
-\item[Being equivalent in features to any other library] \hfill \\
-While we want the library to be usable in as many use cases as possible, we do not attempt to be able to do everything for everyone, so some features known from other libraries, might not be implemented here.
-\end{description}
-
 \subsection{Tasks} \label{cha:tasks}
-To reach the goal desribed in our problem statement we have defined following tasks:
+To reach the goal described in our problem statement we have defined the following tasks:
 \begin{description}
 \item[Create overview of related works] \hfill \\
 As others have made attempts at making GPGPU development simpler, we can learn from their design choices and results.
 \item[Research framework design principles] \hfill \\
 Identify vocabulary and good practices for developing frameworks.
 \item[Design framework] \hfill \\
-Define how the framework should be.
+Design the architecture and API of the framework.
+\item[Setup for implementation of framework] \hfill \\
+Configuring environment and performing necessary preliminary tasks for implementation.
 \item[Implement framework] \hfill \\
 Following the design.
 \item[Research how to compare frameworks] \hfill \\
@@ -29,5 +22,15 @@ To be able to review our framework in perspective of related works.
 \item[Develop demo applications] \hfill \\
 To showcase features and differences compared to related works, based on the research of framework comparison methods.
 \item[Evaluation of our framework] \hfill \\
-To review how our framework compares to the related work, and how well it solves the problem.
+To review how our framework compares to the related works, and how well it reached our goal.
+\end{description}
+
+\subsection{Delimitation}
+The problem can be approached in various ways, but the following are not the priority of the project:
+
+\begin{description}
+\item[Outperforming CUDA/OpenCL] \hfill \\
+While we want the framework to perform well, we do not attempt to reach better performance than CUDA and OpenCL, as this would be unfeasible due to costs of abstraction.
+\item[Being equivalent in features to any other library] \hfill \\
+While we want the library to be usable in as many use cases as possible, we do not attempt to be able to do everything for everyone, so some features known from other libraries, might not be implemented here.
 \end{description}

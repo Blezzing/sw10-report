@@ -220,4 +220,5 @@ TSWLatexianTemp*
 *-tags.tex
 
 # the report
+.vscode/
 master.pdf
