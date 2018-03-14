@@ -38,8 +38,13 @@ z = d_y;
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Thrust} is a library with abstractions build on top of \textit{CUDA}.
-\todo{Flesh this out}
+\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that the developer will include the \textit{Thrust} header files needed, and compile her program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. The compilation process is fully static, and results in a single executable with both host and device code included.
+\begin{figure}
+\center
+\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/thrust_compilation.png}
+\caption{Thrust Compilation Process.}
+\label{fig:thrustCompilation}
+\end{figure}
 
 \subsection{Key Points}
 The API of \textit{Thrust} is structured to imitate that of \textit{STL}, and a \textit{C++} developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.

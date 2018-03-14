@@ -31,6 +31,13 @@ saxpy(out(Y), X, Y, a); ~\label{code:skelclSample:exec}~
 
 \subsection{Implementation}
 \textit{SkelCL} is a library that is built upon \textit{OpenCL}. This allows host and kernel code to be contained within one source file, as opposed to the traditional \textit{OpenCL} approach.
+\todo{text}
+\begin{figure}
+\center
+\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/skelcl_compilation.png}
+\caption{SkelCL Compilation Process.}
+\label{fig:skelclCompilation}
+\end{figure}
 
 \subsection{Key points}
 A key point of \textit{SkelCL} is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers is allocated or deallocated on the host, it is automatically also allocated or deallocated on the device(s). Furthermore, memory transfers between host and device are handled implicitly.

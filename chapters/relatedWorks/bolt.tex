@@ -48,6 +48,19 @@ boltcl::transform(x.begin(), x.end(), y.begin(), z.begin, SaxpyFunctor(a));
 \subsection{Implementation}
 \textit{Bolt} is a library on top of either \textit{C++ AMP} or \textit{OpenCL}\cite{boltPresentation}. The API is the same, while the supported features changes depending on which implementation is selected.
 As shown in the example, only the \textit{C++ AMP} backend supports \textit{C++11} lambdas, which reduces the amount of work needed by the developer, compared to using a functor.
+\todo{text}
+\begin{figure}
+\center
+\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/bolt_cl_compilation.png}
+\caption{Bolt Targeting OpenCL Compilation Process.}
+\label{fig:boltClCompilation}
+\end{figure}\todo{text}
+\begin{figure}
+\center
+\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/bolt_amp_compilation.png}
+\caption{Bolt Targeting C++ AMP Compilation Process.}
+\label{fig:boltAmpCompilation}
+\end{figure}
 
 \subsection{Key Points}
 Being able to use the same algorithms on both \textit{STL} containers, and \textit{Bolts} containers can provide an easier transition.
