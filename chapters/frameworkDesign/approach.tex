@@ -3,6 +3,58 @@ We consider the framework as a combination of two entities; the API and architec
 
 The API is the front end of the framework, which is what the developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are presented to the developer. The API design dictates the usage and learning experience of the developer, and many principles exist to guide the development of this part. \todo{refer to previous chapter where we hopefully will define some of these principles.}
 
-The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will impact 
+The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will define which use cases are possible to facilitate, and have an impact on how the user is going to incorporate the framework into her work flow.
 
+\subsection{Design Order}
+As both the API and the architecture decisions have an influence on what is possible when designing the other, the order of which these get designed is important. Different approaches is discussed here.
 
+\subsubsection{API First}
+When the API is designed before the architecture, we expect the following pros and cons, in no specific order:
+
+Pros:
+\begin{itemize}
+\item The API will be convenient for the user to use.
+\item The API will be simple.
+\item The API will not let implementation details propagate.
+\item The architecture will have very specific tasks to comply.
+\end{itemize}
+
+Cons:
+\begin{itemize}
+\item The architecture can be limited due to some API decisions being unfeasible on some platforms.
+\item The usage might be too far away from the implementation, making some computations more expensive than needed.
+\item The requirements to the architecture might be impossible or self conflicting.
+\item The API design might require features that make the compilation process convoluted for the developer.
+\end{itemize}
+
+\subsubsection{Architecture First}
+When the architecture is designed before the API, we expect the following pros and cons:
+
+Pros:
+\begin{itemize}
+\item The framework structure will be simpler to explain.
+\item Performance optimizations will be more convenient to implement.
+\item Allow a convenient tool chain, with a well defined compilation process.
+\end{itemize}
+
+Cons:
+\begin{itemize}
+\item The API design might have implementation details revealed.
+\item The API design might be constrained, due to limitations in the architecture.
+\end{itemize}
+
+%\subsubsection{Intertwined}
+%When we design them at the same time, and allow design decisions of one to influence the other, we expect the following pros and cons:
+%
+%Pros:
+%\begin{itemize}
+%\item A coherent API design and architecture design.
+%\end{itemize}
+%
+%Cons:
+%\begin{itemize}
+%\item Implementation details might be included in the API design.
+%\end{itemize}
+
+\subsubsection{Decision}
+\todo{den sover vi lige på.}
