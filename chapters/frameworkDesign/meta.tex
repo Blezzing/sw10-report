@@ -1,0 +1,13 @@
+The design of the framework, including API and architecture, is described in this chapter. Thought processes behind decisions are included to reason about choices when multiple options are present.
+
+%We make decisions, not war!
+%
+%Language choice:
+%C/C++ is the language in focus since it interfaces directly to OpenCL/CUDA, which in turn makes it easier for the developer to substitute the library use with OpenCL/CUDA later in their development process. 
+%
+%Library design:
+%The library is developed following the principles of Cognitive Dimension of Notations. 
+%\todo[inline]{Måske også Standard C++ Library Design Guidelines fra isocpp.org, eller revurderede kriterier fra sidste semester}
+%
+%Implementation plan:
+%Using LLVM’s abillity to provide Code Generation from llvm IR to PTX, and using the library to emmit llvm IR.
