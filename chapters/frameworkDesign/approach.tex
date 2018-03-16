@@ -27,6 +27,8 @@ Cons:
 \item The API design might require features that make the compilation process convoluted for the developer.
 \end{itemize}
 
+In general, this approach is more likely to make our framework ergonomic to use, but it might be at at the cost of architectural simplicity. 
+
 \subsubsection{Architecture First}
 When the architecture is designed before the API, we expect the following pros and cons:
 
@@ -43,6 +45,8 @@ Cons:
 \item The API design might be constrained, due to limitations in the architecture.
 \end{itemize}
 
+In general, this approach is more likely to make our framework consistent, but it might be at the cost of some possibilities in the API. 
+
 %\subsubsection{Intertwined}
 %When we design them at the same time, and allow design decisions of one to influence the other, we expect the following pros and cons:
 %
@@ -57,4 +61,4 @@ Cons:
 %\end{itemize}
 
 \subsubsection{Decision}
-\todo{den sover vi lige på.}
+As the goal of this project is to make a framework that makes it fast and simple to try GPGPU accelerated code, we choose to design the API first, as it will put the ergonomics of the framework first. As making the underlying architecture work is an implementation problem for us, it is not a concern of the developer. 
