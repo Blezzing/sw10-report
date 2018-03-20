@@ -1,0 +1,25 @@
+\section{API Design Guidelines}
+As we are inexperienced in writing and documenting \textit{C++} libraries and APIs, we wanted to identify some guidelines to consult during our development process. The guidelines we discovered are presented in this section along with the knowledge we have gained as a result. The gained knowledge is utilized in the framework design chapter. 
+We have considered \textit{The Little Manual of API Design}, by \textit{Jasmin Blancehette} \cite{apiDesignManual} and \textit{Standard Library Guidelines} from \textit{isocpp.org} \cite{isoLibDesign}.
+
+\subsection{The Little Manual of API Design}
+The author, \textit{Jasmin Blancehette}, from the company \textit{Trolltech}, now known as \textit{The Qt Company}, are the developers of the \textit{Qt} framework which was released in 1995. They have given both talks and released materials concerning development of APIs - the \textit{The Little Manual of API Design} is one of such materials. It provides short walkthrough of some core API design principles which are good to have in mind before we begin our framework design phase. The principles range from the 'good' characteristics of APIs, the design process, to guidelines. We focus mostly on the characteristics since the design process is focused on collecting information and extending existing APIs.
+
+\textit{The Little Manual of API Design} describes good characteristics of an API as follows:\\
+\textbf{Easy to learn and memorize} \\ % missing predictability %
+The API should use meaningful naming conventions that are consistent throughout the entirety of the library. The API should be minimal such that it is easy to memorize and consistent such that the developer can reapply the knowledge gained in one area of the API in another. \\
+\textbf{Leads to readable code} \\
+The API should lead the developer towards readable code. The API should not force a developer to write excess of boilerplate code nor specify irrelevant information.\\
+\textbf{Hard to misuse} \\
+The API should be designed in a way that it minimizes the risk of using it wrong. This includes not forcing the developer to call methods in a strict order and avoid implicit side effects. \\
+\textbf{Easy to extend}\\
+Frameworks and libraries can be extended over time, and this should be kept in mind during the design of the API. \\
+\textbf{Complete} \\
+This is an ideal to pursue. Since it might be impossible to create a \textit{complete} API, it should allow developers to extend it or customize it to hit their needs.  \\
+
+\subsection{Standard Library Guidelines}
+The guidelines are a refined version of a set of ideas from the ISO standards committee members from 2012. The guidelines have been assembled in order to assist the community in getting libraries accepted and included in the standard. The guidelines provide specifics for writing documentation and examples, designing library components and their public interfaces, and coding conventions.
+
+\subsection{Strategy for use of guidelines}
+We reflect upon to the two sets guidelines presented in this the previous sections during the development of \textit{YAGAL}. Characteristics from \textit{The Little Manual of API Design} are kept in mind during development, and the \textit{Standard Library Guidelines} are referred to for decisions.
+
