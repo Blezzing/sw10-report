@@ -1,9 +1,9 @@
 \section{Design Approach}
-We consider the framework as a combination of two entities; the API and architecture.
+We consider the \textit{YAGAL} framework as a combination of two entities; API and architecture.
 
-The API is the front end of the framework, which is what the developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are presented to the developer. The API design dictates the usage and learning experience of the developer, and many principles exist to guide the development of this part. \todo{refer to previous chapter where we hopefully will define some of these principles.}
+The API is the front end of the framework, which is what a developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are made available to developers. The API design dictates the usage and learning experience for developers, and many principles exist to guide the development of this part. \todo{refer to previous chapter where we hopefully will define some of these principles.}
 
-The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will define which use cases are possible to facilitate, and have an impact on how the user is going to incorporate the framework into her work flow.
+The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will define which use cases are possible to facilitate, and have an impact on how a developer is going to incorporate the framework into her work flow.
 
 \subsection{Design Order}
 As both the API and the architecture decisions have an influence on what is possible when designing the other, the order of which these get designed is important. Different approaches is discussed here.
@@ -45,7 +45,7 @@ Cons:
 \item The API design might be constrained, due to limitations in the architecture.
 \end{itemize}
 
-In general, this approach is more likely to make our framework consistent, but it might be at the cost of some possibilities in the API. 
+In general, this approach is more likely to make our framework consistent, but it might come at a cost in the form of limitations in the API. 
 
 %\subsubsection{Intertwined}
 %When we design them at the same time, and allow design decisions of one to influence the other, we expect the following pros and cons:
@@ -61,4 +61,4 @@ In general, this approach is more likely to make our framework consistent, but i
 %\end{itemize}
 
 \subsubsection{Decision}
-As the goal of this project is to make a framework that makes it fast and simple to try GPGPU accelerated code, we choose to design the API first, as it will put the ergonomics of the framework first. As making the underlying architecture work is an implementation problem for us, it is not a concern of the developer. 
+As the goal of this project is to make a framework that makes it fast and simple to try GPGPU accelerated code, we choose to design the API first, as it will put the ergonomics of the framework first. As making the underlying architecture work is an implementation problem for us, it is not a concern for a developer.
