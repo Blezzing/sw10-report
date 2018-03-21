@@ -1,1 +1,16 @@
 \section{API Design}
+\subsection{Goals}
+\todo{vi ønsker at abstrahere væk fra kernels, none of related works use kernels as abstraction}
+We want the developer to be able to use high level functional abstractions such as map and reduce, without writing specific kernel functions for every appliance. The kernel model in general requires the developer to handle threads, thread blocks and work distribution, which is a part of the learning requirement, that we want the spare the developer of.
+As such we want the API to have a set of high order functions available to the developer, and not expose any kernel logic that she is not yet prepared for.
+
+\todo{vær kompatibel med cuda, thrust er rigtig gode til dette}
+We want the API to be replaced by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
+
+\subsection{Data types}
+\todo{vi laver nogle data typer der indkapsler brug og data: arrays (ingen related), vectors(alle related), multidims(cppamp views)} 
+\todo{skal de tilgås som stl containers(.begin() og .end())? ranges(bare .)? kompatibilitet med cuda(raw ptr)?}
+
+\subsection{Functions}
+\todo{vi laver nogle højniveau funktioner, functors vs lambdas, chaining, vi kan snakke om mulighed for "collapsing", .execute()?}
+\todo{hvordan tager vi imod lambdaer}
