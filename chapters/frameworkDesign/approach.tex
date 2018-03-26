@@ -1,7 +1,7 @@
 \section{Design Approach}
 We consider the \textit{YAGAL} framework as a combination of two entities; API and architecture.
 
-The API is the front end of the framework, which is what a developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are made available to developers. The API design dictates the usage and learning experience for developers, and many principles exist to guide the development of this part. \todo{refer to previous chapter where we hopefully will define some of these principles.}
+The API is the front end of the framework, which is what a developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are made available to developers. The API design dictates the usage and learning experience for developers, and som principles to guide the development of this part is covered in Chapter \ref{cha:designPrinciples}.
 
 The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will define which use cases are possible to facilitate, and have an impact on how a developer is going to incorporate the framework into her work flow.
 
@@ -13,18 +13,17 @@ When the API is designed before the architecture, we expect the following pros a
 
 Pros:
 \begin{itemize}
-\item The API will be convenient for the user to use.
-\item The API will be simple.
-\item The API will not let implementation details propagate.
-\item The architecture will have very specific tasks to comply.
+\item The API design and be done with ease of use as first priority.
+\item The API design is more likely to not let implementation details propagate.
+\item The architecture design can be developed against very specific tasks.
 \end{itemize}
 
 Cons:
 \begin{itemize}
-\item The architecture can be limited due to some API decisions being unfeasible on some platforms.
-\item The usage might be too far away from the implementation, making some computations more expensive than needed.
-\item The requirements to the architecture might be impossible or self conflicting.
-\item The API design might require features that make the compilation process convoluted for the developer.
+\item The architecture can be limited due to some API design decisions being unfeasible on some platforms, such as requiring features of a specific vendor.
+\item The API usage might be too different from the underlying implementation, resulting in some computations being more expensive than needed, such as abstracting memory location can result in multiple redundant data transfers.
+\item The requirements to the architecture might be impossible or self conflicting, such as two actions in the API being convenient based on two different underlying data structures.
+\item The API design might require features that make the compilation process convoluted for the developer, such as requiring custom preprocessing before compilation.
 \end{itemize}
 
 In general, this approach is more likely to make our framework ergonomic to use, but it might be at at the cost of architectural simplicity. 

@@ -12,11 +12,11 @@ A feature of \textit{C++ AMP} is that kernel functions is here expressed in \tex
 
 Construction of matrices is done by first creating an array, and then wrap it with the \texttt{array\_view} that is provided by \textit{C++ AMP}. To show an example, an array is constructed below:
 \begin{lstlisting}
-int matrix[] = \{1, 2, 3, 4\}; 
+int matrix[] = {1, 2, 3, 4}; 
 \end{lstlisting}
 To construct a matrix with two dimensions, the \texttt{matrix} array is wrapped with \texttt{array\_view}:
 \begin{lstlisting}
-array\_view<int, 2> mat(2, 2, matrix); 
+array_view<int, 2> mat(2, 2, matrix); 
 \end{lstlisting}
 Here the \texttt{<int, 2>} specifies that the \texttt{mat} matrix consist of integers and two dimensions. \texttt{(2, 2, matrix)} indicates that the \texttt{mat} matrix will have two rows and two columns, and will be populated with the data from the \texttt{matrix} array;
 
@@ -49,7 +49,7 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 
 \subsection{Implementation}
 \todo{text}
-\begin{figure}
+\begin{figure}[H]
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/cppamp_compilation.png}
 \caption{C++ AMP Compilation Process.}
