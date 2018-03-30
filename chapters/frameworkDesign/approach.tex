@@ -1,20 +1,20 @@
 \section{Design Approach}
-We consider the \textit{YAGAL} framework as a combination of two entities; API and architecture.
+We consider designing \textit{YAGAL} a task that can be separated in two sub tasks; designing the API, and designing the architecture.
 
 The API is the front end of the framework, which is what a developer is going to see when using the framework. Designing the API is the task of defining the programming model of the framework, including what functions and types are made available to developers. The API design dictates the usage and learning experience for developers, and som principles to guide the development of this part is covered in Chapter \ref{cha:designPrinciples}.
 
-The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions will define which use cases are possible to facilitate, and have an impact on how a developer is going to incorporate the framework into her work flow.
+The architecture is the structure of the framework, its run-time environment, its compilation process, and platform support. Architectural design decisions define which use cases are possible to facilitate, and have an impact on how a developer will incorporate the framework into her work flow.
 
 \subsection{Design Order}
-As both the API and the architecture decisions have an influence on what is possible when designing the other, the order of which these get designed is important. Different approaches is discussed here.
+We expect the order of design to be able to change the final outcome, as both API and architecture design can set requirements and limitations for the other. As such the order of which these get designed is important, and different approaches are discussed here.
 
 \subsubsection{API First}
 When the API is designed before the architecture, we expect the following pros and cons, in no specific order:
 
 Pros:
 \begin{itemize}
-\item The API design and be done with ease of use as first priority.
-\item The API design is more likely to not let implementation details propagate.
+\item The API design can be done with ease of use as the primary goal.
+\item The API design can be done without having to let architectural details propagate into it.
 \item The architecture design can be developed against very specific tasks.
 \end{itemize}
 
@@ -22,7 +22,7 @@ Cons:
 \begin{itemize}
 \item The architecture can be limited due to some API design decisions being unfeasible on some platforms, such as requiring features of a specific vendor.
 \item The API usage might be too different from the underlying implementation, resulting in some computations being more expensive than needed, such as abstracting memory location can result in multiple redundant data transfers.
-\item The requirements to the architecture might be impossible or self conflicting, such as two actions in the API being convenient based on two different underlying data structures.
+\item The API design might impose requirements on the architecture that are difficult to implement or self conflicting, such as two actions in the API requiring two different architectures to be meaningful.
 \item The API design might require features that make the compilation process convoluted for the developer, such as requiring custom preprocessing before compilation.
 \end{itemize}
 
@@ -61,3 +61,6 @@ In general, this approach is more likely to make our framework consistent, but i
 
 \subsubsection{Decision}
 As the goal of this project is to make a framework that makes it fast and simple to try GPGPU accelerated code, we choose to design the API first, as it will put the ergonomics of the framework first. As making the underlying architecture work is an implementation problem for us, it is not a concern for a developer.
+
+This decision is one we reflect on in Chapter \ref{cha:reflection}, as it is done on our assumption at the time.
+\todo{reflekter over dette, og fiks reference til reflektion}

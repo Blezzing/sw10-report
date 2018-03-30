@@ -1,9 +1,9 @@
 \section{API Design Guidelines}
-As we are inexperienced in writing and documenting \textit{C++} libraries and APIs, we wanted to identify some guidelines to consult during our development process. The guidelines we discovered are presented in this section along with the knowledge we have gained as a result. The gained knowledge is utilized in the framework design chapter. 
-We have considered \textit{The Little Manual of API Design}, by \textit{Jasmin Blancehette} \cite{apiDesignManual} and \textit{Standard Library Guidelines} from \textit{isocpp.org} \cite{isoLibDesign}.
+As we are inexperienced in writing and documenting \textit{C++} libraries and APIs, we need to identify some guidelines to consult during our development process. The guidelines are presented in this section along with the knowledge we gain as a result. This knowledge is utilized in the framework design chapter. 
+We consider \textit{The Little Manual of API Design}\cite{apiDesignManual}, as it is written by \textit{Jasmin Blancehette}, who have experience from \textit{The Qt Company} in creating \textit{C++} APIs. We also consider the \textit{Standard Library Guidelines}\cite{isoLibDesign} from \textit{isocpp.org}, as guidelines for the standard library of \textit{C++} can be relevant to us as well.
 
 \subsection{The Little Manual of API Design}
-The author, \textit{Jasmin Blancehette}, from the company \textit{Trolltech}, now known as \textit{The Qt Company}, are the developers of the \textit{Qt} framework which was released in 1995. They have given both talks and released materials concerning development of APIs, \textit{The Little Manual of API Design} is one of such materials. It provides some core API design principles which can assist us in our framework design phase. The principles cover good characteristics of APIs, the design process, to guidelines. We focus mostly on the characteristics since the design process is focused on collecting information and extending existing APIs.
+\textit{The Little Manual of API Design} is written by \textit{Jasmin Blancehette}, and contains key insights into API design that were discovered during development of the \textit{Qt application development framework} by \textit{Trolltech}, which later became \textit{The Qt Company}. It provides some core API design principles which can assist us in our framework design phase. The principles cover good characteristics of APIs, the design process, to guidelines. We focus mostly on the characteristics since the design process is focused on collecting information and extending existing APIs.
 
 \textit{The Little Manual of API Design} describes good characteristics of an API as follows:
 \begin{description}
@@ -16,12 +16,16 @@ The API should be designed in a way that it minimizes the risk of using it wrong
 \item[Easy to extend]\hfill \\
 Frameworks and libraries can be extended over time, and this should be kept in mind during the design of the API.
 \item[Complete] \hfill \\
-This is an ideal to pursue. Since it might be impossible to create a \textit{complete} API, it should allow developers to extend it or customize it to hit their needs.
+This is an ideal to pursue. Since it might be impossible to create a \textit{complete} API, it should allow developers to extend it or customize it to fit their needs.
 \end{description}
 
 \subsection{Standard Library Guidelines}
-The guidelines are a refined version of a set of ideas from the ISO standards committee members from 2012. The guidelines have been assembled in order to assist the community in getting libraries accepted and included in the standard. The guidelines cover writing documentation and examples, designing library components and public interfaces, and coding conventions. The guidelines are very general, and gives an idea about what a \textit{C++} developer would expect of a library.
+The \textit{Standard Library Guidelines} are a refined version of a set of ideas from the ISO standards committee members from 2012. The guidelines have been assembled in order to assist the \textit{C++} community in getting libraries accepted and included in the standard. The guidelines cover writing documentation and examples, designing library components and public interfaces, and coding conventions. The guidelines are very general, and gives an idea about what a \textit{C++} developer would expect of a library.
 
 \subsection{Strategy for use of guidelines}
-We reflect upon to the two sets guidelines presented in this the previous sections during the development of \textit{YAGAL}. Points from both \textit{The Little Manual of API Design} and \textit{Standard Library Guidelines} are considered during design.%, and the \textit{Standard Library Guidelines} are referred to for decisions.
+We find the points of \textit{The Little Manual of API Design} to be fine principles to consider when making general decisions regarding the API design. The points of the \textit{Standard Library Guidelines} is much more specific to implementation details, and as such we use those to look up specific things, such as naming conventions.
+
+The use of these guidelines is reflected upon in Chapter \ref{cha:reflection}.
+\todo{fix ref}
+%We reflect upon to the two sets guidelines presented in this the previous sections during the development of \textit{YAGAL}. Points from both \textit{The Little Manual of API Design} and \textit{Standard Library Guidelines} are considered during design.%, and the \textit{Standard Library Guidelines} are referred to for decisions.
 
