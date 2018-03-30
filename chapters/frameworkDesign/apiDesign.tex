@@ -1,13 +1,13 @@
 \section{API Design}
-In this section we will discuss the design of the API, and the reasoning that lead to these decisions.
+In this section we discuss the design of the API, and the reasoning that behind to these decisions.
 
 \subsection{Goals}
 %vi ønsker at abstrahere væk fra kernels, none of related works use kernels as abstraction
-We want a developer to be able to use high level functional abstractions such as map and reduce, without writing specific kernel functions for every appliance. The kernel model in general requires the developer to handle threads, thread blocks and work distribution, which is a part of the learning requirement, that we want the spare the developer of.
+We want a developer to be able to use high level functional abstractions such as map and reduce, without writing specific kernel functions for every appliance. The kernel model in general requires the developer to handle threads, thread blocks and work distribution, which is a part of the learning requirement, that we want the spare the developer from.
 As such we want the API to have a set of high order functions available to the developer, and not expose any kernel logic that she is not yet prepared for.
 
 %vær kompatibel med cuda, thrust er rigtig gode til dette
-We want the API to be replaced by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
+As stated in Section \ref{cha:languageSelection}, we want the API to be replaceable by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
 
 \subsection{Data types}
 \todo{vi laver nogle data typer der indkapsler brug og data: arrays (ingen related), vectors(alle related), multidims(cppamp views)} 
@@ -18,30 +18,29 @@ We want to provide a developer with types that makes it convenient to work with 
 
 \subsubsection{Memory Model}
 % where is the data
-There are two general approaches to handling the underlying memory of \textit{YAGAL}s data types in our opinion. One is that the data types are representing a unified memory layout, where the actual location of the data is handled by \textit{YAGAL}, involving any data transfers required to perform computations. The other is to provide methods for a developer to control the location of the data on their own accord, giving him more work, but more explicit control. 
+Two general directions of handling the underlying memory of \textit{YAGAL}s data types. One is that the data types represent a unified memory layout, where the actual location of the data is handled by \textit{YAGAL}, involving any data transfers required to perform computations. The other is to provide methods for a developer to control the location of the data, giving her more work, but more explicit control. 
 
 % Handle memory implicitly - Bolt and PACXX
-In the case of \textit{YAGAL} being able to handle memory transfers between host and device implicitly, data should here be available and behave as regular \textit{STL} data types when used on host, and be available for use on device. \textit{Bolt} and \textit{PACXX} handles memory this way, as seen in Chapter \ref{cha:relatedWorks}. An advantage of this approach is that a developer does not need to be concerned about memory when working with \textit{YAGAL}. A downside is that the developer lose control of when transfers are happening, which can come at high performance cost. It may also create difficulties for a developer when they want to replace \textit{YAGAL} with \textit{CUDA}.
+In the case of \textit{YAGAL} being able to handle memory transfers between host and device implicitly, data should be available and behave as regular \textit{STL} data types when used on host, and be available for use on device. \textit{Bolt} and \textit{PACXX} handle memory this way, as seen in Chapter \ref{cha:relatedWorks}. An advantage of this approach is that a developer does not need to be concerned about memory when working with \textit{YAGAL}. A downside is that the developer loses control of when transfers are happening, which can come at a high performance cost. It may also create difficulties for a developer when she want to replace \textit{YAGAL} with \textit{CUDA}.
 
 % Provide methods for memory handling - Thrust, AMP, and SkelCL
-Memory in \textit{C++} is handled explicitly, and an experienced \textit{C++} developer is used to know and be in control of how and where data is stored. As \textit{YAGAL} is a \textit{C++} library, it makes sense to let developers handle memory themselves. Therefore it would make sense for \textit{YAGAL} to facilitate ways to manually manage where data is allocated and be able to control transfers between host and device. In Chapter \ref{cha:relatedWorks} we saw that \textit{Thrust}, \textit{C++ AMP}, and \textit{SkelCL} handles memory this way.
+Memory in \textit{C++} is handled explicitly, and an experienced \textit{C++} developer is used to know and be in control of how and where data is stored. As \textit{YAGAL} is a \textit{C++} library, it makes sense to let developers handle memory themselves. Based on this we decided that \textit{YAGAL} will facilitate ways to manually manage where data is allocated and be able to control transfers between host and device. In Chapter \ref{cha:relatedWorks} we saw that \textit{Thrust}, \textit{C++ AMP}, and \textit{SkelCL} handles memory this way.
 
 % The decision
 We decided that \textit{YAGAL} will provide developers with the means to manage allocation and transfers of data between host and device themselves, instead of handling it implicitly.
 
 \subsubsection{Supported Types}
 % Introduction to considered types
-There are many types that \textit{YAGAL} potentially can provide. To stay within the time frame of this project, we decide to keep the current amount of provided types to a minimum, and extend \textit{YAGAL} with additional types later. The types we have concidered are \texttt{arrays}, \texttt{vectors}, and \texttt{maps}.
+There are many types that \textit{YAGAL} potentially can provide. To stay within the time frame of this project, we decide to keep the current amount of provided types to a minimum, and extend \textit{YAGAL} with additional types depending on the deadline. The types we have considered are \texttt{arrays}, \texttt{vectors}, and \texttt{maps}.
 
 % We would like vectors, but arrays if it fails
-\texttt{vectors} are contiguous memory that can be used as arrays with the possibility of being dynamically resized, in contrast to \texttt{arrays} which is contiguous memory with a static size. The frameworks in \ref{cha:relatedWorks} all provide \texttt{vectors} with the exception of \textit{C++ AMP} that uses \texttt{arrays} and \texttt{array\_views}. Based on this, we would like \textit{YAGAL} to support \texttt{vectors}, but it is unclear to what degree of complications the implementation of \texttt{vectors} would introduce. \texttt{arrays} on the other hand, appear to be more simple to implement due to it being statically sized. We will attempt to implement \texttt{vectors} and have \texttt{arrays} as fallback, as the possibility of being able to dynamically resize a data collection is a quality that makes it easier for developers to use.
+\texttt{vectors} are contiguous memory that can be used as arrays with the possibility of being dynamically resized, in contrast to \texttt{arrays} which are contiguous memory with a static size. The frameworks in Chapter \ref{cha:relatedWorks} all provide \texttt{vectors} with the exception of \textit{C++ AMP} that uses \texttt{arrays} and \texttt{array\_views}. Based on this, we want \textit{YAGAL} to support \texttt{vectors}, but it is unclear to what degree of complications the implementation of \texttt{vectors} would introduce, due to their dynamic functionality. \texttt{arrays} on the other hand, appear to be more simple to implement due to them being statically sized. We will therefore focus on implementing \texttt{vectors} and have \texttt{arrays} as fallback solution, as the possibility of being able to dynamically resize a data collection is a quality that makes it easier for developers to use.
 
 % Multi dim support
-In regard to multidimensional support for \texttt{vectors} and/or \texttt{arrays}, it is convenient to have as it makes some tasks easier to implement, but it is of low priority as it is a more specialized feature, that is not needed by all developers, in contrast to single dimension arrays or vectors. We would like \textit{YAGAL} to support it, but it will not be prioritized.
+In regard to multidimensional support for \texttt{vectors} and/or \texttt{arrays}, it is convenient to have as it makes some tasks easier to implement, but it is of low priority as it is a more specialized feature, that is not needed by all developers, in contrast to single dimension arrays or vectors. We would useful for \textit{YAGAL} to support it, but it will not be prioritized.
 
 % No support for maps
-The \texttt{map} data container is an interesting option, since the GPU could be utilized to perform lookups. We see this as out of scope in regard to the aim of \textit{YAGAL}.
-\todo{måske sløjf det med maps, det tager focus fra array vs vector, og vi gør jo ikke mere med det.}
+The \texttt{map} data container is an interesting option, since the GPU could be utilized to perform lookups. This however does not contribute to the overall goal of \textit{YAGAL}, as we have not observed this feature in any of the tools covered in Section \ref{related works} and the introduction of this feature does not contribute to \textit{YAGAL} being replaceable. \texttt{map} will therefore not be supported.
 
 \subsubsection{CUDA compatibility}
 \todo{snak om at det måske er godt at lade udvikleren gribe fat i lav niveau ting som device pointers, for at gøre transitionen nemmere senere.}
