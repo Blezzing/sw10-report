@@ -1,4 +1,11 @@
-\section{Language Selection}\label{cha:languageSelection}
+\section{Project Prerequisites}
 In our previous semester project\cite{sw9Report}, we compared multiple languages with frameworks supporting development targeting the GPU. We observed how \textit{CUDA} and \textit{OpenCL} are the frameworks that offer the most explicit device control, and as such can be the choice for developers with knowledge of how to fine tune a GPGPU application.
 
+Based on our previous experience we take some early choices, that set the direction of the project.
+
+\subsection{Language Selection}\label{cha:languageSelection}
 Our goal of this project is the construction of a framework that can assist in providing applications with an initial benefit of GPGPU acceleration, where our framework is replaceable by another framework with a more low level programming model when the developer is prepared for the steep learning curve of traditional GPGPU development. It is therefore convenient to keep our framework in the same language these low level approaches. As \textit{CUDA} and \textit{OpenCL} are used from \textit{C++} and \textit{C} we want to look at these. The abstractions allowed in \textit{C++}, in the form of templates and lambdas, makes it more attractive for us, as we want to provide high level abstractions. As such \textit{C++} is our language of choice, and the framework we create in this project will be based on \textit{C++}.
+
+\subsection{Platform}
+\todo{codegen: llvm introduceres her} 
+\todo{runtime: cuda introduceres her}
