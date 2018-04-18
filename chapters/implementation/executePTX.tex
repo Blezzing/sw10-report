@@ -1,0 +1,60 @@
+\section{Execute .PTX}
+\todo{Brug af CUDA driver API}
+
+% Motivation
+In order for \textit{YAGAL} to make use of the GPU, it must have a mechanism to execute code on it. Since \textit{LLVM} generates .PTX code, \textit{YAGAL} must be able to actually run it. This can be done by passing the .PTX to the \textit{CUDA} API. To this end, \textit{CUDA} related handling have been contained within the \texttt{yagal::cuda} namespace.
+
+% Implementation
+Whenever .PTX code is to be executed, the .PTX is passed to the function \texttt{executePtxWithParams} as a string along with a vector containing the given input parameters as seen on Listing \ref{code:executePtxWithParams}. To ensure that the GPU is ready, the \texttt{initIfNeeded()} function at line \ref{code:executePtxWithParams:init} is called which checks if a CUDA context have been created, and creates one if not.
+
+At line \ref{code:executePtxWithParams:crtMd} a CUDA module is created by calling \texttt{cuModuleLoadDataEx()}, which is part of the \textit{CUDA C} API. It takes accepts PTX code as a \texttt{NULL-terminated} string, and outputs to the provided module container.
+
+A function handle is need in order to determine which function within the module to execute. The handle is identified by calling \texttt{cuModuleGetFunction()} at line \ref{code:executePtxWithParams:handle}. Here a function called \texttt{kernel} is requested from within the module. \texttt{kernel} is a hardcoded function that is created by \textit{YAGAL}.
+
+Predetermined block and grid dimensions are set through line \ref{code:executePtxWithParams:cfgStart} to \ref{code:executePtxWithParams:cfgEnd}. This part will be refactored such that dimensions are based upon the data instead of being hardcoded.
+
+The module is executed on the GPU at line \ref{code:executePtxWithParams:launch} by a call to the function \texttt{cuLaunchKernel} and the module is then unloaded at line \ref{code:executePtxWithParams:clean} by \texttt{cuModuleUnload()}. Since the module have been executed, the functionality within it is not needed anymore, but the data it worked on still is. Only the module is therefore unloaded, and context is not.
+
+\begin{lstlisting}[caption={int executePtxWithParams()}, label={code:executePtxWithParams}]
+CUcontext  cudaContext;
+
+int executePtxWithParams(const std::string& ptx, std::vector<CUdeviceptr*>& kernelParams){
+    CUmodule    cudaModule;
+    CUfunction  function;
+    CUlinkState linker;
+    int         devCount;
+
+    initIfNeeded(); ~\label{code:executePtxWithParams:init}~
+
+    // Create module for object
+    checkCudaErrors(
+       cuModuleLoadDataEx(&cudaModule, ptx.c_str(),0, 0, 0)); ~\label{code:executePtxWithParams:crtMd}~
+
+    // Get kernel function
+    checkCudaErrors(
+        cuModuleGetFunction(&function, cudaModule, "kernel")); ~\label{code:executePtxWithParams:handle}~
+
+    // Set kernel configuration
+    unsigned blockSizeX = 16;  ~\label{code:executePtxWithParams:cfgStart}~
+    unsigned blockSizeY = 1;
+    unsigned blockSizeZ = 1;
+    unsigned gridSizeX  = 1;
+    unsigned gridSizeY  = 1;
+    unsigned gridSizeZ  = 1; ~\label{code:executePtxWithParams:cfgEnd}~
+
+    // Kernel launch
+    _p.info() << "cuda kernel launching" << std::endl;
+    checkCudaErrors(
+        cuLaunchKernel( ~\label{code:executePtxWithParams:launch}~
+            function, gridSizeX, gridSizeY,
+            gridSizeZ, blockSizeX, blockSizeY,
+            blockSizeZ, 0, NULL, 
+            (void**)kernelParams.data(), NULL));
+
+    // Cleanup
+    checkCudaErrors(cuModuleUnload(cudaModule)); ~\label{code:executePtxWithParams:clean}~
+    _p.info() << "cuda kernel executed successfully" << std::endl;
+
+    return 0;
+}
+\end{lstlisting}

@@ -66,6 +66,7 @@ namespace yagal{
 
 \todo{indsæt kode og referer til linjenumre}
 
+
 \section{Step 2 - Execute .PTX}
 \todo{Brug af CUDA driver API}
 
@@ -77,13 +78,13 @@ namespace yagal{
     \begin{minipage}{.7\textwidth}
         \centering
         \includegraphics[width=0.9\linewidth]{chapters/implementation/figs/LLVMLLC.png}
-        \caption{$dt=0.1$}
+        \caption{Yagal using LLC}
         \label{fig:prob1_6_2}
     \end{minipage}%
     \begin{minipage}{0.4\textwidth}
         \centering
         \includegraphics[width=0.5\linewidth]{chapters/implementation/figs/YAGALLLC.png}
-        \caption{$dt =$}
+        \caption{YAGAL with LLC replacement.}
         \label{fig:prob1_6_1}
     \end{minipage}
 \end{figure}
@@ -94,13 +95,19 @@ namespace yagal{
 \section{Step 5 - Multiple functions in one kernel}
 \todo{Chaning af functionalitet til en enkelt kernel}
 
+\begin{figure}[!htb]
+    \includegraphics[width=1\linewidth]{chapters/implementation/figs/IRDiagram.png}
+\end{figure}
+
 \section{Step 6 - LLVM Optimizations}
 \todo{Brug LLVMs erfaring - Det kan betale sig - redegør for det her}
 
 \section{Step 7 - Looping mechanism}
 \todo{Behandle data uafhængigt af tråde mængde og input størelse}
 
-\section{Step 8 - Support For Multiple Input Types}
+\section{Step 8 - Dynamic Kernel Parameters}
+
+\section{Step 9 - Support For Multiple Input Types}
 \todo{Support for andre typer end bare floats, så som ints og vectorer}
 
 \section{Final Overview}
