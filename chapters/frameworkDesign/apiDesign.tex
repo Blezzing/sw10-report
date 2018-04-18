@@ -16,7 +16,7 @@ As stated in Section \ref{cha:languageSelection}, we want the API to be replacea
 
 We want to provide a developer with types that makes it convenient to work with the GPU. It is difficult to define what makes types accessible and easy to work with since there are multiple factors in play, such as the context of the programming language, the context of application, and what an individual developer sees as convenient. In this section and subsections, we explore some of these factors in the form of memory model, the actual data types, how types are accessed, and compatibility degree for CUDA, in order to determine how the types of \textit{YAGAL} should be designed.
 
-\subsubsection{Memory Model}
+\subsubsection{Memory Model} \label{memoryModelDesign}
 % where is the data
 Two general directions of handling the underlying memory of \textit{YAGAL}s data types. One is that the data types represent a unified memory layout, where the actual location of the data is handled by \textit{YAGAL}, involving any data transfers required to perform computations. The other is to provide methods for a developer to control the location of the data, giving her more work, but more explicit control. 
 
