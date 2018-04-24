@@ -1,5 +1,5 @@
-\section{LLC Replacement}
-\todo{Generere PTX fra LLVMIR - Bøvlet - derfor - vores llc erstatning! woo}
+\section{LLVM LLC Replacement}
+\textit{LLVM LLC} is a \textit{LLVM} command line tool that takes \textit{LLVM IR} as input and converts it to assembly language for a specified architecture such as \textit{PTX}. Since \textit{LLVM LLC} is a command line tool, it becomes difficult to include this in \textit{YAGAL}, since this would require the library to start, and be dependent upon, an external process. This can be seen on Figure \ref{fig:yagalLLC} where \textit{YAGAL} starts the \textit{LLVM LLC} process and provides it with the \textit{LLVM IR}, and must await the result.
 
 \begin{figure}[!htb]
     \centering
@@ -7,12 +7,93 @@
         \centering
         \includegraphics[width=0.9\linewidth]{chapters/implementation/figs/LLVMLLC.png}
         \caption{Yagal using LLC}
-        \label{fig:prob1_6_2}
-    \end{minipage}%
+        \label{fig:yagalLLC}
+    \end{minipage}
     \begin{minipage}{0.4\textwidth}
         \centering
         \includegraphics[width=0.5\linewidth]{chapters/implementation/figs/YAGALLLC.png}
         \caption{YAGAL with LLC replacement.}
-        \label{fig:prob1_6_1}
+        \label{fig:noLLC}
     \end{minipage}
 \end{figure}
+
+We decided to implement \textit{PTX} generation part of \textit{LLVM LLC} directly into \textit{YAGAL} in order to avoid this dependency. This has resulted in the flow which is shown by Figure \ref{fig:noLLC} where the \textit{LLVM LLC} tool is no longer involved in the process.
+
+The \textit{PTX} generation have been contained within the \texttt{PTXModule} class. This class functions as a container to generate and hold \textit{PTX} code based upon a given \texttt{IRModule}. The constructor of the \texttt{PTXModule} class can be seen in Listing \ref{code:ptxmodule}, and line references in this section is referring to this Listing. 
+
+% Initialize stuff
+\texttt{initializeLlvmTargetIfNeeded()} invokes \textit{LLVM C} macros if they haven not already been invoked. This initializes the \textit{LLVM} backend for \textit{NPTX} which is needed for converting \textit{LLVM IR} to \textit{PTX}. \texttt{initializeLlvmPassRegistryIfNeeded()} specifies which passes the \textit{NPTX} backend should perform upon the \textit{LLVM IR}.
+
+% Setup - architecture - target machine
+Lines \ref{code:ptxmodule:targetVarsBegin} through \ref{code:ptxmodule:targetVarsEnd} sets the variables needed for the target machine. This involves setting the architecture, the target triple, error output string etc.. 
+
+% PassManager
+A \texttt{PassManager} is an \textit{LLVM} structure that manage the passes specified at the \texttt{initializeLlvmPassRegistryIfNeeded()}. The \texttt{PassManager} is initialized at line \ref{code:ptxmodule:passMan}. 
+
+% output buffer
+% - Siger sig selv
+
+% Machine Module info
+A \texttt{LLVMTargetMachine} is instantiated at line \ref{code:ptxmodule:machine} along with a \texttt{MachineModuleInfo} pointer. These contain meta information regarding the target machine which are necessities for LLVM.
+
+% Reset datalayout of module
+The data layout for the \texttt{PtxModule} is set at line \ref{code:ptxmodule:layout}. The data layout describes how data is to be laid out in memory based upon the targeted hardware. The data layout for the GPU in our test machine is \texttt{e-i64:64-i128:128-v16:16-v32:32-n16:32:64}.
+
+% After data layout
+The given passes are registered and initialized by call to \texttt{addPassesToEmitFile()} at line \ref{code:ptxmodule:emit}. The output buffer is also registered here such it can be converted to a \texttt{string} once the \textit{PTX} have been generated.
+
+% pass run & write to string
+Finally, the passes are executed at line \ref{code:ptxmodule:runPass}. The result is then witted to a the \texttt{\_string} variable, which is a member of the \texttt{PtxModule} class, at line \ref{code:ptxmodule:writeStr}. The \texttt{\_string} variable is later in the process passed to CUDA through \texttt{yagal::cuda::cudaHandler} for execution.
+
+\begin{lstlisting} [caption={\texttt{PTXModule} constructor based on a given \texttt{IRModule}.}, label={code:ptxmodule}]
+PTXModule(IRModule& ir){
+    initializeLlvmTargetIfNeeded();
+    initializeLlvmPassRegistryIfNeeded();
+
+    std::string arch("nvptx64"); ~\label{code:ptxmodule:targetVarsBegin}~
+    llvm::Triple triple(llvm::Twine("nvptx64-nvidia-cuda"));
+    std::string error;
+    const llvm::Target *target(
+        llvm::TargetRegistry::lookupTarget(
+            arch, triple, error));
+    std::string cpuStr("sm_20");
+    std::string featureStr("");
+    llvm::CodeGenOpt::Level optLevel(
+        llvm::CodeGenOpt::Aggressive);
+    llvm::TargetOptions options;~\label{code:ptxmodule:targetVarsEnd}~
+
+    std::unique_ptr<llvm::TargetMachine> ~\label{code:ptxmodule:targetMachine}~
+        targetMachine(target->createTargetMachine(
+        triple.getTriple(), 
+        cpuStr, 
+        featureStr, 
+        options, 
+        llvm::None, 
+        llvm::CodeModel::Small, 
+        optLevel));
+
+    llvm::legacy::PassManager passManager; ~\label{code:ptxmodule:passMan}~
+
+    llvm::SmallVector<char, 512> buffer; ~\label{code:ptxmodule:buffer}~
+    auto bufferStream = 
+        std::make_unique<llvm::raw_svector_ostream>(buffer);
+    auto outputStream = bufferStream.get();
+
+    llvm::LLVMTargetMachine &llvmtm = ~\label{code:ptxmodule:machine}~
+        static_cast<llvm::LLVMTargetMachine&>(*targetMachine);
+    llvm::MachineModuleInfo *mmi = 
+        new llvm::MachineModuleInfo(&llvmtm);
+
+    ir.module.setDataLayout( ~\label{code:ptxmodule:layout}~
+        targetMachine->createDataLayout());
+    targetMachine->addPassesToEmitFile( ~\label{code:ptxmodule:emit}~
+        passManager, *outputStream, 
+        llvm::TargetMachine::CGFT_AssemblyFile, false, mmi);
+
+    passManager.run(ir.module); ~\label{code:ptxmodule:runPass}~
+
+    _string = std::string(buffer.begin(), buffer.end()); ~\label{code:ptxmodule:writeStr}~
+
+    _p.debug() << "ptx module constructed" << std::endl;
+}
+\end{lstlisting}
