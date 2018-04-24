@@ -1,15 +1,14 @@
 \section{Execute PTX}
-\todo{Brug af CUDA driver API}
 
 % Motivation
 In order for \textit{YAGAL} to make use of the GPU, it must have a mechanism to execute code on it. Since \textit{LLVM} generates \textit{PTX} code, \textit{YAGAL} must be able to run it. This can be done by passing the \textit{PTX} to the \textit{CUDA} API. The \textit{CUDA} related handling have been contained within the \texttt{yagal::cuda} namespace. 
 
 % Implementation
-To execute the \textit{PTX} code, it is passed to the function \texttt{executePtxWithParams} as a string, along with a vector containing the input parameters as seen on Listing \ref{code:executePtxWithParams}. The line number references in this section refer this listing.
+To execute the \textit{PTX} code, it is passed to the function \texttt{executePtxWithParams} as a string, along with a vector containing the input parameters as seen on Listing \ref{code:executePtxWithParams}. The line number references in this section refers this listing.
 
-To ensure that the GPU is ready, the \texttt{initIfNeeded()} function at line \ref{code:executePtxWithParams:init} is called which checks if a CUDA context have been created, and creates one if not.
+To ensure that the GPU is ready, the \texttt{initIfNeeded()} function at line \ref{code:executePtxWithParams:init} is called which creates a \textit{CUDA} context if one does not already exists.
 
-At line \ref{code:executePtxWithParams:crtMd} a CUDA module is created by calling \texttt{cuModuleLoadDataEx()}, which is part of the \textit{CUDA C} API. It takes accepts PTX code as a \texttt{C-string}, and outputs to the provided module container.
+At line \ref{code:executePtxWithParams:crtMd} a \textit{CUDA} module is created by calling \texttt{cuModuleLoadDataEx()}, which is part of the \textit{CUDA C} API. It takes \textit{PTX} code as a \texttt{C-string}, and outputs to the provided module container.
 
 A function handle is needed in order to determine which function within the module to execute. The handle is identified by calling \texttt{cuModuleGetFunction()} at line \ref{code:executePtxWithParams:handle}. Here a function called \texttt{kernel} is requested from within the module. \texttt{kernel} is the hardcoded name of a function that is created by \textit{YAGAL}.
 
