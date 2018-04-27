@@ -1,0 +1,36 @@
+\section{Queuing Actions} \label{cha:queueingActions}
+To modify a YAGAL \texttt{Vector} we create a concept of actions that contain the necessary information for a kernel, that executes the needed logic, to be generated.
+
+An action is an intended task to perform on the \texttt{Vector}, and is constructed as a result of a developer calling a function on the \texttt{Vector} to change it. For instance, calling \texttt{myVector.add(5)} will result in an \texttt{AddAction} being created with a copy of the parameters, here 5, needed to perform the calculation. The developer can then call \texttt{myVector.exec()} to perform all actions needed. As such we can use the actions as the source of our code generation, as we need to generate code to perform exactly the content of the action.
+
+The template class \texttt{Vector<T>} is expanded, as seen in Listing \ref{code:actionAdditions}. A vector of \texttt{Action<T>} elements have been added to the fields at line \ref{code:actionAdditions:vec}, it contains the actions needing to be performed on the \texttt{Vector<T>}, in the order they were added. Functions have been added to generate actions that are placed in this vector. An example of this is \texttt{Vector<T>\& add(T value)} at line \ref{code:actionAdditions:val}, which creates an action that represents adding a value to all elements in the \texttt{Vector<T>}, and places it at the back of the vector. The other added function is \texttt{Vector<T>\& exec()}, which is the function that consumes the action vector, generates \textit{LLVM IR} based on the consumed actions, translates the \textit{LLVM IR} to \textit{PTX}, loads the \textit{PTX} on the device, and executes it. The content of the \texttt{Vector<T>\& exec()} function is not the focus of this section, and is explained in sections regarding its mentioned tasks.
+
+\begin{lstlisting}[caption={Vector<T> action additions}, label={code:actionAdditions}]
+namespace yagal{
+    template <typename T>
+    class Vector{
+    private:
+        /* omitted fields */
+
+        std::vector<std::shared_ptr<internal::Action>> _actions; ~\label{code:actionAdditions:vec}~
+
+        /* omitted functions */
+    
+    public:
+        Vector<T>& add(T value) {~\label{code:actionAdditions:val}~
+            _actions.emplace_back(new internal::AddAction<T>(value));
+            return *this;
+        }
+        
+        /* omitted functions */
+
+        Vector<T>& exec(){
+            /* omitted logic */
+        }
+    }
+}
+\end{lstlisting}
+
+The template class \texttt{Action<T>} is the single top level class in a hierarchy, where every bottom level class is an concrete action that can be performed on a \texttt{Vector<T>}. These actions are grouped by mid level classes, that define their input parameters. An example is the \texttt{AddAction<T>} being a \texttt{SimpleAction<T>}, as it takes a single input value to perform the action on an element of the \texttt{Vector<T>}, and the \texttt{SimpleAction<T>} being an \texttt{Action<T>} to allow us to contain in with other actions in the polymorphic vector on line \ref{code:actionAdditions:vec}.
+
+\todo{create some class diagram}

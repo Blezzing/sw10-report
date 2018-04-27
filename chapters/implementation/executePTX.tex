@@ -1,4 +1,5 @@
-\section{Execute PTX}
+\section{Execute .PTX} \label{cha:execPtx}
+\todo{Brug af CUDA driver API}
 
 % Motivation
 In order for \textit{YAGAL} to make use of the GPU, it must have a mechanism to execute code on it. Since \textit{LLVM} generates \textit{PTX} code, \textit{YAGAL} must be able to run it. This can be done by passing the \textit{PTX} to the \textit{CUDA} API. The \textit{CUDA} related handling have been contained within the \texttt{yagal::cuda} namespace. 

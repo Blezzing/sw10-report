@@ -34,6 +34,7 @@
 \usepackage{fourier}
 \usepackage{color}
 
+
 \presetkeys{todonotes}{inline}{}
 
 \usepackage[backend=bibtex,sorting=none]{biblatex}
@@ -85,10 +86,13 @@
 \lstset{
   language=c++,
   frame=single,
+  basicstyle=\footnotesize\ttfamily,
   keywordstyle=\color{keywordColor},
   commentstyle=\color{commentColor},
   stringstyle=\color{stringColor},
   numberstyle=\color{numberColor},
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  showstringspaces=false
   captionpos=b,
   numbers=left,
   numbersep=8pt,
