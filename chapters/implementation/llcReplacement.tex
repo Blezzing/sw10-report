@@ -1,4 +1,4 @@
-\section{Replacing LLVM LLC}
+\section{Replacing LLVM LLC} \label{sec:llcReplacement}
 \textit{LLVM LLC} is a command line tool that takes \textit{LLVM IR} as input and converts it to assembly language for a specified architecture such as \textit{PTX}. Since \textit{LLVM LLC} is a command line tool, it becomes difficult to include this in \textit{YAGAL}, since this would require the library to start, and be dependent upon, an external process. This can be seen on Figure \ref{fig:yagalLLC} where \textit{YAGAL} starts the \textit{LLVM LLC} process and provides it with the \textit{LLVM IR}, and must await the result.
 
 \begin{figure}[!htb]

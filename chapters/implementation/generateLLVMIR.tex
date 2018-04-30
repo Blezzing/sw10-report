@@ -1,16 +1,16 @@
 \section{Generation of LLVM IR}
-To be able to run any code, we must first generate it. We generate \textit{LLVM Intermediate Representation}, which we now refer to as \textit{IR}, which can later be transformed to \textit{PTX} code, and be executed. We use the tools provided by the \textit{LLVM} library to generate this \textit{IR}, as they manage details such as variable names and references.
+ We generate \textit{LLVM Intermediate Representation}, which we now refer to as \textit{IR}, which can later be transformed to \textit{PTX} code, and be executed. We use the tools provided by the \textit{LLVM} library to generate this \textit{IR}, as they manage details such as variable names and references.
 
-The \textit{IR} is based on a nested structure as seen on \ref{fig:llvmTypes}, where \texttt{module} is the program, \texttt{function} is a function that is a member of the module,  \texttt{basic block} is a code block, and \texttt{instruction} is a instruction. 
+The \textit{IR} is based on a nested structure as seen on \ref{fig:llvmTypes}, where \texttt{LLVM Module} is the program, \texttt{LLVM Function} is a function that is a member of the module,  \texttt{LLVM Basic Block} is a code block, and \texttt{LLVM Instruction} is a instruction. 
 
 \begin{figure}[!htb]
     \center
     \label{fig:llvmTypes}
     \includegraphics[width=0.65\linewidth]{chapters/implementation/figs/llvmTypes.png}
-    \caption{The LLVM IR hierachy}
+    \caption{The LLVM IR hierachy.}
 \end{figure}
 
-When a \texttt{Vector}s \texttt{exec()} function is called, the actions that have been created is used as source for the \textit{IR} generation. The procedure for \textit{IR} generation is as follows:
+When a \texttt{yagal::Vector}'s \texttt{exec} function is called, the queued actions is used as source for the \textit{IR} generation. The procedure for \textit{IR} generation is as follows:
 
 \begin{enumerate}
 \item Generate \textit{LLVM Module} with platform information.
@@ -23,14 +23,14 @@ When a \texttt{Vector}s \texttt{exec()} function is called, the actions that hav
 
 This procedure have the benefit of allowing multiple actions to be compiled to a single kernel function, and as such can be executed on the GPU in a single step.
 
-The implementation of the procedure is presented in this section.
+The implementation of the procedure is presented in the following subsections.
 
 \subsection{Generating a LLVM Module} \label{sec:irmodule}
 The \textit{LLVM Module} is the outer most abstraction of \textit{IR}. In our implementation we encapsulate it in the class \texttt{IRModule}. This class contains functions needed for us to generate \textit{IR}, and have the \textit{LLVM Module} as a member variable that is accessed through these functions. A listing showing an extract of the class with the relevant content can be seen in listing \ref{code:irModule}.
 
-Before we can create any \textit{LLVM} objects, we need a \texttt{LLVMContext}. A \texttt{LLVMContext} is a container of the state that \textit{LLVM} is in, and is declared at line \ref{code:irModule:context}.
+Before we can create any \textit{LLVM} objects, a \texttt{LLVMContext} is needed. A \texttt{LLVMContext} is a container of the state that \textit{LLVM} is in, and is declared at line \ref{code:irModule:context}.
 
-With the \texttt{context} we create the module in the constructor chain at line \ref{code:irModule:module}. Next the module need to define a target architecture. We provide the string \texttt{"nvptx64-nvidia-cuda"}, as it is a key in the \textit{LLVM} library, that will be used to look up target information when code is generated. 
+With the \texttt{context} we create the module in the constructor chain at line \ref{code:irModule:module}. An architecture must then be defined for the module. We provide the string \texttt{"nvptx64-nvidia-cuda"}, as it is a key in the \textit{LLVM} library, that is used to look up target information during code generation. 
 
 \begin{lstlisting}[caption={The IRModule class}, label={code:irModule}]
 namespace yagal::generator{
@@ -81,16 +81,16 @@ namespace yagal::generator{
 }
 \end{lstlisting}
 
-With the module created, we can start building \textit{LLVM Function}s to create our kernels.
+With the module created, we can start building \textit{LLVM Function}s to create our kernel.
 
 \subsection{Generating a LLVM Function} \label{sec:irFunction}
 A \textit{LLVM Function} can be mapped to a GPU kernel, as a GPU kernel is a function callable on the GPU. The code we use to generate an \textit{IR} function is shown in listing \ref{code:createKernelInitial}. 
 
-Before we can declare the function, we need to prepare argument types, as seen from line \ref{code:createKernelInitial:arg:begin} to \ref{code:createKernelInitial:arg:begin}, by providing type information and address space of parameters. The second parameter to \texttt{geFloatPtrTy}, \texttt{1} indicates which address space the parameter is in, with 1 being the global memory of the device.
+Before we can declare the function, we need to prepare argument types, as seen from line \ref{code:createKernelInitial:arg:begin} to \ref{code:createKernelInitial:arg:begin} by providing type information and address space of parameters. The second parameter to \texttt{getFloatPtrTy}, \texttt{1} indicates which address space the parameter is in, with 1 being the global memory of the device.
 
 We construct the function as a member of the module on line \ref{code:createKernelInitial:func}, by providing type information, linking method for external functions, name, and containing module. The type information consist of the return type \texttt{void}, as we expect no direct return value from a kernel, the previously constructed parameter types, and whether the number of parameters can vary. The linkage refers to the visibility of the function, with external meaning that it can be accessed from other modules.
 
-To make sure the function follows the calling convention of the platform we can use the \texttt{setCallingConvention} function, as seen on line \ref{code:createKernelInitial:cc}. This means that parameter parsing is done according to convention for us.
+To make sure the function follows the calling convention of the platform, we use the \texttt{setCallingConvention} function, as seen on line \ref{code:createKernelInitial:cc}. This means that parameter parsing is done according to convention for us.
 
 \begin{lstlisting}[caption={The createKernel function}, label={code:createKernelInitial}]
 llvm::Function* createKernel(int numberOfParameters){
@@ -112,22 +112,22 @@ llvm::Function* createKernel(int numberOfParameters){
 }
 \end{lstlisting}
 
-With the function created we can start building \textit{LLVM Basic Block}s in them, to provide functionality to the kernels.
+With the function created we can start building \textit{LLVM Basic Block}s in them, to provide functionality to the kernel.
 
 \subsection{Generating a LLVM Basic Block Based On an Action} \label{sec:bbbuilding}
-The functionality needed of a kernel is dictated by the actions described in section \ref{cha:queueingActions}. All actions have a function that, when provided the module container, a pointer to the \textit{LLVM Function}, and an index value to indicate which of the kernel parameters, if any, is needed. This function can be seen on line \ref{code:addAction:func}.
+The functionality needed of a kernel is dictated by the actions described in section \ref{cha:queueingActions}. All actions have a function that generates a corresponding \textit{LLVM Basic Block}. This function can be seen on line \ref{code:addAction:func} in listing \ref{code:addAction}.
 
-First we create a \textit{LLVM Basic Bloc} at line \ref{code:addAction:bbc}, by providing the \texttt{LLVM Context} of the \textit{IR} container, a name, and the function that should contain it. We then create a \texttt{LLVM IRBuilder}, which is a object that provides functions for generating \textit{IR} from \textit{LLVM} objects, and add the block to the vector of blocks, that should be managed by the \textit{IR} container.
+First we create a \textit{LLVM Basic Block} at line \ref{code:addAction:bbc} in listing \ref{code:addAction}, by providing the \texttt{LLVM Context} of the \textit{IR} container, a name, and the function that should contain it. We then create a \texttt{LLVM IRBuilder}, which is a object that provides functions for generating \textit{IR} from \textit{LLVM} objects, and adds the block to the vector of blocks, that should be managed by the \textit{IR} container.
 
-After constructing the \textit{LLVM Basic Bloc}, we get a pointer to the first kernel parameter, which always is the vector we are manipulating. We can now start building the \textit{IR}.
+After constructing the \textit{LLVM Basic Block}, we get a pointer to the first kernel parameter, which is the vector we are manipulating. We can now start building the \textit{IR}.
 
-We use the \texttt{IRBuilder} to create the following instructions:
+We use the \texttt{IRBuilder} to create the following instructions as seen in listing \ref{code:addAction}:
 \begin{itemize}
 \item Line \ref{code:addAction:aload} creates the \texttt{load} instruction, that load the index of the value that should be modified.
 \item Line \ref{code:addAction:gep} creates the \texttt{getElementPtr} instruction, that get the pointer to the correct element of the vector based on index.
 \item Line \ref{code:addAction:tmp} creates the \texttt{load} instruction, that load the value of the vector before modification.
-\item Line \ref{code:addAction:const} creates a constant value based on the value the AddAction was created with.
-\item Line \ref{code:addAction:add} creates the \texttt{add} instruction for floating point values, that adds the constant to the loaded value, and assigns a temporary value the result.
+\item Line \ref{code:addAction:const} creates a constant value based on the value the AddAction was constructed with.
+\item Line \ref{code:addAction:add} creates the \texttt{add} instruction for floating point values, that adds the constant to the loaded value, and assigns a temporary value for the result.
 \item Line \ref{code:addAction:astore} creates the \texttt{store} instruction, that stores the temporary value at the address of the element pointer.
 \end{itemize}
 
@@ -166,7 +166,7 @@ Now that we can build a basic block we are almost ready to execute the code. The
 \subsection{Conecting LLVM Basic Blocks} \label{sec:bblinking}
 Now that we can generate \textit{LLVM Basic Block}s in a function, we need to go though all basic blocks of a function and ensure that they are connected in a way that lead to the function executing all basic blocks and returning when done.
 
-To control the flow, two additional basic blocks are created, one representing the entry, and one representing the exit. The entry block contains an unconditional branch to the first basic block, and the exit block contains the return statement. We then iterate all basic blocks in the function, and add a branch instruction at the end, leading to the next basic block. When we reach the last basic block, we make it branch to the exit block instead. Figure \ref{fig:bbflow} shows the resulting flow, and with that we are done directly modifying the content of the function.
+To control the flow, two additional basic blocks are created, one representing the entry, and one representing the exit. The entry block contains an unconditional branch to the first basic block, and the exit block contains the return statement. We then iterate all basic blocks in the function, and add a branch instruction at the end, leading to the next basic block. When we reach the last basic block, we make it branch to the exit block. Figure \ref{fig:bbflow} shows the resulting flow, and with that we are done modifying the content of the function.
 
 \begin{figure}[!htb]
     \center
@@ -176,7 +176,7 @@ To control the flow, two additional basic blocks are created, one representing t
 \end{figure}
 
 \subsection{Generating LLVM Metadata} \label{sec:metadata}
-The \textit{LLVM Function} is ready to be executed on the GPU, but is not marked as a GPU kernel yet. To do this we use \textit{LLVM Metadata}, as the \textit{NVPTX} back end only requires us to provide the function we want marked as a kernel. On listing \ref{code:updateMetadata} we show how we use the \textit{LLVM API} to create a metadata node tagging our function, named "kernel", as a kernel function.
+The \textit{LLVM Function} is ready to be executed on the GPU, but is not marked as a GPU kernel yet. The \textit{NVPTX} back end requires us to provide the function we want marked as a kernel, and to do this we use \textit{LLVM Metadata}. On listing \ref{code:updateMetadata} we show how we use the \textit{LLVM API} to create a metadata node tagging our function, named "kernel", as a kernel function.
 
 \begin{lstlisting}[caption={The updateMetadata function}, label={code:updateMetadata}]
 void updateMetadata(){
@@ -192,10 +192,10 @@ void updateMetadata(){
 }
 \end{lstlisting}
 
-\subsection{Putting The Steps Together}
+\subsection{Putting The Steps Together}\label{cha:puttingStepsTogether}
 Now that we have all necessary components for building \textit{IR}, we can put it together. We do this in the \texttt{exec} function on the \texttt{yagal::Vector<T>}.
 
-At line \ref{code:exec:construct} we construct the \texttt{IRModule}, which will construct a \textit{LLVM Module} ready for \textit{LLVM Function} insertion, as described in section \ref{sec:irmodule}.
+At line \ref{code:exec:construct} in Listing \ref{code:exec} we construct the \texttt{IRModule}, which will construct a \textit{LLVM Module} ready for \textit{LLVM Function} insertion, as described in section \ref{sec:irmodule}.
 
 At line \ref{code:exec:param:begin} to \ref{code:exec:param:end} we prepare the parameters to kernel function. We do this by collecting the \texttt{CUdeviceptr}s of all vectors required by actions queued on the vector, so they are ready to be provided to the kernel.
 
@@ -205,9 +205,7 @@ At line \ref{code:exec:link} we link the basic blocks of the function together, 
 
 At line \ref{code:exec:meta} we create the metadata needed to let the compiler identify the function as a kernel, as described in section \ref{sec:metadata}
 
-At line \ref{code:exec:translate} we can translate the constructed \textit{IR} to \textit{PTX}, and be ready to execute it. How the translation is performed is covered in section \ref{dead}.
-
-\todo{make this translation sections}
+At line \ref{code:exec:translate} we can translate the constructed \textit{IR} to \textit{PTX}, and be ready to execute it. How the translation is performed is covered in section \ref{sec:llcReplacement}.
 
 At line \ref{code:exec:ex} we call the function described in section \ref{cha:execPtx}, to execute the kernel with our parameters.
 
