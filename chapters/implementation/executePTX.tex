@@ -2,7 +2,7 @@
 \todo{Brug af CUDA driver API}
 
 % Motivation
-In order for \textit{YAGAL} to make use of the GPU, it must have a mechanism to execute code on it. Since \textit{LLVM} generates \textit{PTX} code, \textit{YAGAL} must be able to run it. This can be done by passing the \textit{PTX} to the \textit{CUDA} API. The \textit{CUDA} related handling have been contained within the \texttt{yagal::cuda} namespace. 
+Executing PTX code on the GPU is a central part of \textit{YAGAL}'s functionality, and the library must therefore interact with the \textit{CUDA} driver API. All CUDA related code in \textit{YAGAL} are contained within the \texttt{yagal::cuda} namespace. 
 
 % Implementation
 To execute the \textit{PTX} code, it is passed to the function \texttt{executePtxWithParams} as a string, along with a vector containing the input parameters as seen on Listing \ref{code:executePtxWithParams}. The line number references in this section refers this listing.
