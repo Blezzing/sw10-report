@@ -1,5 +1,5 @@
-\section{LLVM LLC Replacement}
-\textit{LLVM LLC} is a \textit{LLVM} command line tool that takes \textit{LLVM IR} as input and converts it to assembly language for a specified architecture such as \textit{PTX}. Since \textit{LLVM LLC} is a command line tool, it becomes difficult to include this in \textit{YAGAL}, since this would require the library to start, and be dependent upon, an external process. This can be seen on Figure \ref{fig:yagalLLC} where \textit{YAGAL} starts the \textit{LLVM LLC} process and provides it with the \textit{LLVM IR}, and must await the result.
+\section{Replacing LLVM LLC}
+\textit{LLVM LLC} is a command line tool that takes \textit{LLVM IR} as input and converts it to assembly language for a specified architecture such as \textit{PTX}. Since \textit{LLVM LLC} is a command line tool, it becomes difficult to include this in \textit{YAGAL}, since this would require the library to start, and be dependent upon, an external process. This can be seen on Figure \ref{fig:yagalLLC} where \textit{YAGAL} starts the \textit{LLVM LLC} process and provides it with the \textit{LLVM IR}, and must await the result.
 
 \begin{figure}[!htb]
     \centering
@@ -17,18 +17,20 @@
     \end{minipage}
 \end{figure}
 
-We decided to implement \textit{PTX} generation part of \textit{LLVM LLC} directly into \textit{YAGAL} in order to avoid this dependency. This has resulted in the flow which is shown by Figure \ref{fig:noLLC} where the \textit{LLVM LLC} tool is no longer involved in the process.
+The source code for \textit{LLVM LLC} is open source, with available on \textit{GitHub}\cite{llvmGithub}, and as such implementing a subset of it to fit our use case can be done following the original implementation as an example.
 
-The \textit{PTX} generation have been contained within the \texttt{PTXModule} class. This class functions as a container to generate and hold \textit{PTX} code based upon a given \texttt{IRModule}. The constructor of the \texttt{PTXModule} class can be seen in Listing \ref{code:ptxmodule}, and line references in this section is referring to this Listing. 
+We implement a subset of \textit{LLVM LLC}, with \textit{PTX} generation as single purpose, directly into \textit{YAGAL} in order to avoid the use of external processes. This has resulted in the flow which is shown by Figure \ref{fig:noLLC} where the \textit{LLVM LLC} tool is no longer involved in the process.
+
+The \textit{PTX} generation have been contained within the \texttt{PTXModule} class. This class functions as a container to generate and hold \textit{PTX} code based on a given \texttt{IRModule}. The constructor of the \texttt{PTXModule} class can be seen in Listing \ref{code:ptxmodule}, and line references in this section is referring to this Listing. 
 
 % Initialize stuff
-\texttt{initializeLlvmTargetIfNeeded()} invokes \textit{LLVM C} macros if they haven not already been invoked. This initializes the \textit{LLVM} backend for \textit{NPTX} which is needed for converting \textit{LLVM IR} to \textit{PTX}. \texttt{initializeLlvmPassRegistryIfNeeded()} specifies which passes the \textit{NPTX} backend should perform upon the \textit{LLVM IR}.
+The \texttt{initializeLlvmTargetIfNeeded} function invokes \textit{LLVM C} macros if they haven not already been invoked. This initializes the \textit{LLVM} backend for \textit{NPTX} which is needed for converting \textit{LLVM IR} to \textit{PTX}. The \texttt{initializeLlvmPassRegistryIfNeeded} function specifies which passes the \textit{NPTX} backend should perform upon the \textit{LLVM IR}.
 
 % Setup - architecture - target machine
-Lines \ref{code:ptxmodule:targetVarsBegin} through \ref{code:ptxmodule:targetVarsEnd} sets the variables needed for the target machine. This involves setting the architecture, the target triple, error output string etc.. 
+At lines \ref{code:ptxmodule:targetVarsBegin} through \ref{code:ptxmodule:targetVarsEnd} we set the variables needed for the target machine. These variables represent options that would have been provided to \textit{LLVM LLC} as command line arguments.
 
 % PassManager
-A \texttt{PassManager} is an \textit{LLVM} structure that manage the passes specified at the \texttt{initializeLlvmPassRegistryIfNeeded()}. The \texttt{PassManager} is initialized at line \ref{code:ptxmodule:passMan}. 
+At line \ref{code:ptxmodule:passMan} we initialize the \texttt{PassManager}. A \texttt{PassManager} is an \textit{LLVM} structure that manage the compilation passes. The compilation passes we need are specified in the \texttt{initializeLlvmPassRegistryIfNeeded} function.
 
 % output buffer
 % - Siger sig selv
@@ -37,10 +39,10 @@ A \texttt{PassManager} is an \textit{LLVM} structure that manage the passes spec
 A \texttt{LLVMTargetMachine} is instantiated at line \ref{code:ptxmodule:machine} along with a \texttt{MachineModuleInfo} pointer. These contain meta information regarding the target machine which are necessities for LLVM.
 
 % Reset datalayout of module
-The data layout for the \texttt{PtxModule} is set at line \ref{code:ptxmodule:layout}. The data layout describes how data is to be laid out in memory based upon the targeted hardware. The data layout for the GPU in our test machine is \texttt{e-i64:64-i128:128-v16:16-v32:32-n16:32:64}.
+The data layout for the \texttt{PtxModule} is set at line \ref{code:ptxmodule:layout}. The data layout describes how data is to be laid out in memory. The data layout for the GPU in our test machine is \texttt{e-i64:64-i128:128-v16:16-v32:32-n16:32:64}.
 
 % After data layout
-The given passes are registered and initialized by call to \texttt{addPassesToEmitFile()} at line \ref{code:ptxmodule:emit}. The output buffer is also registered here such it can be converted to a \texttt{string} once the \textit{PTX} have been generated.
+The given passes are registered and initialized by call to the \texttt{addPassesToEmitFile} function at line \ref{code:ptxmodule:emit}. The output buffer is also registered here, which is where we can read the resulting \textit{PTX} code fom.
 
 % pass run & write to string
 Finally, the passes are executed at line \ref{code:ptxmodule:runPass}. The result is then witted to a the \texttt{\_string} variable, which is a member of the \texttt{PtxModule} class, at line \ref{code:ptxmodule:writeStr}. The \texttt{\_string} variable is later in the process passed to CUDA through \texttt{yagal::cuda::cudaHandler} for execution.
