@@ -1,2 +1,19 @@
-\section{Looping mechanism}
-\todo{Behandle data uafhængigt af tråde mængde og input størelse}
+\section{Matching Number of Threads and Number of Vector Elements}
+As described in section \ref{sec:actionToIr}, we can generate \textit{PTX} code from actions to modify vectors. There is however a major point which is not handled at that point: The element modified by a kernel is simply chosen, by using the kernels index as index in the vector. This mean that in cases of a vector having more elements than threads, the execution would not modify all values in the vector, and in the case of more threads than elements, the execution would go out of bounds, possibly corrupting other data.
+
+The solution to this problem is to implement a logic in the kernels that ensure no execution out of bounds, and all elements in a vector to be modified. A method of implementing such logic is by striding through the vector, having each kernel follow the process:
+
+\begin{enumerate}
+\item Set current index value to thread index value.
+\item If the index value is valid in vector, handle logic, otherwise exit.
+\item Increment the current index value by the number of threads.
+\item repeat from step 2.
+\end{enumerate}
+
+We implement this feature, by extending any function we generate with two \textit{LLVM Basic Block}s and extending the entry block. The entry block will have the logic for initializing the index value, and branch to the first new block, rather than the first user block. The first new block is for checking whether the condition of the index being valid is met, and branch based on that to either the user block chain or the exit block. The second new block is for incrementing the index value by the number of threads, and branch to the condition block. The last user block will be changed to branch to the increment block, rather than the exit block. This implementation is illustrated on figure \ref{blockFlowLoop}, where it is shown how the different blocks are connected.
+
+\begin{figure}[!htb]
+    \centering
+    \label{blockFlowLoop}
+    \includegraphics[width=1\linewidth]{chapters/implementation/figs/IRDiagram.png}
+\end{figure}

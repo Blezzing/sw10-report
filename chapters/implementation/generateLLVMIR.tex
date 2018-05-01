@@ -1,4 +1,4 @@
-\section{Generation of LLVM IR}
+\section{Generation of LLVM IR} \label{sec:actionToIr}
  We generate \textit{LLVM Intermediate Representation}, which we now refer to as \textit{IR}, which can later be transformed to \textit{PTX} code, and be executed. We use the tools provided by the \textit{LLVM} library to generate this \textit{IR}, as they manage details such as variable names and references.
 
 The \textit{IR} is based on a nested structure as seen on \ref{fig:llvmTypes}, where \texttt{LLVM Module} is the program, \texttt{LLVM Function} is a function that is a member of the module,  \texttt{LLVM Basic Block} is a code block, and \texttt{LLVM Instruction} is a instruction. 
