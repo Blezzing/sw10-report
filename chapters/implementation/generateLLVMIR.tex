@@ -86,7 +86,7 @@ With the module created, we can start building \textit{LLVM Function}s to create
 \subsection{Generating a LLVM Function} \label{sec:irFunction}
 A \textit{LLVM Function} can be mapped to a GPU kernel, as a GPU kernel is a function callable on the GPU. The code we use to generate an \textit{IR} function is shown in listing \ref{code:createKernelInitial}. 
 
-Before we can declare the function, we need to prepare argument types, as seen from line \ref{code:createKernelInitial:arg:begin} to \ref{code:createKernelInitial:arg:begin} by providing type information and address space of parameters. The second parameter to \texttt{getFloatPtrTy}, \texttt{1} indicates which address space the parameter is in, with 1 being the global memory of the device.
+Before we can declare the function, we need to prepare argument types, as seen from line \ref{code:createKernelInitial:arg:begin} to \ref{code:createKernelInitial:arg:end} by providing type information and address space of parameters. The second parameter to \texttt{getFloatPtrTy}, \texttt{1} indicates which address space the parameter is in, with 1 being the global memory of the device.
 
 We construct the function as a member of the module on line \ref{code:createKernelInitial:func}, by providing type information, linking method for external functions, name, and containing module. The type information consist of the return type \texttt{void}, as we expect no direct return value from a kernel, the previously constructed parameter types, and whether the number of parameters can vary. The linkage refers to the visibility of the function, with external meaning that it can be accessed from other modules.
 
