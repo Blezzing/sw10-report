@@ -2,8 +2,7 @@
 \todo{Brug LLVMs erfaring - Det kan betale sig - redegør for det her}
 
 % Motivations
-We chose LLVM for a reason
-blabldablda
+LLVM contain tools for code generation, are have been developed throughout a long period of time. Y not use this, and stand atop the shoulders of giants?
 
 % High-level IR
 By using \textit{LLVM} we saved ourselves from a hurdle by not having to generate \textit{PTX} directly. \textit{LLVM IR}, while resembling \textit{assembly}, have a higher level of abstraction than \textit{PTX}. The process of generating code have therefore been made easier since we can stand atop the shoulders of \textit{LLVM} and let it handle the \textit{PTX} generation.
@@ -17,26 +16,12 @@ yagal::Vector<float> v({1.0, 2.0, 3.0});
 v.add(5).add(5).exec();
 \end{lstlisting}
 
-\noindent\begin{minipage}{0.45\paperwidth}
-\begin{lstlisting}[caption=code 1,frame=tlrb]{Name}
-void code()
-{
-
-}
-\end{lstlisting}
-\end{minipage}\hfill
-\begin{minipage}{0.45\paperwidth}
-\begin{lstlisting}[caption=code 2,frame=tlrb]{Name}
-void code()
-{
-
-}
-\end{lstlisting}
-\end{minipage}
-
-\noindent\begin{minipage}{.45\paperwidth}
-\begin{lstlisting}[caption=code 1,frame=tlrb]{Name}
-.visible .entry kernel(
+\begin{figure}
+  \hspace*{-.12\textwidth}%
+  \begin{minipage}{0.6\textwidth}
+    \centering
+    \begin{lstlisting}[caption=code 2,frame=tlrb]{Name}
+	.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
@@ -84,11 +69,14 @@ LBB0_5:
 	st.global.f32 	[%rd7], %f4;
 	bra.uni 	LBB0_2;
 }
-\end{lstlisting}
-\end{minipage}\hfill
-\begin{minipage}{.45\paperwidth}
-\begin{lstlisting}[caption=code 2,frame=tlrb]{Name}
-.visible .entry kernel(
+	\end{lstlisting}
+  \end{minipage}%
+  \qquad
+  \quad
+  \begin{minipage}{0.6\textwidth}
+    \centering
+	\begin{lstlisting}[caption=code 2,frame=tlrb, firstnumber=1]{Name}
+	.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
@@ -116,6 +104,7 @@ LBB0_3:
 LBB0_2:
 	ret;
 }
-
-\end{lstlisting}
-\end{minipage}
+	\end{lstlisting}
+  \end{minipage}%
+  \hspace*{-.1\textwidth}%
+\end{figure}
