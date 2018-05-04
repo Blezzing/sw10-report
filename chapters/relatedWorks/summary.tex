@@ -1,0 +1,12 @@
+\section{Summary}
+Through considering the frameworks in this chapter, we gained some insights which allow us to make better decisions in the design of YAGAL.
+
+\subsection{Data Storage}
+The general approach is to wrap the allocations in container classes such as \texttt{thrust::host_vector}. This seem like a reasonable choice, as it is helps the developer perform memory management with constructors and destructors.
+
+Accessing data from these containers are generally performed through iterators or direct access with syntax as an array access. This seem like a convenient choice, but it might invite the developer to perform logic on the CPU by copying data back and forth, which seem counterintuitive.
+
+\subsection{Lambdas}
+The general approach for modifying the data is to provide some high level functions such as \texttt{boltcl::transform} that take some representation of a function to perform on each element. This function is represented in various ways, either through functors, strings, or \textit{C++ 11} lambdas with additional syntax. This is interesting as it is an area where they differ a lot. A distinction can be made between those that require specific compilers to compile the \textit{C++} code, as they are able to freely add syntax to define new kinds of lambdas, and those that do not require a specific compiler, as they are restricted have the users provide logic in a way the library can extract the intent at compile time.
+
+In general supporting lambdas seem to be a problematic and useful feature, that seem to be most elegant when done by a framework that provides a compiler with support for syntax expansion.
