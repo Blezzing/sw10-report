@@ -2,7 +2,7 @@
 Through considering the frameworks in this chapter, we gained some insights which allow us to make better decisions in the design of YAGAL.
 
 \subsection{Data Storage}
-The general approach is to wrap the allocations in container classes such as \texttt{thrust::host_vector}. This seem like a reasonable choice, as it is helps the developer perform memory management with constructors and destructors.
+The general approach is to wrap the allocations in container classes such as \texttt{thrust::host\_vector}. This seem like a reasonable choice, as it is helps the developer perform memory management with constructors and destructors.
 
 Accessing data from these containers are generally performed through iterators or direct access with syntax as an array access. This seem like a convenient choice, but it might invite the developer to perform logic on the CPU by copying data back and forth, which seem counterintuitive.
 
