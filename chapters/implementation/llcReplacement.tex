@@ -1,27 +1,25 @@
 \section{Replacing LLVM LLC} \label{sec:llcReplacement}
 \textit{LLVM LLC} is a command line tool that takes \textit{LLVM IR} as input and converts it to assembly language for a specified architecture such as \textit{PTX}. Since \textit{LLVM LLC} is a command line tool, it becomes difficult to include this in \textit{YAGAL}, since this would require the library to start, and be dependent upon, an external process. This can be seen on Figure \ref{fig:yagalLLC} where \textit{YAGAL} starts the \textit{LLVM LLC} process and provides it with the \textit{LLVM IR}, and must await the result.
 
-\begin{figure}[!htb]
+\begin{figure}
     \centering
-    \begin{minipage}{.7\textwidth}
-        \centering
-        \includegraphics[width=0.9\linewidth]{chapters/implementation/figs/LLVMLLC.png}
+    \begin{minipage}[t]{0.55\textwidth}\centering%
+        \includegraphics[width=\textwidth]{chapters/implementation/figs/LLVMLLC.png}
         \caption{Yagal using LLC}
         \label{fig:yagalLLC}
-    \end{minipage}
-    \begin{minipage}{0.4\textwidth}
-        \centering
-        \includegraphics[width=0.5\linewidth]{chapters/implementation/figs/YAGALLLC.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.3\textwidth}\centering%
+        \includegraphics[width=\textwidth - 44pt]{chapters/implementation/figs/YAGALLLC.png} 
         \caption{YAGAL with LLC replacement.}
         \label{fig:noLLC}
     \end{minipage}
 \end{figure}
 
-The source code for \textit{LLVM LLC} is open source, with available on \textit{GitHub}\cite{llvmGithub}, and as such implementing a subset of it to fit our use case can be done following the original implementation as an example.
+The source code for \textit{LLVM LLC} is open source and available on \textit{GitHub}\cite{llvmGithub}, and we have implemented a subset of it to fit our use case by using the original implementation as an example.
 
-We implement a subset of \textit{LLVM LLC}, with \textit{PTX} generation as single purpose, directly into \textit{YAGAL} in order to avoid the use of external processes. This has resulted in the flow which is shown by Figure \ref{fig:noLLC} where the \textit{LLVM LLC} tool is no longer involved in the process.
+The subset of \textit{LLVM LLC} we implemented involves \textit{PTX} generation as single purpose. It have been implemented directly into \textit{YAGAL} in order to avoid being dependent upon an external processes. This has resulted in the flow which is shown by Figure \ref{fig:noLLC} where the \textit{LLVM LLC} tool is no longer involved in the process.
 
-The \textit{PTX} generation have been contained within the \texttt{PTXModule} class. This class functions as a container to generate and hold \textit{PTX} code based on a given \texttt{IRModule}. The constructor of the \texttt{PTXModule} class can be seen in Listing \ref{code:ptxmodule}, and line references in this section is referring to this Listing. 
+The \textit{PTX} generation is contained within the \texttt{PTXModule} class. This class functions as a container to generate and hold \textit{PTX} code based on a given \texttt{IRModule}. The constructor of the \texttt{PTXModule} class can be seen in Listing \ref{code:ptxmodule}, and line references in this section is referring to this Listing. 
 
 % Initialize stuff
 The \texttt{initializeLlvmTargetIfNeeded} function invokes \textit{LLVM C} macros if they haven not already been invoked. This initializes the \textit{LLVM} backend for \textit{NPTX} which is needed for converting \textit{LLVM IR} to \textit{PTX}. The \texttt{initializeLlvmPassRegistryIfNeeded} function specifies which passes the \textit{NPTX} backend should perform upon the \textit{LLVM IR}.

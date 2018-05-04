@@ -1,15 +1,14 @@
 \section{LLVM Optimizations}
-\todo{Brug LLVMs erfaring - Det kan betale sig - redegør for det her}
 
 % Motivations
-We chose LLVM for a reason
-blabldablda
-
-% High-level IR
-By using \textit{LLVM} we saved ourselves from a hurdle by not having to generate \textit{PTX} directly. \textit{LLVM IR}, while resembling \textit{assembly}, have a higher level of abstraction than \textit{PTX}. The process of generating code have therefore been made easier since we can stand atop the shoulders of \textit{LLVM} and let it handle the \textit{PTX} generation.
+The use of \textit{LLVM} have provided advantages for \textit{YAGAL}, such as \textit{LLVM IR} and optimizations of generated code. This section contains some examples of where \textit{YAGAL} have made use of these advantages.
 
 % optLevel
-Another benefit of using \textit{LLVM} for generating \textit{PTX} is that \textit{LLVM} is probably better at optimizing \textit{PTX} than we can by hand. This is achieved simply by setting the code generation optimization flag which as \texttt{CodeGenOpt::Level optLevel(CodeGenOpt::Aggressive)}. Listing \ref{code::chainedAdds} shows a \textit{YAGAL} utilizing two chained \texttt{yagal::vector::add()} functions, which we will use as to showcase some of the achieved optimizations.
+The \textit{LLVM} code generation tools have multiple optimization levels for the generated code. We have made use of it for the conversion of \textit{LLVM IR} to \textit{PTX}. This is done by setting the code generation optimization flag with \texttt{CodeGenOpt::Level optLevel(CodeGenOpt::Aggressive)}. To show an example we have the code in Listing \ref{code::chainedAdds} where a \texttt{yagal::vector} is made and two \texttt{add} functions are chained upon it. When equivalent \textit{PTX} code is generated without optimizations, it will result in the code shown on listing \ref{code:unoptiPtx}. With the aggressive flag set, the resulting \textit{PTX} code results in what can be see on listing \ref{code:optiPtx}. 
+What can be seen here is that the non-optimized version consists of more labels and have multiple unnecessary instructions. The optimized version have rearranged the code by having the add instructions happen under the same label at lines \ref{code:optiPtx:add1} and \ref{code:optiPtx:add2}, and having only a single store to global instruction at line \ref{code:optiPtx:store}. These kind of optimizations would have been difficult to make if we were generating \textit{PTX} directly and not utilizing \textit{LLVM IR}.
+
+% High-level IR
+Another major advantage of utilizing \textit{LLVM IR} is that it have a higher level of abstraction that \textit{PTX}. \textit{LLVM IR} allows function definitions with return types and provide unlimited amount of registers. This means that we do not need to take platform and hardware specifics into account since we let \textit{LLVM} handle it during code generation.
 
 \begin{lstlisting}[caption={Chained \texttt{yagal::vector::add}}, label={code::chainedAdds}]
 yagal::Vector<float> v({1.0, 2.0, 3.0});
@@ -17,26 +16,12 @@ yagal::Vector<float> v({1.0, 2.0, 3.0});
 v.add(5).add(5).exec();
 \end{lstlisting}
 
-\noindent\begin{minipage}{0.45\paperwidth}
-\begin{lstlisting}[caption=code 1,frame=tlrb]{Name}
-void code()
-{
-
-}
-\end{lstlisting}
-\end{minipage}\hfill
-\begin{minipage}{0.45\paperwidth}
-\begin{lstlisting}[caption=code 2,frame=tlrb]{Name}
-void code()
-{
-
-}
-\end{lstlisting}
-\end{minipage}
-
-\noindent\begin{minipage}{.45\paperwidth}
-\begin{lstlisting}[caption=code 1,frame=tlrb]{Name}
-.visible .entry kernel(
+\begin{figure}
+  \hspace*{-.12\textwidth}%
+  \begin{minipage}{0.6\textwidth}
+    \centering
+    \begin{lstlisting}[caption=Non-optimized generated PTX., label=code:unoptiPtx, frame=tlrb]{Name}
+	.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
@@ -84,11 +69,14 @@ LBB0_5:
 	st.global.f32 	[%rd7], %f4;
 	bra.uni 	LBB0_2;
 }
-\end{lstlisting}
-\end{minipage}\hfill
-\begin{minipage}{.45\paperwidth}
-\begin{lstlisting}[caption=code 2,frame=tlrb]{Name}
-.visible .entry kernel(
+	\end{lstlisting}
+  \end{minipage}%
+  \qquad
+  \quad
+  \begin{minipage}{0.6\textwidth}
+    \centering
+	\begin{lstlisting}[caption=Optimized generated PTX., label=code:optiPtx, frame=tlrb, firstnumber=1]{Name}
+	.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
@@ -103,19 +91,20 @@ LBB0_5:
 	setp.lt.u32 	%p1, %r5, 3;
 	@%p1 bra 	LBB0_3;
 	bra.uni 	LBB0_2;
-LBB0_3:
+LBB0_3: ~\label{code:optiPtx:lbbo3}~
 	mul.wide.s32 	%rd2, %r5, 4;
 	add.s64 	%rd3, %rd1, %rd2;
 	ld.global.f32 	%f1, [%rd3];
-	add.rn.f32 	%f2, %f1, 0f40A00000;
-	add.rn.f32 	%f3, %f2, 0f40800000;
-	st.global.f32 	[%rd3], %f3;
+	add.rn.f32 	%f2, %f1, 0f40A00000; ~\label{code:optiPtx:add1}~
+	add.rn.f32 	%f3, %f2, 0f40800000; ~\label{code:optiPtx:add2}~
+	st.global.f32 	[%rd3], %f3;~\label{code:optiPtx:store}~
 	add.s32 	%r5, %r5, %r4;
 	setp.lt.u32 	%p1, %r5, 3;
 	@%p1 bra 	LBB0_3;
 LBB0_2:
 	ret;
 }
-
-\end{lstlisting}
-\end{minipage}
+	\end{lstlisting}
+  \end{minipage}%
+  \hspace*{-.1\textwidth}%
+\end{figure}
