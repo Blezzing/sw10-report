@@ -1,4 +1,4 @@
-\section{Execute .PTX} \label{cha:execPtx}
+\section{Execute PTX} \label{cha:execPtx}
 % Motivation
 Executing PTX code on the GPU is a central part of \textit{YAGAL}'s functionality, and the library must therefore interact with the \textit{CUDA} driver API. All CUDA related code in \textit{YAGAL} are contained within the \texttt{yagal::cuda} namespace. 
 
@@ -16,7 +16,7 @@ Predetermined block and grid dimensions are set through line \ref{code:executePt
 
 The module is executed on the GPU at line \ref{code:executePtxWithParams:launch} by a call to the function \texttt{cuLaunchKernel} and the module is then unloaded at line \ref{code:executePtxWithParams:clean} by \texttt{cuModuleUnload()}. The module have now been executed and the functionality within it is not needed anymore, therefore the module is unloaded.
 
-\begin{lstlisting}[caption={int executePtxWithParams()}, label={code:executePtxWithParams}]
+\begin{lstlisting}[caption={int executePtxWithParams()}., label={code:executePtxWithParams}]
 CUcontext  cudaContext;
 
 int executePtxWithParams(const std::string& ptx, std::vector<CUdeviceptr*>& kernelParams){

@@ -32,7 +32,7 @@ Before we can create any \textit{LLVM} objects, an \texttt{LLVMContext} is neede
 
 With the \texttt{context} we create the module in the constructor chain at line \ref{code:irModule:module}. An architecture must then be defined for the module. We provide the string \texttt{"nvptx64-nvidia-cuda"}, as it is a key in the \textit{LLVM} library, that is used to look up target information during code generation. 
 
-\begin{lstlisting}[caption={The IRModule class}, label={code:irModule}]
+\begin{lstlisting}[caption={The IRModule class.}, label={code:irModule}]
 namespace yagal::generator{
     //Representation of a module in llvm ir.
     //Contains the logic to configure a llvm module and provide functions for the rest of the library to add functionality to a module
@@ -92,7 +92,7 @@ We construct the function as a member of the module on line \ref{code:createKern
 
 To make sure the function follows the calling convention and parameter parsing of the platform, we use the \texttt{setCallingConvention} function, as seen on line \ref{code:createKernelInitial:cc}. 
 
-\begin{lstlisting}[caption={The createKernel function}, label={code:createKernelInitial}]
+\begin{lstlisting}[caption={The createKernel function.}, label={code:createKernelInitial}]
 llvm::Function* createKernel(int numberOfParameters){
     std::vector<llvm::Type *> kernel_arg_types; ~\label{code:createKernelInitial:arg:begin}~
     for(int i = 0; i < numberOfParameters; i++){
@@ -131,7 +131,7 @@ We use the \texttt{IRBuilder} to create the following instructions as seen in li
 \item Line \ref{code:addAction:astore} creates the \texttt{store} instruction, that stores the temporary value at the address of the element pointer.
 \end{itemize}
 
-\begin{lstlisting}[caption={The AddAction class}, label={code:addAction}]
+\begin{lstlisting}[caption={The AddAction class.}, label={code:addAction}]
 template <typename T>
 class AddAction : public SimpleAction<T>{
 public:
@@ -172,13 +172,13 @@ To control the flow, two additional basic blocks are created, one representing t
     \center
     \label{fig:bbflow}
     \includegraphics[width=0.65\linewidth]{chapters/implementation/figs/bbflow.png}
-    \caption{The connections of Basic Blocks}
+    \caption{The connections of Basic Blocks.}
 \end{figure}
 
 \subsection{Generating LLVM Metadata} \label{sec:metadata}
 The \textit{LLVM Function} is ready to be executed on the GPU, but is not marked as a GPU kernel yet. The \textit{NVPTX} back end requires us to provide the function we want marked as a kernel, and to do this we use \textit{LLVM Metadata}. On listing \ref{code:updateMetadata} we show how we use the \textit{LLVM API} to create a metadata node tagging our function, named "kernel", as a kernel function.
 
-\begin{lstlisting}[caption={The updateMetadata function}, label={code:updateMetadata}]
+\begin{lstlisting}[caption={The updateMetadata function.}, label={code:updateMetadata}]
 void updateMetadata(){
     auto metadata = module.getOrInsertNamedMetadata("nvvm.annotations");
     auto oneconstant = llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), 1);
@@ -211,7 +211,7 @@ At line \ref{code:exec:ex} we call the function described in section \ref{cha:ex
 
 At line \ref{code:exec:clean} we empty the action vector to be ready for a new action queue on the same vector.
 
-\begin{lstlisting}[caption={The exec function}, label={code:exec}]
+\begin{lstlisting}[caption={The exec function.}, label={code:exec}]
 Vector<T>& exec(){
     yagal::generator::IRModule ir(_count); ~\label{code:exec:construct}~
 

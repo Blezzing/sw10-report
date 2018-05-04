@@ -10,7 +10,7 @@ What can be seen here is that the non-optimized version consists of more labels 
 % High-level IR
 Another major advantage of utilizing \textit{LLVM IR} is that it have a higher level of abstraction that \textit{PTX}. \textit{LLVM IR} allows function definitions with return types and provide unlimited amount of registers. This means that we do not need to take platform and hardware specifics into account since we let \textit{LLVM} handle it during code generation.
 
-\begin{lstlisting}[caption={Chained \texttt{yagal::vector::add}}, label={code::chainedAdds}]
+\begin{lstlisting}[caption={Chained \texttt{yagal::vector::add}.}, label={code::chainedAdds}]
 yagal::Vector<float> v({1.0, 2.0, 3.0});
 
 v.add(5).add(5).exec();

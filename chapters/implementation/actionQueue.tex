@@ -5,7 +5,7 @@ An action is an intended task to be performed on the \texttt{yagal::Vector}, and
 
 The template class \texttt{Vector<T>} is expanded, as seen in Listing \ref{code:actionAdditions}. A vector of \texttt{Action<T>} elements are added to the fields at line \ref{code:actionAdditions:vec}, it contains the actions needing to be performed on the \texttt{Vector<T>}, in the order they were added. Functions have been added to generate actions that are placed in this vector. An example of this is \texttt{Vector<T>\& add(T value)} at line \ref{code:actionAdditions:val}, which creates an action that represents adding a value to all elements in the \texttt{Vector<T>}, and places it at the back of the \texttt{\_actions} vector. The other added function is \texttt{Vector<T>\& exec()}, which is the function that consumes the action vector, generates \textit{LLVM IR} based on the consumed actions, translates the \textit{LLVM IR} to \textit{PTX}, loads the \textit{PTX} on the device, and executes it. The content of the \texttt{Vector<T>\& exec()} function is not the focus of this section, and is explained in section \ref{cha:puttingStepsTogether}.
 
-\begin{lstlisting}[caption={Vector<T> action additions}, label={code:actionAdditions}]
+\begin{lstlisting}[caption={Vector<T> action additions.}, label={code:actionAdditions}]
 namespace yagal{
     template <typename T>
     class Vector{
