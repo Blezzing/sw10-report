@@ -1,10 +1,13 @@
 \section{Motivation}\label{cha:motivation}
 %Hvorfor er gpgpu fedt
 With the development in GPU acceleration it have been shown, that some heavy computational problems can be solved drastically faster using GPUs as accelerators. This have led to the development of multiple frameworks and tools to enable development on this platform.
-\todo{source på at det er godt!}
+%\todo{source på at det er godt!}
 
 %Hvad lavede vi sidste semester, og hvad fandt vi ud af
 In our previous semester\cite{sw9Report}, we analyzed existing languages enabling GPGPU development. The goal of that project was to find representatives of different language groups, and compare the development experiences of using them. We concluded that GPGPU development generally is very difficult, as it requires adapting to a new programming model, which gives in a very steep learning curve for the developer. This leads to a lot of time spent learning the programming model, rather than solving problems. In some cases GPU acceleration is not the solution to performance issues, which means that a developer potentially waste her time learning this programming model.
+
+%problemstillingen med compilers
+We found that frameworks for GPGPU development in compiled languages generally required a very specific compilation process, often by forcing the developer to use a compiler developed as a piece of the framework. This means that developers who already depend on some specific compiler for some feature might be unable to also incorporate the GPGPU framework.
 
 %brug dette når vi argumenterer for c++
 %Another conclusion made in the previous project, was that when absolute performance was the goal, the best option seemed to be using CUDA or OpenCL. The higher abstractions provided by the other languages generally had a performance cost. 
@@ -13,8 +16,11 @@ In our previous semester\cite{sw9Report}, we analyzed existing languages enablin
 
 %Hvad tænker vi at man kan gøre ved det?
 In this project we want to create a framework, prioritizing high abstraction over absolute performance, that allows the developer to build accelerated applications without the knowledge of the underlying programming model. Using our framework, it should be clear whether there is performance to gain by utilizing GPU acceleration. If performance was gained by using our framework, it would indicate that there is even more performance to gain, due to the performance cost of our abstractions. The developer can then decide to spend time learning the programming model of a low level API, such as CUDA or OpenCL, to make the best implementation herself. If no performance was gained, she can investigate other means of increasing performance, rather than wasting more time on learning the GPGPU model.
+\todo{måske sløjf ovenstående og nøjes med nedenstående}
+
+In this project we want to create a framework, prioritizing high abstraction over absolute performance. This framework should allow developers to build accelerated applications without limiting their compiler choice. During the development of the framework we want to investigate the consequences of not implementing the framework in the form of a compiler.
 
 %the old one
 %In our SW9 project we experienced that it is difficult to get started with OpenCL/CUDA development. There are multiple new concepts to learn, such as the programming model with kernels, and the memory model of the GPU. This means that a developer who believe, that the performance of an application can be improved by utilizing a GPU, need to learn all of this before being able to test his theory. This is difficult and we want to be able to initially abstract away all most of the GPU computing model until the developer is ready to learn it.
 
-\todo[inline]{find andre der har svært ved dette, eller nogen der kan bakke vores problem påstand op.}
+%\todo[inline]{find andre der har svært ved dette, eller nogen der kan bakke vores problem påstand op.}
