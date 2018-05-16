@@ -19,7 +19,7 @@ int a = 10;
 
 skelcl::init(); ~\label{code:skelclSample:init}~
 
-Zip<float(float,float)> saxpy("int func(int x, int y, int a){return a * x + y;}");
+Zip<float(float,float)> saxpy("int func(int x, int y, int a){return a * x + y;}"); ~\label{code:skelclSample:zipStatement}~
 
 skelcl::Vector<int> X(N);      
 skelcl::Vector<int> Y(N);
@@ -31,7 +31,13 @@ saxpy(out(Y), X, Y, a); ~\label{code:skelclSample:exec}~
 
 \subsection{Implementation}
 \textit{SkelCL} is a library that is built upon \textit{OpenCL}. This allows host and kernel code to be contained within one source file, as opposed to the traditional \textit{OpenCL} approach.
-\todo{text}
+The implementation is done entirely in a library, and as such it allows the developer to use it without enforcing a compiler choice.
+
+Memory management is handled through either the \texttt{Vector} or the \texttt{Matrix} template classes, where the actual allocations are done on the device, abstracting away allocation management.
+
+Kernel functionality is provided through \textit{C++} constructs that generate \textit{OpenCL} code, which is then relayed to \textit{OpenCL} library. The generated code is constructed as a \textit{OpenCL} kernel string, by providing different hard coded content based on the used skeleton, concatenated with the user provided string, such as the on in listing \ref{code:skelclSample} line \ref{code:skelclSample:zipStatement}. As such it provides the features of \textit{OpenCL} with minimum analysis of user code.
+
+The compilation chain is shown in figure \ref{fig:skelclCompilation}, were the highlight is the library layers with \textit{SkelCL} in front of \textit{OpenCL}, and the use of a non specified compiler, as the implementation is purely in a library.
 \begin{figure}[H]
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/skelcl_compilation.png}
