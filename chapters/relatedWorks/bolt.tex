@@ -46,15 +46,29 @@ boltcl::transform(x.begin(), x.end(), y.begin(), z.begin, SaxpyFunctor(a));
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Bolt} is a library on top of either \textit{C++ AMP} or \textit{OpenCL}\cite{boltPresentation}. The API is the same, while the supported features changes depending on which implementation is selected.
-As shown in the example, only the \textit{C++ AMP} backend supports \textit{C++11} lambdas, which reduces the amount of work needed by the developer, compared to using a functor.
-\todo{text}
+% Intro / Overview
+\textit{Bolt} is an includeable library with two possible backends, namely \textit{C++ AMP} and \textit{OpenCL}.  
+
+% Memory / Types
+\textit{Bolt} have made an effort to integrate into the regular STL of C++. To this end, data is managed within regular host memory data types, such as vectors. Before any data are used on the GPU, \textit{Bolt} will copy the data to device and back once the kernel has executed. \textit{Bolt} also provide device specific types such as \texttt{device\_vector} which allocates data directly in device memory, but the performance provided by these are when the data are used within multiple kernel calls since it do not need to be copied to device upon text use.
+
+% Kernels / func
+Lambda expressions is used to express kernel functions when \textit{C++ AMP} is the targeted backend. The procedure is similar to how it is done in \textit{C++ AMP} which is described in Section \ref{cha:cppAmpRelWork}, but \textit{Bolt} will handle the interaction with data and the \texttt{array\_view}s of \textit{C++ AMP} is therefore not needed. The \texttt{restricted} keyword is still used to tell the compiler that only a subset of functionality is available within the lambda scope.
+
+Functors are used to express kernel functions when using \textit{OpenCl} as the targeted backend. A functor allows the construction of a struct that can be called as a regular function. 
+
+% Comp / Figref
+One of the two supported backends are \textit{C++ AMP}, and the compilation chain can be seen on Figure \ref{fig:boltAmpCompilation}. Here the user code have included the Bolt headers which in turn makes use if the \textit{C++ AMP} headers. \textit{MVSC} is used for compilation since its the only compiler that supports \textit{C++ AMP}. This results in an executable file that utilizes \textit{Direct 3D} for execution on the GPU.
+
 \begin{figure}[H]
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/bolt_cl_compilation.png}
 \caption{Bolt Targeting OpenCL Compilation Process.}
 \label{fig:boltClCompilation}
-\end{figure}\todo{text}
+\end{figure}
+
+The other of the two supported backends are \textit{OpenCL}, and the compilation chain can be seen on Figure \ref{fig:boltClCompilation}. It is the same procedure as it was with \textit{C++ AMP}, except that \textit{Bolt} will make use of OpenCL headers, it is not dependent upon the \textit{MVSC} compiler, and it will utilize the OpenCL runtime.
+
 \begin{figure}
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/bolt_amp_compilation.png}
