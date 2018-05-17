@@ -1,5 +1,5 @@
 \section{C++ AMP}
-AMP stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be executed on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} is developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}. Their choice of \textit{DirectX 11} is interesting since \textit{OpenCl} and \textit{CUDA} existed at the time. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
+\textit{AMP} stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be executed on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} is developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}. Their choice of \textit{DirectX 11} is interesting since \textit{OpenCl} and \textit{CUDA} existed at the time. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
 
 % The commented text describes an implementation outputting OpenCL
 % which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang}\cite{clang} and \textit{LLVM}\cite{llvm} that outputs to \textit{OpenCL} instead of DirectX11.
@@ -48,7 +48,21 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 \end{lstlisting}
 
 \subsection{Implementation}
-\todo{text}
+
+% Intro / Overview
+\textit{C++ AMP} is a library that enables simple manipulation of large dimensional arrays by introducing a new language feature called \texttt{restricted} for \textit{C++}. 
+
+% Memory / Types
+Data are managed within regular \texttt{std::array}s. \texttt{array\_view}s are then constructed to represent these arrays as matrices on the GPU and used to manipulate them.
+
+% Kernels / Fame?
+Lambdas are used to construct the logic of a kernel for execution on the GPU. The \texttt{restricted} keyword are used in conjunction upon the lambda to indicate for the compiler that not all functionality are available within the scope of this lambda. 
+
+To execute the kernel, the lambda are given to the \texttt{parallel\_for\_each} function that first copies the data described by the \texttt{array\_views} to the GPU and then executes the lambda.
+
+% Comp / Figref
+The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampCompilation}. Here the user code have included the \textit{C++ AMP} headers and compiled by the \textit{Microsoft Visual C++} compiler (\textit{MSVC}). The result is a executable file that utilizes \textit{Direct3D} to execute on the GPU. Even though \textit{C++ AMP} is an includeable library, it makes use of compiler specific functionality to add an additional keyword to the language and is therefore tied to the \textit{MSVC} compiler for \textit{windows}. The \textit{C++ AMP} specification is however open such that other compiler vendors could support it in the future.
+
 \begin{figure}[H]
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/cppamp_compilation.png}
