@@ -38,7 +38,11 @@ z = d_y;
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that the developer will include the \textit{Thrust} header files needed, and compile her program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. The compilation process is fully static, and results in a single executable with both host and device code included.
+\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that the developer will include the \textit{Thrust} header files needed, and compile her program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. 
+
+The memory management is performed though types defined in the library, abstracting away direct allocation management, and functions can be defined as lambdas with the annotation \textit{\_\_device\_\_} which is the \textit{CUDA Runtime} annotation for kernels. With \textit{nvcc} as the compiler thrust can achieve the high level design shown in listing \ref{code:thrustSaxpy}, where the thrust data types interface with \textit{STL} algorithms and use close to pure \textit{C++11} syntax for lambdas.
+
+The compilation process is static, and results in a single executable with both host and \textit{CUDA Runtime} code included.
 \begin{figure}[H]
 \center
 \includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/thrust_compilation.png}
