@@ -30,11 +30,14 @@ int main() {
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{PACXX} utilizes \textit{LLVM} to generate \textit{PTX} code at runtime. \textit{PACXX} is multi-staged.
-\todo{text}
+\textit{PACXX} is a framework centered around a compiler created with \textit{LLVM}, \textit{pacxx++}. Using a special purpose compiler allows for quality of life features, such as defining kernel functionality in \textit{C++11} lambdas, at the cost of forcing that compiler to be used by the developer. The compilation is multi staged, meaning that the main program is statically compiled, and the kernels are compiled before use, allowing kernels to vary depending on run time state.
+
+An important feature of pacxx is that the code written by the developer is standard \textit{C++}, and as such can be compiled and executed on many platforms. The \textit{pacxx++} compiler is able to identify lambdas that can be compiled for a GPU, and as such create a unified programming experience.
+
+On figure \ref{fig:pacxxCompilation} it is shown how a program compiled with \textit{pacxx++} include the \textit{PACXX Runtime}. This runtime is able to generate \textit{LLVM Intermediate Representation} code and translate that to either \textit{PTX} code for the \textit{CUDA Runtime} or \textit{SPIR} code for the \textit{OpenCL Runtime}, using the \textit{LLVM} support for those targets.
 \begin{figure}[H]
 \center
-\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/pacxx_compilation.png}
+\includegraphics[width=0.8\textwidth]{chapters/relatedWorks/figures/pacxx_compilation_cool.png}
 \caption{PACXX Compilation Process.}
 \label{fig:pacxxCompilation}
 \end{figure}
