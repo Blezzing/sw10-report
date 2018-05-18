@@ -33,7 +33,7 @@ saxpy(out(Y), X, Y, a); ~\label{code:skelclSample:exec}~
 \textit{SkelCL} is a library that is built upon \textit{OpenCL}. This allows host and kernel code to be contained within one source file, as opposed to the traditional \textit{OpenCL} approach.
 The implementation is done entirely in a library, and as such it allows the developer to use it without enforcing a compiler choice.
 
-Memory management is handled through either the \texttt{Vector} or the \texttt{Matrix} template classes, where the actual allocations are done on the device, abstracting away allocation management.
+Memory management is handled through either the \texttt{Vector} or the \texttt{Matrix} template classes, where the actual allocations are done on the device, abstracting allocation management.
 
 Kernel functionality is provided through \textit{C++} constructs that generate \textit{OpenCL} code, which is then relayed to \textit{OpenCL} library. The generated code is constructed as a \textit{OpenCL} kernel string, by providing different hard coded content based on the used skeleton, concatenated with the user provided string, such as the on in listing \ref{code:skelclSample} line \ref{code:skelclSample:zipStatement}. As such it provides the features of \textit{OpenCL} with minimum analysis of user code.
 
@@ -49,3 +49,5 @@ The compilation chain is shown in figure \ref{fig:skelclCompilation}, were the h
 A key point of \textit{SkelCL} is the data containers it provides, namely vectors and matrices. They are transparently available on both host and device. When one of these data containers is allocated or deallocated on the host, it is automatically also allocated or deallocated on the device(s). Furthermore, memory transfers between host and device are handled implicitly.
 
 Another key point of \textit{SkelCL} is how it is designed to function on systems with multiple GPUs. The \textit{distribution mechanism} describes how a container is distributed among the available GPUs. This feature abstracts away the need to manage which parts of the container gets assigned to which GPU. The data containers can be considered as self contained entities. A developer must specify a model for how the data should be distributed, with the available options being \textit{single}, \textit{copy}, \textit{block}, and \textit{overlap}.
+
+A last key point is that \textit{SkelCL} generate \textit{OpenCL} code based upon skeletons which reduces the amount of needed analysis of user code. This results in an \textit{OpenCL} string that can be delivered to the \textit{OpenCL} runtime for execution.

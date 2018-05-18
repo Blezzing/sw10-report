@@ -2,7 +2,7 @@
 \textit{Thrust} is a \textit{C++} library that allow developers to implement high performance applications with minimal programming effort. This section is based on \textit{Thrust}'s overview document\cite{thrustOverview} and \textit{Github} page\cite{thrustGithub}.
 
 \subsection{Goals}
-The aim of \textit{Thrust} is to make high performance application development as easy as possible. It is designed to be similar to \textit{STL}, with the intention of being concise, readable, and efficient. It is intended to supply the developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by \textit{BLAS}. It is also intended to be interoperable with \textit{CUDA}.
+The aim of \textit{Thrust} is to make high performance application development as easy as possible. It is designed to be similar to \textit{STL}, with the intention of being concise, readable, and efficient. It is intended to supply developers with containers and fundamental algorithms, with user defined behavior, rather than specific numeric algorithms as provided by \textit{BLAS}. It is also intended to be interoperable with \textit{CUDA}.
 
 \subsection{Programming Model}
 \textit{Thrust} is modeled on \textit{STL} and as such, follows the model of calling functions with iterators as arguments to instruct where input, and output is located.
@@ -38,9 +38,9 @@ z = d_y;
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that the developer will include the \textit{Thrust} header files needed, and compile her program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. 
+\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that a developer will include the \textit{Thrust} header files needed, and compile the program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. 
 
-The memory management is performed though types defined in the library, abstracting away direct allocation management, and functions can be defined as lambdas with the annotation \textit{\_\_device\_\_} which is the \textit{CUDA Runtime} annotation for kernels. With \textit{nvcc} as the compiler thrust can achieve the high level design shown in listing \ref{code:thrustSaxpy}, where the thrust data types interface with \textit{STL} algorithms and use close to pure \textit{C++11} syntax for lambdas.
+The memory management is performed though types defined in the library, abstracting direct allocation management, and functions can be defined as lambdas with the annotation \textit{\_\_device\_\_} which is the \textit{CUDA Runtime} annotation for kernels. With \textit{nvcc} as the compiler thrust can achieve the high level design shown in listing \ref{code:thrustSaxpy}, where the thrust data types interface with \textit{STL} algorithms and use close to pure \textit{C++11} syntax for lambdas.
 
 The compilation process is static, and results in a single executable with both host and \textit{CUDA Runtime} code included.
 \begin{figure}[H]

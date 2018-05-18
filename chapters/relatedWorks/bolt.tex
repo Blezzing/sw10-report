@@ -77,8 +77,8 @@ The other of the two supported backends are \textit{OpenCL}, and the compilation
 \end{figure}
 
 \subsection{Key Points}
-Being able to use the same algorithms on both \textit{STL} containers, and \textit{Bolts} containers can provide an easier transition.
+\textit{STL} containers are more seamlessly integrated than they are in \textit{C++ AMP} since no \texttt{array\_view}s are needed. \textit{Bolt} handles allocations for device and provides \texttt{device_array} for cases where data should be kept on device.
 
 Being a library on top of other frameworks results in some code artifacts. With \textit{C++ AMP} as target, the use of the restrict classifier on lambdas seem unergonomic. \texttt{BOLT\_FUNCTOR} as a macro is used to overcome the language gap between \textit{C++} and \textit{OpenCL C} when \textit{OpenCL} is set as targeted backend. Both examples show that workarounds to support the target backend sometimes will show up in the API. 
 
-The usage of the containers is based on iterators, as \textit{STL} is, and can be very verbose with multiple operations on the same container.
+The usage of the containers is based on iterators, as \textit{STL} is, and can be verbose in cases that have multiple operations on the same container.

@@ -73,4 +73,6 @@ The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampC
 \subsection{Key Points}
 A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. We assume that this decision might have been made due to DirectX11 being developed and maintained by \textit{Microsoft} as well.
 
-\textit{C++ AMP} is meant to extend \textit{C++} with parallelism. While this allows a developer to write code for GPUs in \textit{C++}, there are still some quirks in the form of \textit{array\_view} and restricted lambdas.
+\textit{C++ AMP} is meant to extend \textit{C++} with parallelism, but using arrays on the GPU requires that they are wrapped within an \textit{array\_view}, and lambdas are restricted. 
+
+\textit{C++ AMP} is dependent upon the \textit{MSVC} compiler.
