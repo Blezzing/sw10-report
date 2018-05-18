@@ -43,6 +43,6 @@ On figure \ref{fig:pacxxCompilation} it is shown how a program compiled with \te
 \end{figure}
 
 \subsection{Key Points}
-\textit{PACXX} allows a developer to write device specific code with \textit{C++14} with few restrictions, and must still take threads and blocks into account. 
+\textit{PACXX} allows a developer to write device specific code with \textit{C++14} lambdas with few restrictions, and must still take threads and blocks into account. 
 
-\textit{PACXX} uses \textit{LLVM} to generate and compile code, \textit{PTX}, at runtime. This is interesting since provides more opportunities and freedom for abstractions than a static header library would.
+\textit{PACXX} uses \textit{LLVM} to generate, \textit{PTX} an \textit{SPIR} code at run-time. This is interesting since provides more opportunities and freedom for abstractions than a static header library would. \texti{PACXX} is also multi staged such that run-time compiled kernels can vary depending on state.
