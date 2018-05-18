@@ -29,8 +29,8 @@ Understanding the goals of a framework help us identify the motivation behind it
 \item[Programming Model] \hfill \\
 Understanding the programming model of a framework helps us form an overview of which approaches have been tried, and what is currently possible. 
 
-To give a demonstration of the programming model, we implement the Single-Precision A * X plus Y, \textit{SAXPY}, algorithm. It is a simple calculation where the iterations of the main loop can be executed in any order, or parallel. The calculation is:
-\begin{lstlisting}
+To give a demonstration of the programming model, we implement the Single-Precision A * X plus Y, \textit{SAXPY}, algorithm. It is a simple calculation where the iterations of the main loop can be executed in any order, or parallel. \textit{SAXPY} is seen in listing \ref{code:saxpyInC}.
+\begin{lstlisting}[caption={The \textit{SAXPY} computation in C.}, label=code:saxpyInC] 
 for (int i = 0; i < N; i++){
     result[i] = a * x[i] + y[i];
 }
@@ -40,5 +40,5 @@ for (int i = 0; i < N; i++){
 Understanding the implementation helps us understand how the programming model have been facilitated, and can give us insight of different approaches. While not all related works are open source, we can still get an architectural overview of their process.
 
 \item[Key Points] \hfill \\
-We put emphasis on the most critical points of the frameworks from our perspective, giving us some strong points to keep in mind when we design our own framework.
+We put emphasis on the most critical points of the frameworks from our perspective, giving us some points to keep in mind when we design our own framework.
 \end{description}
