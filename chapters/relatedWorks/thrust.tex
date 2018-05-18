@@ -53,4 +53,4 @@ The compilation process is static, and results in a single executable with both 
 \subsection{Key Points}
 The API of \textit{Thrust} is structured to imitate that of \textit{STL}, and a \textit{C++} developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.
 
-\textit{Thrust} is a header only implementation, meaning there is no need for a specialized compiler, and it builds upon \textit{CUDA}. This allows mixing \textit{Thrust} and \textit{CUDA} code if there is a need for specialized code.
+\textit{Thrust} is a header only implementation, but depends on the \textit{CUDA Run-time}, and as such requires the \textit{NVIDIA} compiler \textit{nvcc} to be used, forcing the developers choice of compiler.
