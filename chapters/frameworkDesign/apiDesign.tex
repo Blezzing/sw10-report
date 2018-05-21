@@ -58,11 +58,17 @@ We chose to provide a developer with the device pointer to the data, and the num
 
 Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
 
-\subsubsection{CUDA compatibility}
-\todo{snak om at det måske er godt at lade udvikleren gribe fat i lav niveau ting som device pointers, for at gøre transitionen nemmere senere.}
-
 \subsection{Functions}
-\todo{vi laver nogle højniveau funktioner, functors vs lambdas, chaining, vi kan snakke om mulighed for "collapsing", .execute()?}
-\todo{gennemgå hvilke funktioner vi mener der er nødvendige}
-\todo{map, reduce, filter, zip, access}
-\todo{hvordan tager vi imod lambdaer}
+To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality.
+
+\subsubsection{?}
+\todo{Man har exec}
+
+\subsubsection{?}
+\todo{Man chainer functioner}
+
+\subsubsection{?}
+\todo{Hvilke low order functions vil vi have}
+
+\subsubsection{?}
+\todo{Hvilke high order functions vil vi have}
