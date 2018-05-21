@@ -2,11 +2,11 @@
 In this section we discuss the design of the API, and the reasoning that behind to these decisions.
 
 \subsection{Goals}
-As it is stated in the motivation in Section \ref{cha:motivation}, we want to prioritize high abstraction over absolute performance. To this end we want to avoid exposing kernel logic and put a layer of abstraction upon the general GPU model by handling kernel function setup and setup of blocks and threads for the developer.
+As it is stated in the motivation in Section \ref{cha:motivation}, we want to prioritize high abstraction over absolute performance. W want to avoid exposing kernel logic and put a layer of abstraction upon the general GPU model by handling kernel function setup and setup of blocks and threads for the developer.
 
 In Section \ref{cha:languageSelection} it is stated that we want the API to be replaceable by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
 
-There are multiple ways of achieving a higher level of abstraction and multiple ways of interfacing with \textit{CUDA}. In the following sections we discuss some of the possibilities and what decided to go forward with.
+There are multiple ways of achieving a higher level of abstraction and multiple ways of interfacing with \textit{CUDA}. In the following sections we discuss some of the options and decisions taken in designing \textit{YAGAL}.
 
 \subsection{Data types}
 We want to provide a developer with types that makes it convenient to work with the GPU. It is difficult to define what makes types accessible and easy to work with since there are multiple factors in play, such as the context of the programming language, the context of application, and what an individual developer sees as convenient. In this section and subsections, we explore some of these factors in the form of memory model, the actual data types, how types are accessed, and compatibility degree for CUDA, in order to determine how the types of \textit{YAGAL} should be designed.
