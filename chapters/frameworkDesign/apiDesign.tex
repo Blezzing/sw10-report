@@ -2,12 +2,11 @@
 In this section we discuss the design of the API, and the reasoning that behind to these decisions.
 
 \subsection{Goals}
-%vi ønsker at abstrahere væk fra kernels, none of related works use kernels as abstraction
-We want a developer to be able to use high level functional abstractions such as map and reduce, without writing specific kernel functions for every appliance. The kernel model in general requires the developer to handle threads, thread blocks and work distribution, which is a part of the learning requirement, that we want the spare the developer from.
-As such we want the API to have a set of high order functions available to the developer, and not expose any kernel logic that she is not yet prepared for.
+As it is stated in the motivation in Section \ref{cha:motivation}, we want to prioritize high abstraction over absolute performance. To this end we want to avoid exposing kernel logic and put a layer of abstraction upon the general GPU model by handling kernel function setup and setup of blocks and threads for the developer.
 
-%vær kompatibel med cuda, thrust er rigtig gode til dette
-As stated in Section \ref{cha:languageSelection}, we want the API to be replaceable by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
+In Section \ref{cha:languageSelection} it is stated that we want the API to be replaceable by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
+
+There are multiple ways of achieving a higher level of abstraction and multiple ways of interfacing with \textit{CUDA}. In the following sections we discuss some of the possibilities and what decided to go forward with.
 
 \subsection{Data types}
 \todo{vi laver nogle data typer der indkapsler brug og data: arrays (ingen related), vectors(alle related), multidims(cppamp views)} 
