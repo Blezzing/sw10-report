@@ -10,10 +10,6 @@ As such we want the API to have a set of high order functions available to the d
 As stated in Section \ref{cha:languageSelection}, we want the API to be replaceable by more specific implementations written in \textit{CUDA}, as such it is preferred that the API allows an easier transition, by allowing interfacing with \textit{CUDA}.
 
 \subsection{Data types}
-\todo{vi laver nogle data typer der indkapsler brug og data: arrays (ingen related), vectors(alle related), multidims(cppamp views)} 
-
-\todo{skal de tilgås som stl containers(.begin() og .end())? ranges(bare .)? kompatibilitet med cuda(raw ptr)?}
-
 We want to provide a developer with types that makes it convenient to work with the GPU. It is difficult to define what makes types accessible and easy to work with since there are multiple factors in play, such as the context of the programming language, the context of application, and what an individual developer sees as convenient. In this section and subsections, we explore some of these factors in the form of memory model, the actual data types, how types are accessed, and compatibility degree for CUDA, in order to determine how the types of \textit{YAGAL} should be designed.
 
 \subsubsection{Memory Model} \label{memoryModelDesign}
@@ -41,6 +37,26 @@ In regard to multidimensional support for \texttt{vectors} and/or \texttt{arrays
 
 % No support for maps
 The \texttt{map} data container is an interesting option, since the GPU could be utilized to perform lookups. This however does not contribute to the overall goal of \textit{YAGAL}, as we have not observed this feature in any of the tools covered in Section \ref{related works} and the introduction of this feature does not contribute to \textit{YAGAL} being replaceable. \texttt{map} will therefore not be supported.
+
+\subsubsection{Accessing Data}
+When a data container is in use, there are multiple possible methods of accessing the data that can be expected. 
+
+When a single element is required, either for read or write, we consider two options:
+\begin{itemize}
+\item Using \texttt{container.get(index)} and \texttt{container.set(index, value)} to read and modify.
+\item Using \texttt{container[index]} to read and modify.
+\end{itemize}
+We chose to implement get and set functions, as the square bracket accessing can be developed on top of these at a later point if wanted.
+
+It is more problematic when more than a single element is needed. There are multiple options we consider:
+\begin{itemize}
+\item Using iterators to provide easy iteration over data, as is normal in \textit{C++}.
+\item Using a pointer to the first element and a number of elements to let a developer control access, as is normal in \textit{C}.
+\item Using casting rules to let a developer cast a collection to another type that provides the needed accessing methods at the cost of a data transfer to host.
+\end{itemize}
+We chose to provide a developer with the number of elements, which is enough for using the previously mentioned single access methods safely. 
+
+Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
 
 \subsubsection{CUDA compatibility}
 \todo{snak om at det måske er godt at lade udvikleren gribe fat i lav niveau ting som device pointers, for at gøre transitionen nemmere senere.}
