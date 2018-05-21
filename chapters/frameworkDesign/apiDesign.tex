@@ -59,7 +59,7 @@ We chose to provide a developer with the device pointer to the data, and the num
 Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
 
 \subsection{Functions}
-To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality.
+To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality. We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then applies it to a collection, we want to build the kernel on the collection in an attempt to make the process more readable.
 
 \subsubsection{?}
 \todo{Man har exec}
