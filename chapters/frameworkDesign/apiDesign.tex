@@ -45,15 +45,16 @@ When a single element is required, either for read or write, we consider two opt
 \item Using \texttt{container.get(index)} and \texttt{container.set(index, value)} to read and modify.
 \item Using \texttt{container[index]} to read and modify.
 \end{itemize}
-We chose to implement get and set functions, as the square bracket accessing can be developed on top of these at a later point if wanted.
+We chose to implement get and set functions, as the square bracket accessing can be developed on top of these at a later point if needed.
 
 It is more problematic when more than a single element is needed. There are multiple options we consider:
 \begin{itemize}
-\item Using iterators to provide easy iteration over data, as is normal in \textit{C++}.
-\item Using a pointer to the first element and a number of elements to let a developer control access, as is normal in \textit{C}.
-\item Using casting rules to let a developer cast a collection to another type that provides the needed accessing methods at the cost of a data transfer to host.
+\item Providing iterators to provide iteration over data, as is tradition in \textit{C++}.
+\item Providing a pointer to the first element and a number of elements to let a developer control access, as is tradition in \textit{C}.
+\item Providing the number of elements to let the developer use single element accessing methods.
+\item Providing casting rules to let a developer cast a collection to another type that provides the needed accessing methods at the cost of a data transfer to host.
 \end{itemize}
-We chose to provide a developer with the number of elements, which is enough for using the previously mentioned single access methods safely. 
+We chose to provide a developer with the device pointer to the data, and the number of elements contained, giving the developer information enough to use the single element accessors. This also allow direct access to the memory for other frameworks if multiple frameworks are used together.
 
 Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
 
