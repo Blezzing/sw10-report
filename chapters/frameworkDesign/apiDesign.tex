@@ -61,8 +61,15 @@ Providing iterators is problematic as it motivates the developer to make many sm
 \subsection{Functions}
 To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality. We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then applies it to a collection, we want to build the kernel on the collection in an attempt to make the process more readable.
 
-\subsubsection{?}
-\todo{Man har exec}
+\subsubsection{Calling execute on a collection}
+% Principle
+A way to achieve building a kernel upon the collection could be by doing it lazily. A developer could build up kernel functionality by appending functions upon the collection. When the developer have applied her functions, then the actual kernel function would be generated and executed based on the stored functions, when she calls execute on the collection.
+
+% Pros
+An advantage of this approach is that it could prevent unnecessary data transfers between host and device since it might be possible to bundle necessary logic within a single kernel function. 
+
+% Cons 
+A disadvantage of this approach is that it could be a cause for confusion for the developer. When the developer applies \texttt{add(5)} to a collection, a developer might expect the addition to have already taken place.
 
 \subsubsection{?}
 \todo{Man chainer functioner}
