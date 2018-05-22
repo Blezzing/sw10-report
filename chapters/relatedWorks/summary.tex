@@ -9,7 +9,7 @@ The compilation processes are diverse. The following variants have been shown in
 \item \textit{C++ AMP} is a standard that require the compiler to implement it.
 \item \textit{Bolt} is a library extension over either \textit{OpenCL} or \textit{C++ AMP}, and as such the compilation process is either using any compiler and linking to the \textit{OpenCL} library, or using a compiler that implements the \textit{C++ AMP} standard.
 \item \textit{SkelCL} is a library that wraps building a \textit{OpenCL kernel string} in pretty objects, and the compilation can be done using any compiler and linking to the \textit{OpenCL} library.
-\item \textit{PACXX} is a framework that revolves around having a compiler smart enough to automatically offload some execution to the GPU.
+\item \textit{PACXX} is a frame and a compiler where developers can kernel functions in limited lambdas with regular \textit{C++} which are generated during run-time.
 \end{itemize}
 
 Only \textit{SkelCL} and \textit{Bolt}, when targetting \textit{OpenCL}, allow any compiler to be used. The common part is that both generate \textit{OpenCL} kernels as strings, ready for the run-time.
