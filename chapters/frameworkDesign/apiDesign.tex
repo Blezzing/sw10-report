@@ -71,8 +71,12 @@ An advantage of this approach is that it could prevent unnecessary data transfer
 % Cons 
 A disadvantage of this approach is that it could be a cause for confusion for the developer. When the developer applies \texttt{add(5)} to a collection, a developer might expect the addition to have already taken place.
 
-\subsubsection{?}
-\todo{Man chainer functioner}
+\subsubsection{Function Chaining}
+We want to make a single kernel able to execute multiple actions, such as adding and multiplying a value in sequence. To enable this we want each function call to return a reference to the collection object so that multiple actions can be queued before the final execute call.
+
+This will allow a program, that adds 5 to all elements of a collection before multiplying them with 2, in \textit{YAGAL} to be written as \texttt{collection.add(5).multiply(2).exec()}, which we find to be very intuitive to read in comparison to the define kernel and apply kernel form of the other frameworks.
+
+Allowing chaining of functions also allow the framework to make decisions on how to split kernels, so that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
 
 \subsubsection{?}
 \todo{Hvilke low order functions vil vi have}
