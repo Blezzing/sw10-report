@@ -81,5 +81,19 @@ Allowing chaining of functions also allow the framework to make decisions on how
 \subsubsection{?}
 \todo{Hvilke low order functions vil vi have}
 
-\subsubsection{?}
-\todo{Hvilke high order functions vil vi have}
+\subsubsection{Higher order functions}
+We want to implement some higher order functions. This will allow us to experiment with different methods of passing one function to another, and for many use cases higher order functions allow better abstractions for the developer.
+
+One such function is transform, which takes a function that describes how to transform each element in the collection. It is a simple higher order function to implement as it can use any method of traversing the collection, and as such it can reuse some of the logic from the primitive functions and allow the development to focus on the function passing.
+
+Other interesting higher order functions are:
+\begin{description}
+\item[Sort] \hfill \\ 
+Sorting a collection require another way of traversing the collection compared to a transform, which makes it interesting.
+\item[Contains] \hfill \\ 
+Checking if a collection contains an element that satisfies a predicate require the ability to return a value, which makes it interesting.
+\item[Filter] \hfill \\ 
+Creating a new collection with some elements from the original collection require the ability to dynamically share where potential elements should be inserted between threads.
+\end{description}
+
+There are many more higher order functions that can be relevant, but we prioritize working on transform, as it is a simple function that allow us to focus on function passing. If successfully implemented we can revisit other higher order functions.
