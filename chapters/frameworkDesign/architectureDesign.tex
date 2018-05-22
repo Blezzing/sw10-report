@@ -8,22 +8,7 @@ As \textit{LLVM Intermediate Representation} is a higher level language than \te
 
 When we can generate \textit{PTX} we can focus on executing it, which is done using the \textit{CUDA Driver API}. The \textit{CUDA Driver API} differ from the \textit{CUDA Runtime API} by being slightly more verbose, but allowing \textit{PTX} to be invoked, and not requiring the \textit{NVIDIA} compiler. Using the \textit{LLVM} library in conjunction with the \textit{CUDA Driver API} allow us to handle code generation and execution without requiring a specific compiler.
 
-\subsection{Compilation and Run-time Requirements}
-% Compilation
-As stated in the SOMWHERE REF, we intend for \textit{YAGAL} to compiler independent. As long as the required headers are available, then \textit{YAGAL} should be able to compile. 
-
-The headers required are:
-\begin{description}
-\item[LLVM] \hfill\\
-Used for generation of LLVM IR and conversion of it to PTX code.
-\item[CUDA driver api] \hfill\\
-Used to execute the generated PTX code.
-\end{description}
-
-% Run-time
-Run-time wise, \textit{YAGAL} should be idependent of external processes, except for \textit{CUDA} drivers. 
-
-\todo{any compiler, requiring llvm libraries and cuda driver api libraries}
+Using the \textit{LLVM} library and the \textit{CUDA Driver API} does impose dependencies that the user of \textit{YAGAL} is required to have available. So while the compiler choice is still up to the developer, the need to install these two libraries are still present as a prerequisite to using \textit{YAGAL}.
 
 \subsection{CUDA Compatibility}
 \todo{let internal pointers be accessible}
