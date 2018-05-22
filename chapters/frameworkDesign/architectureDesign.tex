@@ -10,5 +10,9 @@ When we can generate \textit{PTX} we can focus on executing it, which is done us
 
 Using the \textit{LLVM} library and the \textit{CUDA Driver API} does impose dependencies that the user of \textit{YAGAL} is required to have available. So while the compiler choice is still up to the developer, the need to install these two libraries are still present as a prerequisite to using \textit{YAGAL}.
 
+\todo{figur der viser library}
+
 \subsection{CUDA Compatibility}
-\todo{let internal pointers be accessible}
+In cases where programs are unable to be expressed in \textit{YAGAL}, we want to provide a fall back solution. We intend to do this though letting the developer execute arbitrary \textit{PTX} code, through the \textit{CUDA Driver API}. To allow this we want our abstractions to provide access to the relevant device pointers to the GPU.
+
+This solution still require the developer to have \textit{PTX} code that solves the problem. Normally this would mean writing \textit{CUDA} code, and compile that to \textit{PTX}, which is a long work around. As such it is not ideal, but we decide that it is better to provide a problematic work around, rather than none.
