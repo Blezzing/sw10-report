@@ -78,8 +78,22 @@ This will allow a program, that adds 5 to all elements of a collection before mu
 
 Allowing chaining of functions also allow the framework to make decisions on how to split kernels, so that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
 
-\subsubsection{?}
-\todo{Hvilke low order functions vil vi have}
+\subsubsection{Primitive Functions}
+A baseline of simplistic regular functions could be provided to provide developers with a baseline of functionality to append to collections. A such function could be \texttt{collection.add(X)} which will add \texttt{X} to each member of the collection. 
+
+Here are some primitive functions that each take either a single value or a collection: 
+\begin{description}
+\item[\texttt{collection.add(X)}]\hfill\\
+Add a value \texttt{X} to each element of the collection or add entries of the collection with the entries from a given collection \texttt{X}.
+\item[\texttt{collection.sub(X)}]\hfill\\
+Subtract a value \texttt{X} from each element of the collection or subtract entries of a given collection \texttt{X} from the entries of the collection.
+\item[\texttt{collection.div(X)}]\hfill\\
+Divide each element in the collection by value \texttt{X} or divide each entry by each entry of a given collection \texttt{X}.
+\item[\texttt{collection.mult(X)}]\hfill\\
+Multiply each value of the collection by the value \texttt{X} or multiply each entry of the collection by each entry of the collection \texttt{X}.
+\end{description}
+
+These functions also serve as a way for us to get started experimenting with code generation since the operations involved are relatively simple. By implementing these primitive functions first we also ensure that \textit{YAGAL} provides some base functionality for developers.
 
 \subsubsection{Higher order functions}
 We want to implement some higher order functions. This will allow us to experiment with different methods of passing one function to another, and for many use cases higher order functions allow better abstractions for the developer.
