@@ -44,14 +44,21 @@ namespace yagal::generator{
         llvm::Module module;
 
         uint64_t elementsToHandle;
+        std::vector<llvm::Function*> kernels;
+        std::vector<llvm::BasicBlock*> userBlocks;
 
+        //Core function variables
         llvm::Function* getThreadIdxIntrinsic;
+        llvm::Function* getBlockIdxIntrinsic;
+        llvm::Function* getBlockDimxIntrinsic;
         llvm::Function* getGridDimxIntrinsic;
-
+        llvm::Value* currentIndexValue;
 
         IRModule(uint64_t numberOfElements): 
             module("yagalModule", context), ~\label{code:irModule:module}~
             getThreadIdxIntrinsic(llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::nvvm_read_ptx_sreg_tid_x)),
+            getBlockIdxIntrinsic(llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::nvvm_read_ptx_sreg_ctaid_x)),
+            getBlockDimxIntrinsic(llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::nvvm_read_ptx_sreg_ntid_x)),
             getGridDimxIntrinsic(llvm::Intrinsic::getDeclaration(&module, llvm::Intrinsic::nvvm_read_ptx_sreg_nctaid_x)),
             elementsToHandle(numberOfElements)
         {
