@@ -23,8 +23,7 @@ Accessing single data elements is done through \texttt{get} and \texttt{set} fun
 
 We chose not to implement an iterator for the \texttt{yagal::Vector} in order to avoid motivating CPU computations on device memory. This makes it different from an \textit{STL} \texttt{std::vector}, but iterating over elements can still be done, by copying the data from the device to an \textit{STL} \texttt{std::vector}.
 
-
-\todo{resize discussion, let's go?!?}
+There is no support for resizing of a \texttt{yagal::Vector}. Implementing this is troublesome as there is no such thing as \texttt{realloc} in the \textit{CUDA Driver API}. A possible workaround is to initially allocate all available memory and manage that in a layer below the \texttt{yagal::Vector}, however then we also make it impossible for a \textit{YAGAL} program to use the \textit{CUDA Driver API} for any other tasks, which we feel is a unnecessary restriction. This does show up in the API of \textit{YAGAL}, as there is no functions such as \texttt{push\_back()} or \texttt{resize()} on the \texttt{yagal::Vector}, and an initialization with the size of zero will cause a compile time error, as there is no possible meaning of it.
 
 \begin{lstlisting}[caption={Vector class, showing only code relevant to memory management.}, label={code:memoryManagementVector}, mathescape, escapeinside={(*@}{@*)}]
 namespace yagal{
