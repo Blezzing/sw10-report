@@ -30,7 +30,7 @@ The \textit{LLVM Module} is the outer most abstraction of \textit{IR}. In our im
 
 Before we can create any \textit{LLVM} objects, an \texttt{LLVMContext} is needed. A \texttt{LLVMContext} is a container of the state that \textit{LLVM} is in, and is declared at line \ref{code:irModule:context}.
 
-With the \texttt{context} we create the module in the constructor chain at line \ref{code:irModule:module}. An architecture must then be defined for the module. We provide the string \texttt{"nvptx64-nvidia-cuda"}, as it is a key in the \textit{LLVM} library, that is used to look up target information during code generation. 
+With the \texttt{context} we create the module in the constructor chain at line \ref{code:irModule:module}, along with the initialization of the intrinsics which will be used by the kernel to fetch information at run-time. An architecture must then be defined for the module. We provide the string \texttt{"nvptx64-nvidia-cuda"}, as it is a key in the \textit{LLVM} library, that is used to look up target information during code generation. 
 
 \begin{lstlisting}[caption={The IRModule class.}, label={code:irModule}]
 namespace yagal::generator{
@@ -148,7 +148,7 @@ public:
         _p.debug() << "generateIR for add action called." << std::endl;
 
         //Prepare the block to fill in
-        auto actionBlock = llvm::BasicBlock::Create(ir.context, llvm::Twine(ir.getNextBasicBlockName()), kernel); ~\label{code:addAction:bbc}~
+        auto actionBlock = llvm::BasicBlock::Create(ir.context, llvm::Twine(ir.getNextBasicBlockName()),kernel);~\label{code:addAction:bbc}~
         llvm::IRBuilder<> builder(actionBlock);
         ir.userBlocks.push_back(actionBlock);
 
