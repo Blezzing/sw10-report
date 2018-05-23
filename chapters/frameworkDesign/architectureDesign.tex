@@ -10,7 +10,15 @@ When we can generate \textit{PTX} we can focus on executing it, which is done us
 
 Using the \textit{LLVM} library and the \textit{CUDA Driver API} does impose dependencies that the user of \textit{YAGAL} is required to have available. So while the compiler choice is still up to the developer, the need to install these two libraries are still present as a prerequisite to using \textit{YAGAL}.
 
-\todo{figur der viser library}
+Figure \textit{fig:architectureOverview} illustrate an overview of \textit{YAGAL}. We show that the source is clean \textit{C++} with nothing but \textit{YAGAL} library inclusion. This source, when compiled, result in a executable that contains the logic of the program, together with the \textit{YAGAL} logic to both generate \textit{LLVM Intermediate Representation} and manage memory, together with the \textit{LLVM Translator} which translates the \textit{LLVM Intermediate Representation} to \textit{PTX}. The run-time requirement of a \textit{CUDA Driver} is present as it is the part that facilitates memory management and code execution on the GPU.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{chapters/frameworkDesign/figs/architecture.png}
+\caption{Architectural overview of YAGAL.}
+\label{fig:architectureOverview}
+\end{figure}
+
 
 \subsection{CUDA Compatibility}
 In cases where programs are unable to be expressed in \textit{YAGAL}, we want to provide a fall back solution. We intend to do this though letting the developer execute arbitrary \textit{PTX} code, through the \textit{CUDA Driver API}. To allow this we want our abstractions to provide access to the relevant device pointers to the GPU.
