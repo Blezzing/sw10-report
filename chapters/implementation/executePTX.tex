@@ -3,7 +3,8 @@
 Executing PTX code on the GPU is a central part of \textit{YAGAL}'s functionality, and the library achieves this by interacting with the \textit{CUDA} driver API. All CUDA related code in \textit{YAGAL} are contained within the \texttt{yagal::cuda} namespace.
 
 % Implementation
-To execute the \textit{PTX} code, it is passed to the function \texttt{executePtxWithParams} as a string, along with a vector containing the input parameters as seen on Listing \ref{code:executePtxWithParams}. The last two parameters corresponds to block and grid dimensions and defaults to \texttt{128, 1, 1}. The line number references in this section refers this listing.
+To execute the \textit{PTX} code, it is passed to the function \texttt{executePtxWithParams} as a string, along with a vector containing the input parameters as seen on Listing \ref{code:executePtxWithParams}. The last two parameters corresponds to block and grid dimensions. The optimal values for these vary depending on algorithm and data sizes. We chose to default to \texttt{128, 1, 1} for both, as it results in $128*128=16384$ instances of the kernel, which is sufficient to make use of all threads of any current GPU. When tested on sample calculations we found this to be a well performing configuration compared to other configurations. Results from these tests can be found in appendix \ref{cha:appendixDefaultConfiguration}.
+\todo{smid det i appendix}
 
 To ensure that the GPU is ready, the \texttt{initIfNeeded()} function at line \ref{code:executePtxWithParams:init} is called which creates a \textit{CUDA} context if one does not already exists.
 
