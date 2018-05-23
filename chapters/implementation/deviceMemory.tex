@@ -13,7 +13,7 @@ We chose not to implement an iterator for the \texttt{yagal::Vector} in order to
 
 \todo{resize discussion, let's go?!?}
 
-\begin{lstlisting}[caption={Vector class, showing only code relevant to memory management.}, label={code:memoryManagementVector}, mathescape]
+\begin{lstlisting}[caption={Vector class, showing only code relevant to memory management.}, label={code:memoryManagementVector}, mathescape, escapeinside={(*@}{@*)}]
 namespace yagal{
     template<typename T>
     class Vector{
@@ -22,7 +22,7 @@ namespace yagal{
         size_t _count;
 
     public
-        // Constructors ~\label{code:memoryManagementVectorConstructors}~
+        // Constructors (*@\label{code:memoryManagementVectorConstructors}@*)
         Vector(int elementCount)
             : _count(elementCount)
         {
@@ -36,14 +36,14 @@ namespace yagal{
             yagal::cuda::copyToDevice(_devicePtr, source.data(), _count * sizeof(T));
         }
 
-        // Cast (Copy out) ~\label{code:memoryManagementVectorCast}~
+        // Cast (Copy out) (*@\label{code:memoryManagementVectorCast}@*)
         operator std::vector<T>(){
             std::vector<T> result(_count);
             yagal::cuda::copyToHost(result.data(), _devicePtr, _count * sizeof(T));
             return result;
         }
 
-        // Accessors ~\label{code:memoryManagementVectorAcc}~
+        // Accessors (*@\label{code:memoryManagementVectorAcc}@*)
         T getElement(int index){
             T result;
             yagal::cuda::copyToHost(&result, _devicePtr + (index * sizeof(T)), sizeof(T));
@@ -55,7 +55,7 @@ namespace yagal{
         }
 
         // Destructors
-        $~$Vector(){
+        ~Vector(){
             yagal::cuda::free(_devicePtr);
         }
 
