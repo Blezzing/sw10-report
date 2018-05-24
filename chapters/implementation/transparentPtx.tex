@@ -1,0 +1,119 @@
+\section{Making PTX use more transparent}
+In the design at chapter \ref{cha:design} we mention that we want to allow execution of external \textit{PTX} code. We want to follow up on that and at the same time enable the user to work with the \textit{PTX} source in general. 
+
+We provide \textit{PTX} management through two functions on the \texttt{yagal::Vector}. The first is an overload of the \texttt{exec} function that instead of generating \textit{PTX} and executing it, just executes a given string of ptx. The second is a function that generates the \textit{PTX} based on the actions on a vector, but instead of executing it, returns it in a string.
+
+\subsection{Overload of exec}
+The \texttt{exec} overload is shown in listing \ref{lst:execOverload}. The parameters to the function are in order:
+\begin{description}
+\item[ptxSource]\hfill\\The ptx to execute as a \textit{STL} string.
+\item[otherVectors]\hfill\\A vector of the other relevant vectors \texttt{CUdeviceptr}s.
+\item[blockDimensions \& gridDimensions]\hfill\\The parameters used to start the kernel, these are optional and defaults to the values mentioned in section \ref{cha:execPtx}.
+\end{description}
+
+The function collects all \texttt{CUdeviceptr}s, including the one on the vector which the function is called on at line \ref{lst:execOverload:begin} to \ref{lst:execOverload:end}, and forwards the arguments to the \texttt{executePtxWithParams} function shown in section \ref{cha:execPtx}.
+
+\begin{lstlisting}[caption={\texttt{exec} overload to just execute \textit{PTX}.}, label={lst:execOverload}]
+Vector<T>& exec(const std::string& ptxSource, const std::vector<CUdeviceptr*>& otherVectors, std::tuple<int, int, int> blockDimensions = {128, 1, 1}, std::tuple<int, int, int> gridDimensions = {128, 1, 1}){
+    std::vector<CUdeviceptr*> devicePointers({&_devicePtr}); ~\label{lst:execOverload:begin}~
+    for(const auto& e: otherVectors){
+        devicePointers.push_back(e);
+    }~\label{lst:execOverload:end}~
+
+    //Execute kernel
+    yagal::cuda::executePtxWithParams(ptxSource, devicePointers, blockDimensions, gridDimensions);
+}
+\end{lstlisting}
+
+\subsection{Introduction of exportPtx}
+The function that creates \textit{PTX} code based on actions is named \texttt{exportPtx} and is shown in listing \ref{lst:exportPtx}.
+
+The single parameter it takes determines if the queued actions should be deleted after \textit{PTX} generation at line \ref{lst:exportPtx}. This is implemented to allow a refactoring of the initial \texttt{exec} function to use this function for generating \textit{PTX} and still be able to access the vectors provided to the actions. When at the default value, true, it clean the vector, allowing a new queue of actions to be filled.
+
+The function performs the logic that was previously found in exec, as it presented in section \ref{cha:puttingStepsTogether}, except the preparation of devicePointers being replaced by a count of them at at line \ref{lst:exportPtx:count:begin} to \ref{lst:exportPtx:count:end}, and no execution of \textit{PTX} is happening.
+
+\begin{lstlisting}[caption={\texttt{exportPtx} to build \textit{PTX} code.}, label={lst:exportPtx}]
+std::string exportPtx(bool clearActions = true){
+    yagal::generator::IRModule ir(_count); ~\label={lst:exportPtx:irmodule}~
+
+    //Count number of cuda parameters needed, starting at 1 to include the vector itself.
+    int devicePointerCount = 1; ~\label={lst:exportPtx:count:begin}~
+    for (auto& a : _actions){
+        if(a->requiresCudaParameter()){
+            devicePointerCount++;
+        }
+    } ~\label={lst:exportPtx:count:end}~
+
+    //Generate llvm ir blocks.
+    int inputVectorCounter = 0;
+    auto kernel = ir.createKernel(devicePointerCount);
+    for (const auto& a : _actions){
+        a->generateIR(ir, kernel, inputVectorCounter);
+    }
+
+    //Link blocks and update metadata.
+    ir.finalizeKernel(kernel);
+    ir.updateMetadata();
+
+    //Link blocks and update metadata.
+    ir.finalizeKernel(kernel);
+    ir.updateMetadata();
+
+    //Generate code
+    _p.debug() << ir.toString() << std::endl;
+    yagal::generator::PTXModule ptx(ir);
+    auto ptxSource = ptx.toString();
+    _p.debug() << ptx.toString() << std::endl;
+
+    //Cleanup
+    if(clearActions){
+        _actions.clear(); ~\label{lst:exportPtx:clean}~
+    }
+
+    return ptxSource;
+}
+\end{lstlisting}
+
+\subsection{PTX Posibilities}
+Using raw \textit{PTX} it is possible to work around the build time from \textit{YAGAL}. Allowing the developer to control when to generate the \textit{PTX} and when to execute it separately can be beneficial in some cases.
+
+We have made some time measurements on different methods of the different ways a kernel can be created and executed with \textit{YAGAL}. The code we measured is shown in listing \ref{lst:timeBuild}. The purpose of the logic is to take a vector, and increment all values by one. Any measurements noted in this section are done on a machine with a \textit{GTX 970} GPU running \textit{Ubuntu 17.10} as operating system. They are only intended comparison relative to each other and should not be compared to other results on other setups.
+
+On line \ref{lst:timeBuild:simple} we use the simplest form; we enqueue the add action with the value 1, and immediately generate and execute the kernel. This was measured to take 22.20 milliseconds.
+
+On line \ref{lst:timeBuild:build} we only construct the ptx; we enqueue the add action with the value 1, as previously, and output the string to a variable. This was measured to take 21.92 milliseconds.
+
+On line \ref{lst:timeBuild:run} we execute the previously generated ptx. This was measured to take 0.16 milliseconds.
+
+For this example generating the \textit{PTX} was about 137 times more time consuming than executing it, which mean that if the computation were to happen multiple times, it could be beneficial for the developer to only generate the kernel once and apply it multiple times later.
+
+\begin{lstlisting}[caption={Building and executing \textit{PTX} in action}, label={lst:timeBuild}]
+typedef std::chrono::high_resolution_clock Clock;
+void timeBuild(){
+    //Initialize a considerably big vector
+    std::vector<float> src(1<<16);
+    std::srand(0);
+    std::generate(src.begin(), src.end(), std::rand);
+    yagal::Vector<float> v(src);
+
+
+    auto t0 = Clock::now();
+
+    //Use the default method of building and executing a kernel
+    v.add(1).exec(); ~\label{lst:timeBuild:simple}~
+
+    auto t1 = Clock::now();
+
+    //Use exportPtx to generate ptx and execute it later
+    auto ptx = v.add(1).exportPtx();~\label{lst:timeBuild:build}~
+
+    auto t2 = Clock::now();
+
+    //Execute previously generated ptx
+    v.exec(ptx,{});~\label{lst:timeBuild:run}~
+
+    auto t3 = Clock::now();
+
+    /* omitted delta time calculations and output statements */
+}
+\end{lstlisting}
