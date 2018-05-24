@@ -53,15 +53,15 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 \textit{C++ AMP} is a library that enables simple manipulation of large dimensional arrays by introducing a new language feature called \texttt{restricted} for \textit{C++}. 
 
 % Memory / Types
-Data are managed within regular \texttt{std::array}s. \texttt{array\_view}s can be constructed to represent these arrays as matrices on the GPU and is used to manipulate them.
+Data is managed within regular \texttt{std::array}s. \texttt{array\_view}s can be constructed to represent these arrays as matrices on the GPU and is used to manipulate them.
 
 % Kernels / Fame?
-Lambdas are used to construct the logic of a kernel for execution on the GPU. The \textit{C++ AMP} keyword \texttt{restricted} is required on the lambda to indicate that the lambda is intended execution on the GPU, and as such have limited functionality. 
+Lambdas are used to construct the logic of a kernel for execution on the GPU. The \textit{C++ AMP} keyword \texttt{restricted} is required on the lambda to indicate that the lambda is intended for execution on the GPU, and has limited functionality. 
 
 To execute a kernel, the kernel defining lambda is given to the \texttt{parallel\_for\_each} function which also manages copies to and from the device of the data described by the \texttt{array\_views}.
 
 % Comp / Figref
-The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampCompilation}. Here the user code have included the \textit{C++ AMP} headers and compiled by the \textit{Microsoft Visual C++} compiler (\textit{MSVC}). The result is a executable file that utilizes \textit{Direct3D} to execute on the GPU. In addition to being a library that must be included in the code, \textit{C++ AMP} add an additional keyword to the language and is therefore tied to any compiler that implements the specification, such as the \textit{MSVC} compiler for \textit{windows}. The \textit{C++ AMP} specification is however open such that other compiler vendors could support it in the future.
+The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampCompilation}. Here the \textit{C++ AMP} headers are included within the user code, and is compiled by the \textit{Microsoft Visual C++} compiler (\textit{MSVC}). The result is an executable file that utilizes \textit{Direct3D} to execute on the GPU. In addition to being a library that must be included in the code, \textit{C++ AMP} adds an additional keyword to the language and is therefore tied to any compiler that implements the specification, such as the \textit{MSVC} compiler for \textit{windows}. The \textit{C++ AMP} specification is however open such that other compiler vendors could support it in the future.
 
 \begin{figure}[H]
 \center

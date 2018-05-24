@@ -38,9 +38,9 @@ z = d_y;
 \end{lstlisting}
 
 \subsection{Implementation}
-\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that a developer will include the \textit{Thrust} header files needed, and compile the program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on \ref{fig:thrustCompilation}. 
+\textit{Thrust} is a library build on top of the \textit{CUDA} library. This means that a developer will include the \textit{Thrust} header files needed, and compile the program with the \textit{NVIDIA} compiler, \textit{nvcc}, as seen on figure \ref{fig:thrustCompilation}. 
 
-The memory management is performed though types defined in the library, abstracting direct allocation management, and functions can be defined as lambdas with the annotation \textit{\_\_device\_\_} which is the \textit{CUDA Runtime} annotation for kernels. With \textit{nvcc} as the compiler thrust can achieve the high level design shown in listing \ref{code:thrustSaxpy}, where the thrust data types interface with \textit{STL} algorithms and use close to pure \textit{C++11} syntax for lambdas.
+The memory management is performed through types defined in the library, abstracting direct allocation management, and functions can be defined as lambdas with the annotation \textit{\_\_device\_\_} which is the \textit{CUDA Runtime} annotation for kernels. With \textit{nvcc} as the compiler \textit{Thrust} can achieve the high level design shown in listing \ref{code:thrustSaxpy}, where the \textit{Thrust} data types interface with \textit{STL} algorithms and use close to pure \textit{C++11} syntax for lambdas.
 
 The compilation process is static, and results in a single executable with both host and \textit{CUDA Runtime} code included.
 \begin{figure}[H]
@@ -53,4 +53,4 @@ The compilation process is static, and results in a single executable with both 
 \subsection{Key Points}
 The API of \textit{Thrust} is structured to imitate that of \textit{STL}, and a \textit{C++} developer is therefore familiar with it. It can be very verbose with multiple operations on the same container since the usage of the containers is based on iterators.
 
-\textit{Thrust} is a header only implementation, but depends on the \textit{CUDA Run-time}, and as such requires the \textit{NVIDIA} compiler \textit{nvcc} to be used, forcing the developers choice of compiler.
+\textit{Thrust} is a header only implementation, but is dependent upon the \textit{CUDA Run-time}, and requires the \textit{NVIDIA} compiler \textit{nvcc} to be used.

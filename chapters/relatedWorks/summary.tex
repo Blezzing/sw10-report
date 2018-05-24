@@ -1,27 +1,27 @@
 \section{Summary}
-Through considering the frameworks in this chapter, we gained some insights which allow us to make better decisions in the design of YAGAL.
+Through considering the frameworks in this chapter, we gained some insights which allow us to make better decisions in the design of \textit{YAGAL}.
 
 \subsection{Compilation}
 The compilation processes are diverse. The following variants have been shown in this chapter:
 
 \begin{itemize}
-\item \textit{Thrust} is a library extension over \textit{CUDA}, and as such inherits the compilation process of \textit{CUDA}.
-\item \textit{C++ AMP} is a standard that require the compiler to implement it.
-\item \textit{Bolt} is a library extension over either \textit{OpenCL} or \textit{C++ AMP}, and as such the compilation process is either using any compiler and linking to the \textit{OpenCL} library, or using a compiler that implements the \textit{C++ AMP} standard.
-\item \textit{SkelCL} is a library that wraps building a \textit{OpenCL kernel string} in pretty objects, and the compilation can be done using any compiler and linking to the \textit{OpenCL} library.
-\item \textit{PACXX} is a frame and a compiler where developers can kernel functions in limited lambdas with regular \textit{C++} which are generated during run-time.
+\item \textit{Thrust} is a library extension over \textit{CUDA}, and inherits the compilation process of \textit{CUDA}.
+\item \textit{C++ AMP} is a standard that requires the compiler to implement it.
+\item \textit{Bolt} is a library extension over either \textit{OpenCL} or \textit{C++ AMP}, and the compilation process is either using any compiler and linking to the \textit{OpenCL} library, or using a compiler that implements the \textit{C++ AMP} standard.
+\item \textit{SkelCL} is a library that wraps the construction of \textit{OpenCL kernel string}s within objects, and the compilation can be done using any compiler and by linking to the \textit{OpenCL} library.
+\item \textit{PACXX} is a framework and a compiler where developers can define kernel functions with limited lambdas and regular \textit{C++}. The kernels are then generated during run-time.
 \end{itemize}
 
-Only \textit{SkelCL} and \textit{Bolt}, when targetting \textit{OpenCL}, allow any compiler to be used. The common part is that both generate \textit{OpenCL} kernels as strings, ready for the run-time.
+Only \textit{SkelCL}, and \textit{Bolt} when targeting \textit{OpenCL}, allow any compiler to be used. The common part is that both generate \textit{OpenCL} kernels as strings, ready for the run-time.
 
-\textit{PACXX} is interesting as it implement a compiler that take normal \textit{C++} code and compiles some of it to GPU kernels using \textit{LLVM} and its intermediate representation. The use of \textit{LLVM} is enabling support for both \textit{NVIDIA}s \textit{PTX} and \textit{Khronos Group}s \textit{SPIR} platform. It does have the drawback of requiring a specific compiler to be able to use, which might be troublesome for some developers to integrate.
+\textit{PACXX} is interesting as it implements a compiler that takes normal \textit{C++} code and compiles some of it to GPU kernels using \textit{LLVM} and its intermediate representation. The use of \textit{LLVM} is enabling support for both \textit{NVIDIA}'s \textit{PTX} and \textit{Khronos Group}'s \textit{SPIR} platform. It has the drawback of requiring a specific compiler, which might be troublesome for some developers to integrate.
 
 \subsection{Data Storage}
-The general approach observed for managing allocations in container classes such as \texttt{thrust::host\_vector}. This seem like a reasonable choice, as it helps the developer perform allocations, free memory, and transfer data between host and device, through constructors and destructors.
+The general approach observed for managing allocations is by providing container classes such as \texttt{thrust::host\_vector} to wrap that functionality. This seems like a reasonable choice, as it helps the developer perform allocations, free memory, and transfer data between host and device, through constructors and destructors.
 
-Accessing data from these containers are generally performed through iterators or direct access with syntax as an array access. This seem like a convenient choice, but it might invite the developer to perform logic on the CPU by copying data back and forth, which seem counterintuitive as many small copies is slower than few large copies.
+Accessing data from these containers is generally performed through iterators or direct access with syntax as an array access. This seems like a convenient choice, but it might invite the developer to perform logic on the CPU by copying data back and forth, which seem counterintuitive as many small copies are slower than a few large copies, due to the memory transfer overhead \cite{memoryTranferOverhead}.
 
 \subsection{Lambdas}
-The general approach observed for modifying the data is to provide some high level functions such as \texttt{boltcl::transform} that take some representation of a function to perform on each element. This function is represented in various ways, either through functors, strings, or \textit{C++ 11} lambdas with additional syntax. This is interesting as it is an area where they differ a lot. A distinction can be made between those that require specific compilers to compile the \textit{C++} code, as they are able to freely add syntax to define new kinds of lambdas, and those that do not require a specific compiler, as they are restricted have the users provide logic in a way the library can extract the intent at compile time.
+The general approach observed for modifying the data is to provide some high level functions such as \texttt{boltcl::transform} that take some representation of a function to perform on each element. This function is represented in various ways, either through functors, strings, or \textit{C++ 11} lambdas with additional syntax. Lambda handling is interesting since the related works each have a unique way of handling them. A distinction can be made between those that require specific compilers, and those that does not. Those that require specific compilers are able to freely add syntax to define new kinds of lambdas. Those that do not require a specific compiler require the developers to provide the logic in such a way that the library can extract the intent.
 
-In general supporting lambdas seem to be a problematic and useful feature, that seem to be most elegant when done by a framework that provides a compiler with support for syntax expansion.
+In general, supporting lambdas seems to be a problematic but useful feature, that seems to be most elegant when done by a framework that provides a compiler with support for syntax expansion.
