@@ -37,12 +37,12 @@ std::string exportPtx(bool clearActions = true){
     yagal::generator::IRModule ir(_count); ~\label={lst:exportPtx:irmodule}~
 
     //Count number of cuda parameters needed, starting at 1 to include the vector itself.
-    int devicePointerCount = 1; ~\label={lst:exportPtx:count:begin}~
+    int devicePointerCount = 1; ~\label{lst:exportPtx:count:begin}~
     for (auto& a : _actions){
         if(a->requiresCudaParameter()){
             devicePointerCount++;
         }
-    } ~\label={lst:exportPtx:count:end}~
+    } ~\label{lst:exportPtx:count:end}~
 
     //Generate llvm ir blocks.
     int inputVectorCounter = 0;
