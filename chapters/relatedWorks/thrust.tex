@@ -12,23 +12,23 @@ Listing \ref{code:thrustSaxpy} shows how the \textit{SAXPY} computation can be i
 The execution of \textit{SAXPY} is done in line \ref{code:thrustSaxpy:execute}, and shows how iterators are used to define input and output locations.
 \begin{lstlisting}[caption={\textit{Thrust} \textit{SAXPY} example.}, label={code:thrustSaxpy}]
 size_t N = 1024;
-int a = 10;
+float a = 10;
 
 //cuda classifier on lambda
-auto func = [=]__device__(int x, int y){return a * x + y;};
+auto func = [=]__device__(float x, float y){return a * x + y;};
 
 //initialize host vectors
-thrust::host_vector<int> x(N);
-thrust::host_vector<int> y(N);
-thrust::host_vector<int> z(N);
+thrust::host_vector<float> x(N);
+thrust::host_vector<float> y(N);
+thrust::host_vector<float> z(N);
 
 //fill with random data
 std::generate(x.begin(), x.end(), rand);
 std::generate(y.begin(), y.end(), rand);
 
 //copy to device
-thrust::device_vector<int> d_x = x;
-thrust::device_vector<int> d_y = y;
+thrust::device_vector<float> d_x = x;
+thrust::device_vector<float> d_y = y;
 
 //perform saxpy
 thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_y.begin(), func); ~\label{code:thrustSaxpy:execute}~

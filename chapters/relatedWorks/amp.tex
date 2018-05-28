@@ -12,30 +12,30 @@ A feature of \textit{C++ AMP} is that kernel functions is here expressed in \tex
 
 Construction of matrices is done by first creating an array, and then wrap it with the \texttt{array\_view} that is provided by \textit{C++ AMP}. To show an example, an array is constructed below:
 \begin{lstlisting}
-int matrix[] = {1, 2, 3, 4}; 
+float matrix[] = {1, 2, 3, 4}; 
 \end{lstlisting}
 To construct a matrix with two dimensions, the \texttt{matrix} array is wrapped with \texttt{array\_view}:
 \begin{lstlisting}
-array_view<int, 2> mat(2, 2, matrix); 
+array_view<float, 2> mat(2, 2, matrix); 
 \end{lstlisting}
-Here the \texttt{<int, 2>} specifies that the \texttt{mat} matrix consist of integers and two dimensions. \texttt{(2, 2, matrix)} indicates that the \texttt{mat} matrix will have two rows and two columns, and will be populated with the data from the \texttt{matrix} array;
+Here the \texttt{<float, 2>} specifies that the \texttt{mat} matrix consist of floating point values and two dimensions. \texttt{(2, 2, matrix)} indicates that the \texttt{mat} matrix will have two rows and two columns, and will be populated with the data from the \texttt{matrix} array;
 
 Listing \ref{code:cppampSaxpy} shows \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though this example only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that \texttt{z\_v} is used purely as an output container, and to avoid wasting resources transferring it to device since the contents will be overwritten.
 At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The lambda at line \ref{code:cppampSaxpy:lambda} are marked with \texttt{restrict(amp)} which states that the lambda should be executed on device and that only a subset \textit{C++} functionality is available for execution.
 \begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
 const size_t N = 1024;
-int a = 10;
+float a = 10;
 
-std::array<int, N> x;
-std::array<int, N> y;
-std::array<int, N> z;
+std::array<float, N> x;
+std::array<float, N> y;
+std::array<float, N> z;
 
 std::generate(x.begin(), x.end(), rand);
 std::generate(y.begin(), y.end(), rand);
 
-array_view<const int, 1> x_v(size, x);~\label{code:cppampSaxpy:viewsStart}~
-array_view<const int, 1> y_v(size, y);
-array_view<int, 1> z_v(size, z);~\label{code:cppampSaxpy:viewsEnd}~
+array_view<const float, 1> x_v(size, x);~\label{code:cppampSaxpy:viewsStart}~
+array_view<const float, 1> y_v(size, y);
+array_view<float, 1> z_v(size, z);~\label{code:cppampSaxpy:viewsEnd}~
 z_v.discard_data();~\label{code:cppampSaxpy:discard}~
 
 parallel_for_each( ~\label{code:cppampSaxpy:forEach}~

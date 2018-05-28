@@ -10,12 +10,12 @@ As the aim of \textit{PACXX} suggests, the programming model is similar to a reg
 Listing \ref{code:saxpyPACXX} shows a \textit{SAXPY} implementation using \textit{PACXX}. A lambda function called \texttt{SAXPY} is created on line \ref{code:saxpyPACXX:lambda}, which describes \textit{SAXPY}. The thread id will be fetched, as seen on line \ref{code:saxpyPACXX:fetchID}, and then the elements corresponding to that thread of each vector will be used for the \textit{SAXPY} computation. The amount of threads and blocks are determined at line \ref{code:saxpyPACXX:threads} and \ref{code:saxpyPACXX:blocks}. Then, at line \ref{code:saxpyPACXX:kernel}, the kernel function is constructed using the \textit{PACXX} provided \texttt{kernel} class. The \textit{SAXPY} computation is executed at line \ref{code:saxpyPACXX:exec}.
 
 \begin{lstlisting}[caption={\textit{SAXPY} implementation made with \textit{PACXX}.}, label={code:saxpyPACXX}]
-int main() {
+main() {
   size_t = 1 << 24;
-  int a = 2;
-  std::vector<int> x(n), y(n), z(n);
+  float a = 2;
+  std::vector<float> x(n), y(n), z(n);
 
-  auto saxpy = [](const int& a, const vector<int>& x, const vecotr<int>& y, vector<int>& z) { ~\label{code:saxpyPACXX:lambda}~
+  auto saxpy = [](const float& a, const vector<float>& x, const vecotr<int>& y, vector<float>& z) { ~\label{code:saxpyPACXX:lambda}~
     auto i = Thread::get().global.x; ~\label{code:saxpyPACXX:fetchID}~
     if (i >= x.size()) return;
     z[i] = x[i] * a + y[i];

@@ -1,4 +1,4 @@
-\section{SkelCL}
+\section{SkelCL}\label{cha:skelclRelatedWorks}
 \textit{SkelCL} (Skeleton Computing Language) is a library aiming to provide abstractions for parallel programming on multi GPU systems. It is developed as a research project by Michel Steuwer et.al at University of Munster. This section is written based upon the information available on their website \cite{skelclWebsite} and in their paper \cite{skelclPaper}.
 
 \subsection{Goals}
@@ -15,14 +15,14 @@ An implementation of the \textit{SAXPY} computation in \textit{SkelCL} is shown 
 
 \begin{lstlisting}[caption={The \textit{SAXPY} computation in \textit{SkelCL}.}, label=code:skelclSample] 
 size_t N = 1024;
-int a = 10;
+float a = 10;
 
 skelcl::init(); ~\label{code:skelclSample:init}~
 
-Zip<float(float,float)> saxpy("int func(int x, int y, int a){return a * x + y;}"); ~\label{code:skelclSample:zipStatement}~
+Zip<float(float,float)> saxpy("float func(float x, float y, float a){return a * x + y;}"); ~\label{code:skelclSample:zipStatement}~
 
-skelcl::Vector<int> X(N);      
-skelcl::Vector<int> Y(N);
+skelcl::Vector<float> X(N);      
+skelcl::Vector<float> Y(N);
 skelcl::init(X.begin(), X.end()); 
 skelcl::init(Y.begin(), Y.end());
 

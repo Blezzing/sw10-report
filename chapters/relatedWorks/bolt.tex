@@ -17,11 +17,11 @@ From line \ref{code:boltSaxpy:opencl} it is shown how, instead of a lambda, a fu
 
 \begin{lstlisting}[caption={Bolt \textit{SAXPY} example}, label={code:boltSaxpy}]
 const size_t N = 1024;
-int a = 10;
+float a = 10;
 
-std::vector<int> x(N);
-std::vector<int> y(N);
-std::vector<int> z(N);
+std::vector<float> x(N);
+std::vector<float> y(N);
+std::vector<float> z(N);
 
 std::generate(x.begin(), x.end(), rand);
 std::generate(y.begin(), y.end(), rand);
@@ -35,9 +35,9 @@ bolt::transform(x.begin(), x.end(), y.begin(), z.begin, saxpyLambda);
 //bolt with opencl backend ~\label{code:boltSaxpy:opencl}~
 BOLT_FUNCTOR(SaxpyFunctor,
   struct SaxpyFunctor{
-    int _a;
-    SaxpyFunctor(int a): _a(a) {};
-    float operator() (const int& xx, const int& yy){
+    float _a;
+    SaxpyFunctor(float a): _a(a) {};
+    float operator() (const float& xx, const float& yy){
       return _a * xx + yy;
     };
   };
