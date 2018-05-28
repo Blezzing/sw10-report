@@ -57,11 +57,11 @@ We chose to provide a developer with the device pointer to the data, and the num
 Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
 
 \subsection{Functions}
-To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality. We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then applies it to a collection, we want to build the kernel on the collection in an attempt to make the process more readable.
+To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality. We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then apply it to a collection, we want to build the kernel on the collection to make the kernel definition appear as methods on the collection.
 
 \subsubsection{Calling execute on a collection}
 % Principle
-A way to achieve building a kernel upon the collection could be by doing it lazily. A developer could build up kernel functionality by appending functions upon the collection. When the developer have applied her functions, then the actual kernel function would be generated and executed based on the stored functions, when she calls execute on the collection.
+To achieve building a kernel upon a collection we do it lazily. A developer can build up kernel functionality by appending functions upon the collection. When the function are applied to the collection, the actual kernel function will be generated and executed based on the stored functions, when she calls execute on the collection.
 
 % Pros
 An advantage of this approach is that it could prevent unnecessary data transfers between host and device since it might be possible to bundle necessary logic within a single kernel function. 
@@ -70,42 +70,44 @@ An advantage of this approach is that it could prevent unnecessary data transfer
 A disadvantage of this approach is that it could be a cause for confusion for the developer. When the developer applies \texttt{add(5)} to a collection, a developer might expect the addition to have already taken place.
 
 \subsubsection{Function Chaining}
-We want to make a single kernel able to execute multiple actions, such as adding and multiplying a value in sequence. To enable this we want each function call to return a reference to the collection object so that multiple actions can be queued before the final execute call.
+We want to make a single kernel able to execute multiple actions, such as adding and multiplying a value in sequence. To enable this each function call must return a reference to the collection object so that multiple actions can be queued before the final execute call.
 
-This will allow a program, that adds 5 to all elements of a collection before multiplying them with 2, in \textit{YAGAL} to be written as \texttt{collection.add(5).multiply(2).exec()}, which we find to be very intuitive to read in comparison to the define kernel and apply kernel form of the other frameworks.
+This will allow a program, that adds 5 to all elements of a collection before multiplying them with 2, to be written as \texttt{collection.add(5).multiply(2).exec()}, which we find to be very intuitive to read in comparison to the define kernel and apply kernel form of the other frameworks.
 
-Allowing chaining of functions also allow the framework to make decisions on how to split kernels, so that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
+Allowing chaining of functions also allows the framework to determine how to split kernels, so that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
 
 \subsubsection{Primitive Functions}
-A baseline of simplistic regular functions could be provided to provide developers with a baseline of functionality to append to collections. A such function could be \texttt{collection.add(X)} which will add \texttt{X} to each member of the collection. 
+A baseline of simplistic regular functions could be provided to give developers a baseline of functionality to append to collections. A such function could be \texttt{collection.add(X)} which will add \texttt{X} to each member of the collection. 
 
 Here are some primitive functions that each take either a single value or a collection: 
 \begin{description}
 \item[\texttt{collection.add(X)}]\hfill\\
-Add a value \texttt{X} to each element of the collection or add entries of the collection with the entries from a given collection \texttt{X}.
+Add a value \texttt{X} to each element of the collection or add entries of a given collection \texttt{X} to the corresponding entries of the collection.
 \item[\texttt{collection.sub(X)}]\hfill\\
-Subtract a value \texttt{X} from each element of the collection or subtract entries of a given collection \texttt{X} from the entries of the collection.
+Subtract a value \texttt{X} from each element of the collection or subtract entries of a given collection \texttt{X} from the corresponding entries of the collection.
 \item[\texttt{collection.div(X)}]\hfill\\
-Divide each element in the collection by value \texttt{X} or divide each entry by each entry of a given collection \texttt{X}.
+Divide each element in the collection by value \texttt{X} or divide each entry by each corresponding entry of a given collection \texttt{X}.
 \item[\texttt{collection.mult(X)}]\hfill\\
-Multiply each value of the collection by the value \texttt{X} or multiply each entry of the collection by each entry of the collection \texttt{X}.
+Multiply each value of the collection by the value \texttt{X} or multiply each entry of the collection by each corresponding entry of the collection \texttt{X}.
 \end{description}
 
-These functions also serve as a way for us to get started experimenting with code generation since the operations involved are relatively simple. By implementing these primitive functions first we also ensure that \textit{YAGAL} provides some base functionality for developers.
+These functions also serve as a way for us to get started experimenting with code generation since the operations involved are relatively simple. We implement these primitive functions to provide some base functionality.
 
 \subsubsection{Higher order functions}
-We want to implement some higher order functions. This will allow us to experiment with different methods of passing one function to another, and for many use cases higher order functions allow better abstractions for the developer.
+We implement higher order functions in order to allow us to experiment with different methods of passing one function to another. Higher order functions provide an additional layer of abstractions for the developer.
 
-One such function is transform, which takes a function that describes how to transform each element in the collection. It is a simple higher order function to implement as it can use any method of traversing the collection, and as such it can reuse some of the logic from the primitive functions and allow the development to focus on the function passing.
+%One such function is transform, which takes a function that describes how to transform each element in the collection. It is a simple higher order function to implement as it can use any method of traversing the collection, and it can reuse some of the logic from the primitive functions and allow the development to focus on the function passing.
 
-Other interesting higher order functions are:
+Here is a list of higher order functions that have been considered for implementation:
 \begin{description}
+\item[Transform]\hfill\\
+Takes a function that describes how to transform each element in the collection.
 \item[Sort] \hfill \\ 
-Sorting a collection require another way of traversing the collection compared to a transform, which makes it interesting.
+Sorting a collection requires another way of traversing the collection compared to a transform.
 \item[Contains] \hfill \\ 
-Checking if a collection contains an element that satisfies a predicate require the ability to return a value, which makes it interesting.
+Checking if a collection contains an element that satisfies a predicate require the ability to return a value.
 \item[Filter] \hfill \\ 
-Creating a new collection with some elements from the original collection require the ability to dynamically share where potential elements should be inserted between threads.
+Creating a new collection with some elements from the original collection requires the ability to dynamically share where potential elements should be inserted between threads.
 \end{description}
 
-There are many more higher order functions that can be relevant, but we prioritize working on transform, as it is a simple function that allow us to focus on function passing. If successfully implemented we can revisit other higher order functions.
+The list above is not an exhaustive list as there are other higher order functions that can be relevant. We prioritize working on transform, as it is a simple function that allow us to focus on function passing. If successfully implemented we can revisit other higher order functions.
