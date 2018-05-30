@@ -1,0 +1,105 @@
+\section{Anonymous Functions}
+We consider anonymous functions as an important part of a framework that allow construction of other functions, in the case of \textit{YAGAL} GPU kernels.
+
+\subsection{Known Approaches}
+%c++ lambdas
+An initial thought is that \textit{C++11} provide very expressive lambdas, which seem ideal for a framework such as \textit{YAGAL}. The problem with expanding on this construct is that it require a compiler to be built to know how to handle lambdas, as the information available on the function object is little more than the function signature\cite{cppLambdaRef}, and an important part of the lambda is the body, since that is the major part needed for code generation. In the related work we see that \textit{C++ AMP} in section \ref{cha:cppAmpRelWork} and \textit{Thrust} in section \ref{cha:thrustRelWork} both take the approach of using extended \textit{C++} lambdas. In both case they have extended the language with keywords to annotate the lambdas, so that their compiler know that they should be treated differently to normal lambdas. Even though \textit{PACXX} lambdas can be defined with clean \textit{C++} syntax, it still require the specific compiler to be able to generate kernels. In \textit{YAGAL} we chose not to enforce the compiler choice on the developer, so this approach was not possible.
+
+%opencl kernel strings
+Another method, used by \textit{SkelCL} in section \ref{cha:skelclRelatedWorks} and \textit{Bolt} on \textit{OpenCL} in section \ref{cha:boltRelWorks}, is to generate the kernel as a \textit{OpenCL} string by concatenating strings, involving a user defined string that describes the anonymous function. A problem here is that it require the framework to be based on OpenCL, where \textit{YAGAL} is based on \textit{CUDA}. With \textit{OpenCL} is syntactically very similar to \textit{C++}, it is a usable way of allowing the developer to specify the lambda. In contrast, providing similar functionality, where the user provides the lambda as a \textit{PTX} string, is far less intuitive due to the big difference between \textit{C++} and \textit{PTX}.
+
+%reetablishing that this is a fucking problem
+As we are not based on \textit{OpenCL}, and we do not provide a special purpose compiler, none of the related works provide a model we can re-use in \textit{YAGAL}.
+
+\subsection{Alternative Approaches}
+To work around this problem we have tried to rethink the way kernel logic can be created. We came up with two ideas for constructing it. One idea is to extend the library with types to represent logic that would otherwise be provided through lambdas. Another is to create a \textit{CUDA C} string, and use external tools to compile that to \textit{PTX} at run-time. We discuss these possibilities here.
+
+\subsubsection{Creating Meta Types}
+\todo{lad brugerne lave objekter der viser logikken i den anonyme, meget verbose, meget omfattende}
+A function body could be represented in objects representing the expected syntax. An example of what this could look like is shown as listing \ref{code:metaBuildExampleC} being represented with meta types in listing \ref{code:metaBuildExampleBuild}. The different components of the kernel can be constructed like the current action implementation, allowing \textit{LLVM Intermediate Representation} to be generated. 
+
+\begin{lstlisting}[caption={Pseudo C code showing a kernel function.}, label={code:metaBuildExampleC}]
+void kernel(Vector input1, Vector input2, int elements){
+    int threadCount = someIntrensic.getThreadCount();
+    int threadId    = someIntrensic.getThreadId();
+    for(int index = threadId; index < elements; index += threadCount){
+        input1[index] = input1[index] + input2[index];
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Code showing possible construction of kernel function in an meta type solution.}, label={code:metaBuildExampleBuild}]
+auto builder = KernelBuilder.New();
+
+builder.addParameter(Parameter<Vector>("input1"));
+builder.addParameter(Parameter<Vector>("input1"));
+builder.addParameter(Parameter<int>("elements"));
+
+builder.addStatement(Assignment<int>("threadCount"), Intrinsics::getThreadCount));
+builder.addStatement(Assignment<int>("threadId"), Intrinsics::getThreadId));
+builder.addStatement(ForLoop(
+    Assignment<int>("index", builder.getValue("threadId")),
+    Condition(LessThan(builder.getValue("index"), builder.getValue("elements"))),
+    Assignment<int>("index", Plus(builder.getValue("index"), builder.getValue("threadCount"))),
+    LoopBody({
+        AssignmentAtIndex<int>("input1", builder.getValue("index"), Plus(
+            builder.getValueAtIndex("input1", builder.getValue("index")),
+            builder.getValueAtIndex("input2", builder.getValue("index"))
+        ))
+    })
+));
+\end{lstlisting}
+
+This solution is extremely verbose, and much more difficult to read, compared to the logic that is being constructed. A developer would have an easier time simply using another framework. Implementation wise it is a big task to implement all the different kind of operations that would be possible. If it is possible to wrap the way the developer would express the logic in a more simple API, it could still be a feasible solution.
+
+\subsubsection{Wrapping by String Interpretation}
+A method of wrapping the logic of something like listing \ref{code:metaBuildExampleBuild}, could be to implement a parser that parse a string of well formatted \textit{C++}, and create the objects based on the string content. In this case it could be simpler to use methods known from compilers to build a syntax tree. This tree could contain all information needed for code generation with \textit{LLVM}, but would practically mean that \textit{YAGAL}, on top of integrating a considerable part of \textit{LLVM}, need to include other components of a compiler, being the lexer, parser, and syntactical objects for building a syntax tree.
+
+A function could with such a solution, that perform the same calculation as the above meta type example, could look like listing \ref{code:metaBuildString}. It is very similar to the example shown in \ref{code:metaBuildExampleC}, which is exactly what makes it attractive. 
+
+\begin{lstlisting}[caption={Code showing possible construction of kernel with string interpretation.}, label={code:metaBuildString}]
+auto myKernel = buildKernel(
+    "void func(Vector input1, Vector input2, int size){     
+        int threadCount = someIntrensic.getThreadCount();
+        int threadId    = someIntrensic.getThreadId();
+        for(int index = threadId; index < elements; index += threadCount){
+            input1[index] = input1[index] + input2[index];
+        }
+    }"
+);
+\end{lstlisting}
+
+Even though the solution in listing \ref{code:metaBuildString} looks more write- and readable than the example shown in listing \ref{code:metaBuildExampleBuild} it is not a solution without problems. Requiring compilation of the string to be done at run-time will make it more difficult to get errors or warnings presented to the developer, compared to static compilation. There is also the minor annoyance of having strings in user code that provide functionality, as it generally is more difficult for tools to assist the developer in writing and checking.
+
+\subsubsection{Wrapping by C-Style Macros}
+Bolt, targeting \textit{OpenCL}, used \textit{C} macros to wrap their function objects. This allowed them to have the function, after the macros interaction, syntactically checked by the compiler, as the result would still be code, and also to generate an \textit{OpenCL} code string based on this function. As \textit{C++} and \textit{OpenCL} is syntactically similar in their ways to create a function, the major part of code generation was done by copying the content of the macro to a string constant. If such a solution should work for \textit{YAGAL} it could be done by targeting another solution, such as the previously mentioned string interpreter, by constructing a string for that target.
+
+\begin{lstlisting}[caption={Code showing possible construction of kernel with macro, named YAGALIFY, and c++ lambda.}, label={code:metaBuildMacro}]
+auto myKernel = YAGALIFY([](Vector input1, Vector input2, int size)->void{
+    int threadCount = someIntrensic.getThreadCount();
+    int threadId    = someIntrensic.getThreadId();
+    for(int index = threadId; index < elements; index += threadCount){
+        input1[index] = input1[index] + input2[index];
+    }
+});
+\end{lstlisting}
+
+This solution can be considered cleaner than using strings only, but it does add a layer of complexity to the already high stack.
+
+\subsubsection{Generating CUDA C}
+A different approach, compared to the previously mentioned solutions, is to let the user generate define a function in a string, and wrap that code in the needed components to be valid \textit{CUDA C} function. That function can then be sent to the external tool \textit{nvrtc}, \textit{NVIDIA Run-time Compiler}, which will generate the \textit{ptx} needed for that function. This is not as integrated as we wish, but it does have the benefit of solving the task without inventing a new language and the means of compiling it, as the previous examples did.
+
+Example usage can be seen in listing \ref{code:metaBuildNvrtc}. Notable is the lack of \textit{CUDA} keywords, such as \texttt{\_\_GLOBAL\_\_} to declare that it is a device function, and the use of nonstandard intrinsic names to get some variables. These things can be done by the library before parsing it to \textit{nvrtc}, saving the user from learning a few cuda specific details.
+
+\begin{lstlisting}[caption={Code showing possible construction of kernel with a string, being sent to the library, where it get extended to correct \textit{CUDA C}, before being sent to \textit{nvrtc}.}, label={code:metaBuildNvrtc}]
+auto myKernel = yagal::ptxFromCudaString("void func(Vector input1, Vector input2, int size){
+    int threadCount = someIntrensic.getThreadCount();
+    int threadId    = someIntrensic.getThreadId();
+    for(int index = threadId; index < elements; index += threadCount){
+        input1[index] = input1[index] + input2[index];
+    }
+}");
+\end{lstlisting}
+
+\subsection{What Is Implemented}
+\todo{sorry}
