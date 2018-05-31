@@ -70,7 +70,7 @@ auto pred = YAGALIFY(
 This solution can be considered cleaner than using strings only, but it does add a layer of complexity to the already high stack.
 
 \subsubsection{Generating CUDA C}
-A different approach, compared to the previously mentioned solutions, is to let the user generate define a function in a string, and wrap that code in the needed components to be valid \textit{CUDA C} function. That function can then be sent to the external tool \textit{nvrtc}, \textit{NVIDIA Run-time Compiler}, which will generate the \textit{ptx} needed for that function. This is not as integrated as we wish, but it does have the benefit of solving the task without inventing a new language and the means of compiling it, as the previous examples did.
+A different approach, compared to the previously mentioned solutions, is to let the user generate define a function in a string, and wrap that code in the needed components to be valid \textit{CUDA C} function. That function can then be sent to the external tool \textit{nvrtc}\cite{nvrtcDoc}, \textit{NVIDIA Run-time Compiler}, which will generate the \textit{ptx} needed for that function. This is not as integrated as we wish, but it does have the benefit of solving the task without inventing a new language and the means of compiling it, as the previous examples did.
 
 Example usage can be seen in listing \ref{code:metaBuildNvrtc}. Notable is the lack of \textit{CUDA} keywords, such as \texttt{\_\_DEVICE\_\_} to declare that it is a device function. This can be inserted by the library before parsing it to \textit{nvrtc}, along with replacing other keywords we could introduce with intrinsics, saving the user from learning a few cuda specific details.
 
@@ -83,3 +83,6 @@ auto myKernel = yagal::ptxFromCudaString(
 \end{lstlisting}
 
 \subsection{What Is Implemented}
+In \textit{YAGAL} we have no implementation of anonymous functions, or functions using them. We feel that there is a need for them, but the approaches are too involved for the time left. The meta type solution is more straight forward to generate \textit{LLVM Intermediate Representation} for, but would require long development time, and would be inconvenient for the developer to express functions with. The ideas of parsing strings, or using macros, to make the expressions less verbose could alleviate the problems of the first method, but will still require a lot of development. The final solution, using \textit{nvrtc} might be the one that is the most fitting for \textit{YAGAL}, as we already rely on executing \textit{PTX}. It does however come with the cost of a tighter coupling with \textit{CUDA}.
+
+When a method of implementing anonymous functions is implemented, implementing functions to use them would be possible.
