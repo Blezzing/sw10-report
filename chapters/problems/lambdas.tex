@@ -1,5 +1,5 @@
 \section{Anonymous Functions}
-We consider anonymous functions as an important part of a framework that allow construction of other functions, in the case of \textit{YAGAL} GPU kernels.
+We consider anonymous functions as an important part of a framework that allow construction of other functions, in the case of \textit{YAGAL} GPU kernels. Implementing anonymous functions so that the functionality of \textit{YAGAL} can be extended by them is not a straight forward problem, so different approaches are discussed in this section. Code examples in this section are not supported by \textit{YAGAL}, but show how it could look as a result of decisions. The examples all present a predicate, checking whether a squared value of a a vector element is above 1000, which should given to other non-existant \textit{YAGAL} functions such as \texttt{filter} to provide their logic.
 
 \subsection{Known Approaches}
 %c++ lambdas
@@ -15,39 +15,28 @@ As we are not based on \textit{OpenCL}, and we do not provide a special purpose 
 To work around this problem we have tried to rethink the way kernel logic can be created. We came up with two ideas for constructing it. One idea is to extend the library with types to represent logic that would otherwise be provided through lambdas. Another is to create a \textit{CUDA C} string, and use external tools to compile that to \textit{PTX} at run-time. We discuss these possibilities here.
 
 \subsubsection{Creating Meta Types}
-\todo{lad brugerne lave objekter der viser logikken i den anonyme, meget verbose, meget omfattende}
 A function body could be represented in objects representing the expected syntax. An example of what this could look like is shown as listing \ref{code:metaBuildExampleC} being represented with meta types in listing \ref{code:metaBuildExampleBuild}. The different components of the kernel can be constructed like the current action implementation, allowing \textit{LLVM Intermediate Representation} to be generated. 
 
 \begin{lstlisting}[caption={Pseudo C code showing a kernel function.}, label={code:metaBuildExampleC}]
-void kernel(Vector input1, Vector input2, int elements){
-    int threadCount = someIntrensic.getThreadCount();
-    int threadId    = someIntrensic.getThreadId();
-    for(int index = threadId; index < elements; index += threadCount){
-        input1[index] = input1[index] + input2[index];
-    }
+bool pred(float element){
+    return element * element > 1000f;
 }
 \end{lstlisting}
 
 \begin{lstlisting}[caption={Code showing possible construction of kernel function in an meta type solution.}, label={code:metaBuildExampleBuild}]
-auto builder = KernelBuilder.New();
-
-builder.addParameter(Parameter<Vector>("input1"));
-builder.addParameter(Parameter<Vector>("input1"));
-builder.addParameter(Parameter<int>("elements"));
-
-builder.addStatement(Assignment<int>("threadCount"), Intrinsics::getThreadCount));
-builder.addStatement(Assignment<int>("threadId"), Intrinsics::getThreadId));
-builder.addStatement(ForLoop(
-    Assignment<int>("index", builder.getValue("threadId")),
-    Condition(LessThan(builder.getValue("index"), builder.getValue("elements"))),
-    Assignment<int>("index", Plus(builder.getValue("index"), builder.getValue("threadCount"))),
-    LoopBody({
-        AssignmentAtIndex<int>("input1", builder.getValue("index"), Plus(
-            builder.getValueAtIndex("input1", builder.getValue("index")),
-            builder.getValueAtIndex("input2", builder.getValue("index"))
-        ))
-    })
+auto builder = KernelBuilder.New<bool, float>();
+builder.addParameter(Parameter<float>("element"));
+builder.addStatement(ReturnStatement<bool>(
+    GreaterThanComparison<float>(
+        builder.multiply<float>(
+            builder.getValue<float>("element"), 
+            builder.getValue<float>("element")
+        ), 
+        builder.createConstant<float>(1000)
+    )
 ));
+
+auto pred = builder.getResult();
 \end{lstlisting}
 
 This solution is extremely verbose, and much more difficult to read, compared to the logic that is being constructed. A developer would have an easier time simply using another framework. Implementation wise it is a big task to implement all the different kind of operations that would be possible. If it is possible to wrap the way the developer would express the logic in a more simple API, it could still be a feasible solution.
@@ -58,13 +47,9 @@ A method of wrapping the logic of something like listing \ref{code:metaBuildExam
 A function could with such a solution, that perform the same calculation as the above meta type example, could look like listing \ref{code:metaBuildString}. It is very similar to the example shown in \ref{code:metaBuildExampleC}, which is exactly what makes it attractive. 
 
 \begin{lstlisting}[caption={Code showing possible construction of kernel with string interpretation.}, label={code:metaBuildString}]
-auto myKernel = buildKernel(
-    "void func(Vector input1, Vector input2, int size){     
-        int threadCount = someIntrensic.getThreadCount();
-        int threadId    = someIntrensic.getThreadId();
-        for(int index = threadId; index < elements; index += threadCount){
-            input1[index] = input1[index] + input2[index];
-        }
+auto pred = yagal::predicateFromString<bool, float>(
+    "bool pred(float element){
+        return element * element > 1000f;
     }"
 );
 \end{lstlisting}
@@ -75,13 +60,11 @@ Even though the solution in listing \ref{code:metaBuildString} looks more write-
 Bolt, targeting \textit{OpenCL}, used \textit{C} macros to wrap their function objects. This allowed them to have the function, after the macros interaction, syntactically checked by the compiler, as the result would still be code, and also to generate an \textit{OpenCL} code string based on this function. As \textit{C++} and \textit{OpenCL} is syntactically similar in their ways to create a function, the major part of code generation was done by copying the content of the macro to a string constant. If such a solution should work for \textit{YAGAL} it could be done by targeting another solution, such as the previously mentioned string interpreter, by constructing a string for that target.
 
 \begin{lstlisting}[caption={Code showing possible construction of kernel with macro, named YAGALIFY, and c++ lambda.}, label={code:metaBuildMacro}]
-auto myKernel = YAGALIFY([](Vector input1, Vector input2, int size)->void{
-    int threadCount = someIntrensic.getThreadCount();
-    int threadId    = someIntrensic.getThreadId();
-    for(int index = threadId; index < elements; index += threadCount){
-        input1[index] = input1[index] + input2[index];
+auto pred = YAGALIFY(
+    bool pred(float element){
+        return element * element > 1000f;
     }
-});
+);
 \end{lstlisting}
 
 This solution can be considered cleaner than using strings only, but it does add a layer of complexity to the already high stack.
@@ -89,17 +72,14 @@ This solution can be considered cleaner than using strings only, but it does add
 \subsubsection{Generating CUDA C}
 A different approach, compared to the previously mentioned solutions, is to let the user generate define a function in a string, and wrap that code in the needed components to be valid \textit{CUDA C} function. That function can then be sent to the external tool \textit{nvrtc}, \textit{NVIDIA Run-time Compiler}, which will generate the \textit{ptx} needed for that function. This is not as integrated as we wish, but it does have the benefit of solving the task without inventing a new language and the means of compiling it, as the previous examples did.
 
-Example usage can be seen in listing \ref{code:metaBuildNvrtc}. Notable is the lack of \textit{CUDA} keywords, such as \texttt{\_\_GLOBAL\_\_} to declare that it is a device function, and the use of nonstandard intrinsic names to get some variables. These things can be done by the library before parsing it to \textit{nvrtc}, saving the user from learning a few cuda specific details.
+Example usage can be seen in listing \ref{code:metaBuildNvrtc}. Notable is the lack of \textit{CUDA} keywords, such as \texttt{\_\_DEVICE\_\_} to declare that it is a device function. This can be inserted by the library before parsing it to \textit{nvrtc}, along with replacing other keywords we could introduce with intrinsics, saving the user from learning a few cuda specific details.
 
 \begin{lstlisting}[caption={Code showing possible construction of kernel with a string, being sent to the library, where it get extended to correct \textit{CUDA C}, before being sent to \textit{nvrtc}.}, label={code:metaBuildNvrtc}]
-auto myKernel = yagal::ptxFromCudaString("void func(Vector input1, Vector input2, int size){
-    int threadCount = someIntrensic.getThreadCount();
-    int threadId    = someIntrensic.getThreadId();
-    for(int index = threadId; index < elements; index += threadCount){
-        input1[index] = input1[index] + input2[index];
-    }
-}");
+auto myKernel = yagal::ptxFromCudaString(
+    "bool pred(float element){
+        return element * element > 1000f;
+    }"
+);
 \end{lstlisting}
 
 \subsection{What Is Implemented}
-\todo{sorry}
