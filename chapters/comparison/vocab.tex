@@ -1,0 +1,40 @@
+\section{Usability evaluation}
+\textit{Cognitive Dimensions of Notations} are a collection of usability principles that is intended to provide a vocabulary for discussion and evaluation of a given system. In the context of this project we use it to reflect upon the API of \textit{YAGAL} and use it to compare it to the related works.
+
+ Not all of the dimensions are equally interesting when used to evaluate an API. Below is a list of the dimensions, and a description, we use:
+\begin{description}
+    \item[Viscosity]\hfill\\
+    Describes a systems resistance to change. How easy can code be changed and if there are barriers that prevent changes. There are two main types of viscosity;
+    \begin{description}
+    \item[Repetition viscosity] The need for multiple repetitive actions.
+        \item[Knock-on viscosity] Where an action requires the developer take perform actions elsewhere to restore consistency. 
+    \end{description}
+    \item[Visibility]\hfill\\
+    Describes the ability to view components easily. Are the components intuitive and are information available for the developer. Abstractions that hide information could reduce visibility.
+    \item[Premature commitment]\hfill\\
+    Describes constraints on the order a developer must complete tasks. This includes whether the developer are forced to perform tasks in a certain order, make premature decisions before information are made available, and whether the decision of a developer can be reversed or changed at a later stage of the process.
+    \item[Hidden dependencies]\hfill\\ % Nævn exec() for yagal
+    Describes the dependencies between entities in the system where there are no transparent link for the developer. This includes whether changes in one part of the system lead to consequences in another, and whether dependencies between components are made clear to the developer.
+    \item[Role-expressiveness]\hfill\\
+    Describes to what degree a developer can infer the purpose an entity in the system and if they are consistent with the rest of the system. 
+    \item[Error-proneness]\hfill\\
+    Describes whether the system could invite a developer to make mistakes, and if some of the constructs of the system could lead to misuse and result in errors. It also describes how the system handles and prevents developer errors.
+    \item[Abstraction]\hfill\\
+    Describes how the system handles and provide abstractions. It also describes the availability and support for developer defined abstractions. In some systems this could involve determining the minimum and maximum levels of abstractions achievable. A systems with too many abstractions could potentially make the system difficult to learn.
+    %\item[Secondary notation] Tror ikke den er god\hfill\\ % Tror det kæver at vi tæster med rigrige brugere
+    %Describes whether a system supports means for secondary notations.
+    \item[Closeness of mapping]\hfill\\
+    Describes the closeness of the systems representation to the domain it models. In the context if this comparison, it describes how the system relates and maps to working directly with \textit{CUDA} or \textit{OpenCL}.  
+    \item[Consistency]\hfill\\
+    Describes how the semantic forms of the system are expressed and how consistent it is. This includes how intuitive the API is, whether the API can be used in multiple ways, and whether a developer, that have learned one part of the API, can reliably figure other parts of the API. 
+    \item[Diffuseness]\hfill\\
+    Describes the degree of verbosity of the system. This includes the display space needed to express functionality.
+    \item[Hard mental operations]\hfill\\
+    Describes whether the system demand cognitive resources of the developer. This includes the complexity of the notation, and whether a developer can work out the notation in within their own mental processing.
+    %\item[Provisionality] Skal nok også fjernes\hfill\\
+    %Describes how or if the system allows developers to fool around..
+    \item[Progressive evaluation]\hfill\\ % DET TAGER LANG TID AT COMPILERE
+    Describes to what degree the system allow developers to evaluate their work throughout the process. This includes how difficult it is to collect feedback from an incomplete and a complete solusion.
+\end{description}
+
+The result of the usability comparison can be found in section \ref[??].
