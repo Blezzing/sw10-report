@@ -6,5 +6,8 @@ We want to investigate how \textit{YAGAL} performs against the related works and
 The evaluation and comparison will be done based on a demo application that are implemented in each of the frameworks. First the superficial qualities are recorded, then the usability is evaluated which is done for each of the implementations. The findings of the evaluations are then compared to each other in the final section of this chapter.
 
 % What we will compare
-The demo application is blalbalba...
-\todo{Beskriv demo applicationen}
+\textit{YAGAL} does not support anonymous functions, as explained in the previous chapter \ref{??}. This results in the situation \textit{YAGAL} is limited in terms of what can be achieved with it compared to the related works. Because of this, we have chosen to implement a simple demo application, that can be implemented in \textit{YAGAL}. 
+
+The demo application is SAXPY, as it was presented for each of the related works in chapter \ref{cha:relatedWorks}.
+
+The comparison is limited to only two of the related works, which are \textit{Thrust} and \textit{PACXX}, due to our choice of platform. \textit{YAGAL} have been developed and tested on a server running \textit{Ubuntu} and have been using an \textit{Nvidia} GPU. \textit{C++ AMP} is dependent upon the \textit{msvc}, which is only supported on \textit{Windows} platforms. \textit{SkelCL} is supported on \textit{Unix} systems, but requires an \textit{AMD} GPU due to \textit{Nvidia} drivers does not support the \textit{C++} extension for \textit{OpenCL}.
