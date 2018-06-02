@@ -2,39 +2,114 @@
 The evaluation of \textit{YAGAL} is contained in this section. First the code for the demo application is shown and explained, followed by the general evaluation and the usability evaluation. The last subsection is a summary of the evaluation of \textit{YAGAL} which will be used in the comparison in section \ref{sec:comparisoncomparison}.
 
 \subsection{Code of demo application}
+Listing \ref{code:compSaxpyYagal} show SAXPY implemented in \textit{YAGAL}. The size of the \texttt{yagal::vector}s are set at line LINE by bit-shifting 1 by 29, and the \texttt{yagal::vector}s are filled with random data at line LINEX and LINEY by utilizing \texttt{std::generate}. The \texttt{yagal::vector}s are then instantiated at line LINE and LINE based on the generated \texttt{std::vector}s.
+
+The is set up at line LINE by chaining upon the \texttt{yagal::vector} called \texttt{d\_x}. The chained functions are \texttt{multiply()} with argument \texttt{a}, then an \texttt{add()} with the argument \texttt{d\_y}. Finally the kernel is constructed and executed by the lastly chained function \textit{exec()}.
+
+\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY}.}, label={code:compSaxpyYagal}]
+#include "yagal/vector.hpp"
+#include <vector>
+#include <iostream>
+#include "../saxpyValidator.hpp"
+
+int main(){
+    size_t N = 1 << 29;
+    float a = 11;
+
+    std::vector<float> h_x(N);
+    std::vector<float> h_y(N);
+
+    std::generate(h_x.begin(), h_x.end(), rand);
+    std::generate(h_y.begin(), h_y.end(), rand);
+
+    yagal::Vector<float> d_x(h_x);
+    yagal::Vector<float> d_y(h_x);
+    
+    d_x.multiply(a).add(d_y).exec();
+}
+\end{lstlisting}
+
+Listing \ref{code:compSaxpyYagalPtx} show how \textit{YAGAL} can be used to generate and store \textit{PTX} code and utilize the \texttt{exec()} function to execute it upon the given collection.
+
+\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY} utilizing \textit{PTX} generation.}, label={code:compSaxpyYagalPtx}]
+//.. Omitted ..//
+
+int main(){
+    //.. Omitted ..//
+
+    auto ptx = d_x.multiply(a).add(d_y).exportPtx();
+
+    d_x.exec(ptx, {d_y.getDevicePtrPtr()});
+}
+\end{lstlisting}
 
 \subsection{General Evaluation}
+In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{YAGAL}.
 
-Performance: 
+\subsubsection[*]{Performance}
+We have measured performance on the execution of the SAXPY code shown above in listing \ref{code:compSaxpyYagal}, and in listing \ref{code:compSaxpyYagalPtx}.
 
-Lines of code: 
+Here are the time measured for listing \ref{code:compSaxpyYagal}:
+\begin{description}
+    \item[With compilation] 57,933 ms
+    \item[Without compilation] 35,011 ms
+\end{description}
+cpu: 12938,864 ms
 
-Size of executable: 
+\subsection[*]{Lines of code}
+The application in 
+9/10 lines of code
+
+\subsubsection[*]{Size of executable}
+48 mb
 
 \subsection{Usability Evaluation}
+In this section we consider the cognitive dimensions presented in chapter \ref{??}. For \textit{YAGAL} we have implementation specific information that we do not have about the other frameworks, and these influence our evaluation.
 
 \subsubsection[*]{Viscosity}
+\textit{YAGAL} has low viscosity. A developer can freely chain functions together making changes in logic welcome. The computations can be performed on multiple data sets regardless of size. The user code can be used on different \textit{CUDA} compatible devices, compiled by various compilers without changes.
 
 \subsubsection[*]{Visibility}
+If the developer know of the underlying kernel model, \textit{YAGAL} have low visibility, but if the expectation is to modify collections with methods, it is more intuitive. There is a limited amount of constructs to learn, so it is easy to keep an overview.
 
 \subsubsection[*]{Premature Commitment}
+\textit{YAGAL} has a strict order of how tasks should be performed; a developer must have a collection in order to build kernels. A developer must have appended actions on a collection to use \texttt{exec()} or a \texttt{exportPtx()} to build kernels. 
+
+A developer can split chaining upon collections, as long as she ends the chain with an \texttt{exec()} or a \texttt{exportPtx()}.
 
 \subsubsection[*]{Hidden dependencies}
+During allocation of the first \texttt{yagal::Vector} \textit{YAGAL} will create a \texttt{context} in the \textit{CUDA driver API} which will be reused in later usage of the GPU. 
 
-\subsubsection[*]{Role-expressiveness}
+\subsubsection[*]{Role-expressiveness and Consistency}
+Usage of method overloading, in the cases of \texttt{exec()} and \textit{YAGAL}s action functions such as \texttt{add()}, can lead to confusion for a developer. 
+
+\texttt{exec()} either consumes the stored actions on a collection to build and execute a kernel, or it takes a \textit{PTX} code string and other device pointers to execute that kernel.
+
+\texttt{add()} either creates an \textit{add action} with another \texttt{yagal::Vector} as argument, or a single value.
 
 \subsubsection[*]{Error-proneness}
+The use of \texttt{exec()} can cause a developer confusion, as it can be misleading as to when a collection is modified. To show an example,
+\texttt{vec.add(5);} has no \texttt{exec()} in the chain, and \texttt{vec} have therefore not been modified yet.
 
 \subsubsection[*]{Abstraction}
+\textit{YAGAL} has no support for anonymous functions and no support for expressing kernels that have more advanced functionality than traversing a collection. This severely limits which abstractions a developer can build with \textit{YAGAL}.
 
 \subsubsection[*]{Closeness of mapping}
-
-\subsubsection[*]{Consistency}
+The execution model of \textit{YAGAL} and low level APIs, such as \textit{CUDA}, are very different. In \textit{YAGAL} the developer do not build kernels directly, as they enqueue action upon collections. When managing memory, the abstractions of \textit{YAGAL} is only a thin layer above the memory allocations, allowing direct access to addresses if needed.
 
 \subsubsection[*]{Diffuseness}
+The actions of \textit{YAGAL} makes the way a developer express and execute kernels compact, compared to writing a kernels, and strategies for applying them.
 
 \subsubsection[*]{Hard mental operations}
+The API of \textit{YAGAL} is based on actions, that can be perceived as building blocks, which gives a developer a mental model of the kernel he is executing. Due to the separation of logic into small actions, the mental operations required to express the logic have also been divided into more digestible pieces.
 
 \subsubsection[*]{Progressive evaluations}
+\textit{YAGAL} is dependent upon the \textit{C++} type system to provide feedback in case of inappropriate use. In cases where the API is used correctly, but the results are not as the developer expects, \textit{YAGAL} does not provide any tools for assistance.
+
+As the compilation of a program using \textit{YAGAL} is time consuming, the development feedback loop is slow.
 
 \subsection{Summary}
+
+\textit{YAGAL} have, in terms of usability, negative and positive areas. The negatives include restricted abstractions, the compilation feedback loop, and role expressiveness.
+
+The positive areas include the use of actions as abstractions which provide a simple mental model of the process being executed. The actions of \textit{YAGAL} allow a developer to express and execute  logic in a compact statements.
