@@ -2,30 +2,29 @@
 The evaluation of \textit{YAGAL} is contained in this section. First the code for the demo application is shown and explained, followed by the general evaluation and the usability evaluation. The last subsection is a summary of the evaluation of \textit{YAGAL} which will be used in the comparison in section \ref{sec:comparisoncomparison}.
 
 \subsection{Code of demo application}
-Listing \ref{code:compSaxpyYagal} show SAXPY implemented in \textit{YAGAL}. The size of the \texttt{yagal::vector}s are set at line LINE by bit-shifting 1 by 29, and the \texttt{yagal::vector}s are filled with random data at line LINEX and LINEY by utilizing \texttt{std::generate}. The \texttt{yagal::vector}s are then instantiated at line LINE and LINE based on the generated \texttt{std::vector}s.
+Listing \ref{code:compYagal} show \textit{SAXPY} implemented in \textit{YAGAL}. The size of the \texttt{yagal::vector}s are set at line \ref{code:compYagalShift} by bit-shifting 1 by 29, and the \texttt{yagal::vector}s are filled with random data at line \ref{code:compYagalFillBegin} and \ref{code:compYagalFillEnd} by utilizing \texttt{std::generate}. The \texttt{yagal::vector}s are then instantiated at line \ref{code:compYagalVecBegin} and \ref{code:compYagalVecEnd} based on the generated \texttt{std::vector}s.
 
-The is set up at line LINE by chaining upon the \texttt{yagal::vector} called \texttt{d\_x}. The chained functions are \texttt{multiply()} with argument \texttt{a}, then an \texttt{add()} with the argument \texttt{d\_y}. Finally the kernel is constructed and executed by the lastly chained function \textit{exec()}.
+The \textit{SAXPY} computation is set up at line \ref{code:compYagalChain} by invoking a chain of functions on the \texttt{yagal::vector} called \texttt{d\_x}. The chained functions are \texttt{multiply()} with argument \texttt{a}, then an \texttt{add()} with the argument \texttt{d\_y}. Finally the kernel is constructed and executed by the lastly chained function \textit{exec()}.
 
-\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY}.}, label={code:compSaxpyYagal}]
+\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY}.}, label={code:compYagal}]
 #include "yagal/vector.hpp"
 #include <vector>
 #include <iostream>
-#include "../saxpyValidator.hpp"
 
 int main(){
-    size_t N = 1 << 29;
+    size_t N = 1 << 29;~\label{code:compYagalShift}~
     float a = 11;
 
     std::vector<float> h_x(N);
     std::vector<float> h_y(N);
 
-    std::generate(h_x.begin(), h_x.end(), rand);
-    std::generate(h_y.begin(), h_y.end(), rand);
+    std::generate(h_x.begin(), h_x.end(), rand);~\label{code:compYagalFillBegin}~
+    std::generate(h_y.begin(), h_y.end(), rand);~\label{code:compYagalFillEnd}~
 
-    yagal::Vector<float> d_x(h_x);
-    yagal::Vector<float> d_y(h_x);
+    yagal::Vector<float> d_x(h_x);~\label{code:compYagalVecBegin}~
+    yagal::Vector<float> d_y(h_y);~\label{code:compYagalVecEnd}~
     
-    d_x.multiply(a).add(d_y).exec();
+    d_x.multiply(a).add(d_y).exec();~\label{code:compYagalChain}~
 }
 \end{lstlisting}
 
@@ -47,24 +46,22 @@ int main(){
 In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{YAGAL}.
 
 \subsubsection[*]{Performance}
-We have measured performance on the execution of the SAXPY code shown above in listing \ref{code:compSaxpyYagal}, and in listing \ref{code:compSaxpyYagalPtx}.
+We have measured performance on the execution of the \textit{SAXPY} code shown above in listing \ref{code:compYagal}, and in listing \ref{code:compSaxpyYagalPtx}.
 
-Here are the time measured for listing \ref{code:compSaxpyYagal}:
+Here are the time measured for listing \ref{code:compYagal}:
 \begin{description}
-    \item[With compilation] 57,933 ms
-    \item[Without compilation] 35,011 ms
+    \item[With compilation:] 57,933 ms
+    \item[Without compilation:] 35,011 ms
 \end{description}
-cpu: 12938,864 ms
 
-\subsection[*]{Lines of code}
-The application in 
-9/10 lines of code
+\subsubsection[*]{Lines of code}
+\textit{SAXPY} have been achieved in \textit{YAGAL} with 9 lines of code if done with the simple kernel building and execution, and 10 lines if \textit{PTX} code is exported and used. Of these lines 8 are used to prepare the data.
 
 \subsubsection[*]{Size of executable}
-48 mb
+The compilation of \textit{SAXPY} with \textit{YAGAL} results in an executable with size of 48 MB. The compilation time when including \textit{YAGAL} is 43 seconds.
 
 \subsection{Usability Evaluation}
-In this section we consider the cognitive dimensions presented in chapter \ref{??}. For \textit{YAGAL} we have implementation specific information that we do not have about the other frameworks, and these influence our evaluation.
+In this section we consider the cognitive dimensions presented in section \ref{sec:vocab}. For \textit{YAGAL} we have implementation specific information that we do not have about the other frameworks, and these influence our evaluation.
 
 \subsubsection[*]{Viscosity}
 \textit{YAGAL} has low viscosity. A developer can freely chain functions together making changes in logic welcome. The computations can be performed on multiple data sets regardless of size. The user code can be used on different \textit{CUDA} compatible devices, compiled by various compilers without changes.
@@ -109,6 +106,7 @@ The API of \textit{YAGAL} is based on actions, that can be perceived as building
 As the compilation of a program using \textit{YAGAL} is time consuming, the development feedback loop is slow.
 
 \subsection{Summary}
+Based on the general comparison, \textit{YAGAL} completes the \textit{SAXPY} computation about 350 times faster than the corresponding single core CPU implementation, and the \textit{SAXPY} computation can be expressed with 1 to 2 lines of code. 
 
 \textit{YAGAL} have, in terms of usability, negative and positive areas. The negatives include restricted abstractions, the compilation feedback loop, and role expressiveness.
 
