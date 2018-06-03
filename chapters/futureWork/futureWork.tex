@@ -1,7 +1,10 @@
 This chapter contain the topics that need to be addressed in the future, if the development on \textit{YAGAL} were to continue.
 
-\todo{Undersøg om der virkeligt er behov for en sådan løsning, vi tog udgangspunkt i at der ikke var noget, ikke at det manglede}
+\todo{Undersøg om der virkeligt er behov for en sådan løsning. Vi tog udgangspunkt i at der ikke var noget, ikke at det manglede}
+The project was defined in a belief, that somewhere there is a need for an abstraction library for GPGPU development, that does not enforce the developers choice of compiler. Before any more time should be dedicated on further developing \textit{YAGAL}, it should be made clear whether there is a purpose of doing so.
 
 \todo{Implementer lambdaer. Flere muligheder som nævnt i cha?? men meget tidskrævende, hvis ikke det er den billige løsning (nvrtc)}.
+We proposed some approaches to the anonymous function, problem presented in chapter \ref{bleh}. If development were to continue, it would make sense to further investigate those, how they impact the action design, and implement one of them. The most approachable proposed solution would probably be to rely on \textit{nvrtc} to translate \textit{CUDA C} to \textit{PTX}, and get inspiration from the related works that target \textit{OpenCL} on how to construct the \textit{CUDA C} code from user constructs.
 
 \todo{Når funktionaliteten er til det, sørg for at vi følger med performance wise... thrust er gud.}
+The current performance evaluation is grounded in a \textit{SAXPY} implementation. If more constructs get implemented to enable more advanced algorithms in \textit{YAGAL} is it important to see how the performance compares to the related works. Even as an abstraction library, the domain of GPGPU development is  performance oriented.
