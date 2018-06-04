@@ -1,0 +1,74 @@
+\section{CUDA}
+The evaluation of \textit{CUDA} is contained in this section. First the code for the demo application is shown and explained, followed by the general evaluation and the usability evaluation. The last subsection is a summary of the evaluation of \textit{CUDA} which will serve as a baseline in the comparison in section \ref{sec:comparisoncomparison}.
+
+\subsection{Code of demo application}
+
+\begin{lstlisting}[caption={\textit{CUDA} \textit{SAXPY} example.}, label={code:cudaSaxpy}]
+#include <iostream>
+
+__global__ void kernel(int n, float a, float* x, float* y){
+    for( int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x){
+        x[i] = a * x[i] + y[i];
+    }
+}
+
+int main(void){
+    int N = 1 << 29;
+    float a = 11.0;
+
+    float *x, *y, *d_x, *d_y;
+    x = (float*)malloc(N*sizeof(float));
+    y = (float*)malloc(N*sizeof(float));
+
+    cudaMalloc(&d_x, N*sizeof(float));
+    cudaMalloc(&d_y, N*sizeof(float));
+
+    for(int i = 0; i < N; i++){
+        x[i] = 1;
+        y[i] = 2;
+    }
+
+    cudaMemcpy(d_x, x, N*sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_y, y, N*sizeof(float), cudaMemcpyHostToDevice);
+
+    kernel<<<128, 128>>>(N, a, d_x, d_y);
+
+    cudaMemcpy(x, d_x, N*sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(y, d_y, N*sizeof(float), cudaMemcpyDeviceToHost);
+}
+
+\end{lstlisting}
+
+\subsection{General Evaluation}
+
+Performance: 
+
+Lines of code: 
+
+Size of executable: 
+
+\subsection{Usability Evaluation}
+
+\subsubsection[*]{Viscosity}
+
+\subsubsection[*]{Visibility}
+
+\subsubsection[*]{Premature Commitment}
+
+\subsubsection[*]{Hidden Dependencies}
+
+\subsubsection[*]{Role-expressiveness and Consistency}
+
+\subsubsection[*]{Error-proneness}
+
+\subsubsection[*]{Abstraction}
+
+\subsubsection[*]{Closeness of mapping}
+
+\subsubsection[*]{Diffuseness}
+
+\subsubsection[*]{Hard Mental Operations}
+
+\subsubsection[*]{Progressive Evaluations}
+
+\subsection{Summary}
