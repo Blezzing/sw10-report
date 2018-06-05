@@ -1,14 +1,17 @@
 \section{Compilation Time}
 %\todo{it sucks, llvm is big, compile in multiple units and link instead, maybe more troublesome for developers to include then.}
 
-We implemented a subset of \textit{LLVM LLC}, as described in section \ref{sec:llcReplacement}, in order to translate \textit{LLVM IR} to \textit{PTX} code. The consequence of this decision came in the form of additional compilation time. Even though we have stripped most of the functionality of \textit{LLVM LLC} to only contain the \textit{PTX} conversion, the inclusion of \textit{LLVM} headers still causes significant overhead during compilation.
+We implemented a subset of \textit{LLVM LLC}, as described in section \ref{sec:llcReplacement}, in order to translate \textit{LLVM IR} to \textit{PTX} code. The consequence of this decision came in the form of additional compilation time. Even though we have stripped most of the functionality of \textit{LLVM LLC} to only contain the \textit{PTX} conversion, the inclusion of \textit{LLVM} headers still have a significant impact on compilation time.
 
-We have two proposals as to how to overcome the extra overhead for compilation of programs using \textit{YAGAL}. We could further strip the included \textit{LLVM} headers, or we could bundle precompiled binaries of our reimplementation of {LLVM LLC} with \textit{YAGAL}.
+We have two proposals to how to overcome the extra overhead for compilation of programs using \textit{YAGAL}. We could further strip the included \textit{LLVM} headers, or we could bundle pre-compiled binaries of our reimplementation of {LLVM LLC} with \textit{YAGAL}, requiring the developer to link to these at compile time.
 
 \subsection{Stripped Headers}
-The reimplementation of \textit{LLVM LLC} was stripped of anything unrelated to the conversion of \textit{LLVM IR} to \textit{PTX} code, but there are still significant overhead. This is due to the \textit{LLVM LLC}'s dependency to the rest of \textit{LLVM}. To further reduce the compilation overhead, a step deeper could be taken in order to investigate the headers used by \textit{LLVM LLC} and strip those of any unneeded functionality.
+The reimplementation of \textit{LLVM LLC} was stripped of anything unrelated to the conversion of \textit{LLVM IR} to \textit{PTX} code, but there are still significant overhead. This is due to the \textit{LLVM LLC}'s dependency to the rest of \textit{LLVM}. To further reduce the compilation overhead, a step deeper could be taken in order to investigate the headers used by \textit{LLVM LLC} and strip those of any unneeded functionality. This would be a lot of work, and as such, if other approaches are available they would be preferable compared to this.
 
 %We do not know extend this could go, blablabla.. skiv noget mere om hvorfor det er dumt, men det hele er nu contained eller noget.
 
-\subsection{Precompiled binaries}
-Our reimplementation of \textit{LLVM LLC} could be precompiled and bundled with \textit{YAGAL}. This would severely cut down the compilation time, since there is no longer a need for a developer to compile it every time she compiles a \textit{YAGAL} program. This would however require a developer to actively link to the binaries when compiling a \textit{YAGAL} program. 
+\subsection{pre-compiled binaries}
+Our reimplementation of \textit{LLVM LLC} could be pre-compiled and bundled with \textit{YAGAL}. This would severely cut down the compilation time, since there is no longer a need for a developer to compile it every time she compiles a \textit{YAGAL} program. This would however require a developer to link to the library binaries when compiling a \textit{YAGAL} program.
+
+\subsection{What Is Implemented in YAGAL}
+In \textit{YAGAL} we have not implemented pre-compiled headers, even though it is our preferred approach. We chose to prioritize implementing features higher than this, and as such it was not done. Before this would be ready for a developer to use, it is definitely a point that should be addressed.
