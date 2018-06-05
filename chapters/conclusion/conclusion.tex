@@ -1,5 +1,5 @@
 \todo{genetabler problem og hvad vi vil}
-GPGPU development is not an easy task, and present a steep learning curve for a developer getting into it. There are multiple frameworks that attempt to solve this, and they do this by providing various higher level constructs. These frameworks have different dependencies and requirements that the developer must fulfill, including compiler and run-time requirements. 
+GPGPU development is not an easy task, and presents a steep learning curve for a developer getting into it. There are multiple frameworks that attempt to solve this, and they do this by providing various higher level constructs. These frameworks have different dependencies and requirements that the developer must fulfill, including compiler and run-time requirements. 
 
 In this project we perform an experimental design and implementation of \textit{YAGAL}, with the aim of being compiler-independent with a comprehensible programming model with design decisions not covered by related work.
 
@@ -32,13 +32,13 @@ We have evaluated \textit{YAGAL} in regards to measured performance and usabilit
 We have designed \textit{YAGAL} to be an compiler-independent framework, with a run-time based on the \textit{CUDA Driver API}. None of the related works that utilize \textit{CUDA} are compiler independent, which is what inspired this combination.
 
 %yagal abstractionen
-We have provided abstractions for both the memory management in the form of a vector construction, and the construction of kernels in the form of actions. A developer does not have to perform manual allocation and copies on the device, our vector construction handles those tasks for her. A developer also do not have to learn the kernel abstraction of a lower level framework such as \textit{CUDA} or \textit{OpenCL}, as she can apply transformations on our vectors using our actions as building blocks to express the kernel logic.
+We have provided abstractions for both the memory management in the form of a vector construction, and the construction of kernels in the form of actions. A developer does not have to perform manual allocation and copies on the device, our vector construction handles those tasks for her. A developer also does not have to learn the kernel abstraction of a lower level framework such as \textit{CUDA} or \textit{OpenCL}, as she can apply transformations on \textit{YAGAL} vectors using the actions as building blocks to express the kernel logic.
 
 %llvm smadder brug
-We have utilized the \textit{LLVM} library to provide an intermediate representation, for our generated kernels. For our run-time \textit{PTX} code generation, we have made a single purpose re-implementation of \textit{LLVM llc}, which get packaged in the final executable.
+We have utilized the \textit{LLVM} library to provide an intermediate representation, for our generated kernels. For our run-time \textit{PTX} code generation, we have made a single purpose re-implementation of \textit{LLVM llc}, which gets packaged in the final executable.
 
 %hvilke problemer opdagede vi? og vi præsenterer løsningsforslag
 We have discovered that targeting a language that is not \textit{OpenCL} without introducing a compiler results in anonymous functions being problematic to implement. We have proposed a set of possible solution strategies for this problem, including the expected difficulty and implications.
 
 \todo{konkluder betragtninger}
-Finally we conclude that it is indeed possible to create a compiler-independent framework that utilize the \textit{CUDA Driver API}, but when high level abstractions are needed, those require significantly more work to implement compared to other designs.
+Finally we conclude that it is indeed possible to create a compiler-independent framework that utilizes the \textit{CUDA Driver API}, but when high level abstractions are needed, those require significantly more work to implement compared to other designs.
