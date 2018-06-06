@@ -1,0 +1,169 @@
+\chapter{Kernel Launch Parameter Test} \label{app:defaultKernelParams}
+
+Code used to measure:
+\begin{lstlisting}
+void cpuTest(){
+    std::vector<float> src(1 << 29);
+    std::srand(0);
+    std::generate(src.begin(), src.end(), std::rand);
+
+    auto t0 = Clock::now();
+    std::transform(src.begin(), src.end(), src.begin(), [](float x){return x+1;});
+    auto t1 = Clock::now();
+
+    std::cout 
+        << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms" 
+        << " on cpu:"
+        << std::endl;
+}
+
+void defaultParamterTest(){
+    std::vector<float> src(1 << 29);
+    std::srand(0);
+    std::generate(src.begin(), src.end(), std::rand);
+    yagal::Vector<float> v(src);
+
+    auto ptx = v.add(1).exportPtx();
+
+    for(int x = 1; x <= 1024; x *= 2){
+        for(int y = 1; y <= 1024; y *= 2){
+            auto t0 = Clock::now();
+            v.exec(ptx, {}, {x,1,1}, {y,1,1});
+            auto t1 = Clock::now();
+
+            std::cout 
+              << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << " ms" 
+              << " with "
+              << "blockDim: {" << x <<",1,1}, gridDim: {" << y << ",1,1}: "
+              << std::endl;
+        }
+    }
+}
+\end{lstlisting}
+
+Output of both functions, after fixing indentation and sorting by ascending times:
+
+\begin{lstlisting}
+21    ms with blockDim: {1024,1,1}, gridDim: {1024,1,1}
+21    ms with blockDim: {1024,1,1}, gridDim: {512,1,1}
+21    ms with blockDim: {512,1,1},  gridDim: {1024,1,1}
+22    ms with blockDim: {1024,1,1}, gridDim: {256,1,1}
+22    ms with blockDim: {128,1,1},  gridDim: {1024,1,1}
+22    ms with blockDim: {256,1,1},  gridDim: {1024,1,1}
+22    ms with blockDim: {256,1,1},  gridDim: {512,1,1}
+22    ms with blockDim: {512,1,1},  gridDim: {512,1,1}
+23    ms with blockDim: {1024,1,1}, gridDim: {128,1,1}
+23    ms with blockDim: {128,1,1},  gridDim: {128,1,1}
+23    ms with blockDim: {256,1,1},  gridDim: {64,1,1}
+23    ms with blockDim: {512,1,1},  gridDim: {256,1,1}
+24    ms with blockDim: {1024,1,1}, gridDim: {16,1,1}
+24    ms with blockDim: {1024,1,1}, gridDim: {64,1,1}
+24    ms with blockDim: {128,1,1},  gridDim: {512,1,1}
+24    ms with blockDim: {256,1,1},  gridDim: {256,1,1}
+24    ms with blockDim: {512,1,1},  gridDim: {128,1,1}
+24    ms with blockDim: {512,1,1},  gridDim: {32,1,1}
+24    ms with blockDim: {64,1,1},   gridDim: {1024,1,1}
+24    ms with blockDim: {64,1,1},   gridDim: {256,1,1}
+27    ms with blockDim: {1024,1,1}, gridDim: {32,1,1}
+27    ms with blockDim: {128,1,1},  gridDim: {256,1,1}
+27    ms with blockDim: {256,1,1},  gridDim: {128,1,1}
+27    ms with blockDim: {32,1,1},   gridDim: {1024,1,1}
+27    ms with blockDim: {512,1,1},  gridDim: {64,1,1}
+27    ms with blockDim: {64,1,1},   gridDim: {512,1,1}
+29    ms with blockDim: {128,1,1},  gridDim: {64,1,1}
+29    ms with blockDim: {256,1,1},  gridDim: {32,1,1}
+29    ms with blockDim: {32,1,1},   gridDim: {256,1,1}
+29    ms with blockDim: {512,1,1},  gridDim: {16,1,1}
+29    ms with blockDim: {64,1,1},   gridDim: {128,1,1}
+30    ms with blockDim: {1024,1,1}, gridDim: {8,1,1}
+31    ms with blockDim: {32,1,1},   gridDim: {512,1,1}
+46    ms with blockDim: {128,1,1},  gridDim: {32,1,1}
+46    ms with blockDim: {32,1,1},   gridDim: {128,1,1}
+46    ms with blockDim: {64,1,1},   gridDim: {64,1,1}
+47    ms with blockDim: {16,1,1},   gridDim: {1024,1,1}
+47    ms with blockDim: {256,1,1},  gridDim: {16,1,1}
+47    ms with blockDim: {512,1,1},  gridDim: {8,1,1}
+49    ms with blockDim: {1024,1,1}, gridDim: {4,1,1}
+55    ms with blockDim: {16,1,1},   gridDim: {256,1,1}
+57    ms with blockDim: {16,1,1},   gridDim: {512,1,1}
+77    ms with blockDim: {32,1,1},   gridDim: {64,1,1}
+77    ms with blockDim: {64,1,1},   gridDim: {32,1,1}
+78    ms with blockDim: {128,1,1},  gridDim: {16,1,1}
+78    ms with blockDim: {256,1,1},  gridDim: {8,1,1}
+80    ms with blockDim: {512,1,1},  gridDim: {4,1,1}
+83    ms with blockDim: {1024,1,1}, gridDim: {2,1,1}
+87    ms with blockDim: {16,1,1},   gridDim: {128,1,1}
+91    ms with blockDim: {8,1,1},    gridDim: {1024,1,1}
+104   ms with blockDim: {8,1,1},    gridDim: {512,1,1}
+109   ms with blockDim: {8,1,1},    gridDim: {256,1,1}
+132   ms with blockDim: {4,1,1},    gridDim: {1024,1,1}
+141   ms with blockDim: {32,1,1},   gridDim: {32,1,1}
+142   ms with blockDim: {128,1,1},  gridDim: {8,1,1}
+142   ms with blockDim: {64,1,1},   gridDim: {16,1,1}
+143   ms with blockDim: {256,1,1},  gridDim: {4,1,1}
+144   ms with blockDim: {512,1,1},  gridDim: {2,1,1}
+147   ms with blockDim: {16,1,1},   gridDim: {64,1,1}
+148   ms with blockDim: {1024,1,1}, gridDim: {1,1,1}
+170   ms with blockDim: {4,1,1},    gridDim: {512,1,1}
+171   ms with blockDim: {4,1,1},    gridDim: {256,1,1}
+171   ms with blockDim: {8,1,1},    gridDim: {128,1,1}
+226   ms with blockDim: {2,1,1},    gridDim: {1024,1,1}
+282   ms with blockDim: {32,1,1},   gridDim: {16,1,1}
+283   ms with blockDim: {128,1,1},  gridDim: {4,1,1}
+283   ms with blockDim: {16,1,1},   gridDim: {32,1,1}
+283   ms with blockDim: {256,1,1},  gridDim: {2,1,1}
+283   ms with blockDim: {512,1,1},  gridDim: {1,1,1}
+283   ms with blockDim: {64,1,1},   gridDim: {8,1,1}
+291   ms with blockDim: {2,1,1},    gridDim: {256,1,1}
+291   ms with blockDim: {4,1,1},    gridDim: {128,1,1}
+291   ms with blockDim: {8,1,1},    gridDim: {64,1,1}
+299   ms with blockDim: {2,1,1},    gridDim: {512,1,1}
+416   ms with blockDim: {1,1,1},    gridDim: {1024,1,1}
+551   ms with blockDim: {1,1,1},    gridDim: {512,1,1}
+553   ms with blockDim: {1,1,1},    gridDim: {256,1,1}
+557   ms with blockDim: {8,1,1},    gridDim: {32,1,1}
+558   ms with blockDim: {2,1,1},    gridDim: {128,1,1}
+559   ms with blockDim: {16,1,1},   gridDim: {16,1,1}
+559   ms with blockDim: {32,1,1},   gridDim: {8,1,1}
+559   ms with blockDim: {4,1,1},    gridDim: {64,1,1}
+560   ms with blockDim: {64,1,1},   gridDim: {4,1,1}
+562   ms with blockDim: {128,1,1},  gridDim: {2,1,1}
+565   ms with blockDim: {256,1,1},  gridDim: {1,1,1}
+1095  ms with blockDim: {1,1,1},    gridDim: {128,1,1}
+1098  ms with blockDim: {4,1,1},    gridDim: {32,1,1}
+1099  ms with blockDim: {2,1,1},    gridDim: {64,1,1}
+1100  ms with blockDim: {16,1,1},   gridDim: {8,1,1}
+1100  ms with blockDim: {8,1,1},    gridDim: {16,1,1}
+1105  ms with blockDim: {32,1,1},   gridDim: {4,1,1}
+1111  ms with blockDim: {64,1,1},   gridDim: {2,1,1}
+1112  ms with blockDim: {128,1,1},  gridDim: {1,1,1}
+2151  ms with blockDim: {2,1,1},    gridDim: {32,1,1}
+2167  ms with blockDim: {1,1,1},    gridDim: {64,1,1}
+2167  ms with blockDim: {4,1,1},    gridDim: {16,1,1}
+2179  ms with blockDim: {8,1,1},    gridDim: {8,1,1}
+2193  ms with blockDim: {32,1,1},   gridDim: {2,1,1}
+2200  ms with blockDim: {64,1,1},   gridDim: {1,1,1}
+2214  ms with blockDim: {16,1,1},   gridDim: {4,1,1}
+4258  ms with blockDim: {1,1,1},    gridDim: {32,1,1}
+4294  ms with blockDim: {4,1,1},    gridDim: {8,1,1}
+4324  ms with blockDim: {2,1,1},    gridDim: {16,1,1}
+4366  ms with blockDim: {8,1,1},    gridDim: {4,1,1}
+4436  ms with blockDim: {16,1,1},   gridDim: {2,1,1}
+4436  ms with blockDim: {32,1,1},   gridDim: {1,1,1}
+8514  ms with blockDim: {2,1,1},    gridDim: {8,1,1}
+8685  ms with blockDim: {8,1,1},    gridDim: {2,1,1}
+8698  ms with blockDim: {4,1,1},    gridDim: {4,1,1}
+8847  ms with blockDim: {16,1,1},   gridDim: {1,1,1}
+8901  ms with blockDim: {1,1,1},    gridDim: {16,1,1}
+10134 ms on cpu
+16857 ms with blockDim: {1,1,1},    gridDim: {8,1,1}
+17076 ms with blockDim: {2,1,1},    gridDim: {4,1,1}
+17216 ms with blockDim: {8,1,1},    gridDim: {1,1,1}
+17247 ms with blockDim: {4,1,1},    gridDim: {2,1,1}
+26513 ms with blockDim: {1,1,1},    gridDim: {4,1,1}
+26644 ms with blockDim: {2,1,1},    gridDim: {2,1,1}
+26793 ms with blockDim: {4,1,1},    gridDim: {1,1,1}
+45750 ms with blockDim: {1,1,1},    gridDim: {2,1,1}
+46143 ms with blockDim: {2,1,1},    gridDim: {1,1,1}
+84420 ms with blockDim: {1,1,1},    gridDim: {1,1,1}
+\end{lstlisting}
