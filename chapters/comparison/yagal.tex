@@ -1,64 +1,17 @@
 \section{YAGAL}
 The evaluation of \textit{YAGAL} is contained in this section. First the code for the demo application is shown and explained, followed by the general evaluation and the usability evaluation. The last subsection is a summary of the evaluation of \textit{YAGAL} which will be used in the comparison in section \ref{sec:comparisoncomparison}.
 
-\subsection{Code of demo application}
-Listing \ref{code:compYagal} shows \textit{SAXPY} implemented in \textit{YAGAL}. The size of the \texttt{yagal::vector}s are set at line \ref{code:compYagalShift} by bit-shifting 1 by 29, and the \texttt{yagal::vector}s are filled with random data at line \ref{code:compYagalFillBegin} and \ref{code:compYagalFillEnd} by utilizing \texttt{std::generate}. The \texttt{yagal::vector}s are then instantiated at line \ref{code:compYagalVecBegin} and \ref{code:compYagalVecEnd} based on the generated \texttt{std::vector}s.
+%\subsection{Code of demo application}
 
-The \textit{SAXPY} computation is set up at line \ref{code:compYagalChain} by invoking a chain of functions on the \texttt{yagal::vector} called \texttt{d\_x}. The chained functions are \texttt{multiply()} with argument \texttt{a}, then an \texttt{add()} with the argument \texttt{d\_y}. Finally the kernel is constructed and executed by the lastly chained function \textit{exec()}.
 
-\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY}.}, label={code:compYagal}]
-#include "yagal/vector.hpp"
-#include <vector>
-#include <iostream>
+%\subsection{General Evaluation}
+%In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{YAGAL}. We interpret the results of the general evaluation as a part of the evaluation summary in section \ref{sec:yagalEvalSum}.
 
-int main(){
-    size_t N = 1 << 29;~\label{code:compYagalShift}~
-    float a = 11;
+%\subsubsection[*]{Lines of code}
+%\textit{SAXPY} has been achieved in \textit{YAGAL} with 9 lines of code if done with the simple kernel building and execution, and 10 lines if \textit{PTX} code is exported and used. Of these lines 8 are used to prepare the data.
 
-    std::vector<float> h_x(N);
-    std::vector<float> h_y(N);
-
-    std::generate(h_x.begin(), h_x.end(), rand);~\label{code:compYagalFillBegin}~
-    std::generate(h_y.begin(), h_y.end(), rand);~\label{code:compYagalFillEnd}~
-
-    yagal::Vector<float> d_x(h_x);~\label{code:compYagalVecBegin}~
-    yagal::Vector<float> d_y(h_y);~\label{code:compYagalVecEnd}~
-    
-    d_x.multiply(a).add(d_y).exec();~\label{code:compYagalChain}~
-}
-\end{lstlisting}
-
-Listing \ref{code:compSaxpyYagalPtx} shows how \textit{YAGAL} can be used to generate and store \textit{PTX} code and utilize the \texttt{exec()} function to execute it upon the given collection.
-
-\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY} utilizing \textit{PTX} generation.}, label={code:compSaxpyYagalPtx}]
-//.. Omitted ..//
-
-int main(){
-    //.. Omitted ..//
-
-    auto ptx = d_x.multiply(a).add(d_y).exportPtx();
-
-    d_x.exec(ptx, {d_y.getDevicePtrPtr()});
-}
-\end{lstlisting}
-
-\subsection{General Evaluation}
-In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{YAGAL}. We interpret the results of the general evaluation as a part of the evaluation summary in section \ref{sec:yagalEvalSum}.
-
-\subsubsection[*]{Performance}
-We have measured performance on the execution of the \textit{SAXPY} code shown above in listing \ref{code:compYagal}, and in listing \ref{code:compSaxpyYagalPtx}.
-
-Here are the time measured for listing \ref{code:compYagal}:
-\begin{description}
-    \item[With compilation:] 57,933 ms
-    \item[Without compilation:] 35,011 ms
-\end{description}
-
-\subsubsection[*]{Lines of code}
-\textit{SAXPY} has been achieved in \textit{YAGAL} with 9 lines of code if done with the simple kernel building and execution, and 10 lines if \textit{PTX} code is exported and used. Of these lines 8 are used to prepare the data.
-
-\subsubsection[*]{Size of executable}
-The compilation of \textit{SAXPY} with \textit{YAGAL} results in an executable with size of 48 MB. The compilation time when including \textit{YAGAL} is 43 seconds.
+%\subsubsection[*]{Size of executable}
+%The compilation of \textit{SAXPY} with \textit{YAGAL} results in an executable with size of 48 MB. The compilation time when including \textit{YAGAL} is 43 seconds.
 
 \subsection{Usability Evaluation}
 In this section we consider the cognitive dimensions presented in section \ref{sec:vocab}. For \textit{YAGAL} we have implementation specific information that we do not have about the other frameworks, and these influence our evaluation.

@@ -1,12 +1,195 @@
 \section{General Comparison}
-The General part of the comparison serves as a static metric for comparison of the frameworks. It will show how each of the frameworks perform, and will be used to show how \textit{YAGAL} competes against these. 
+The General part of the comparison serves as a static metric for comparison of the frameworks. It shows how each of the frameworks perform, and is used to show how \textit{YAGAL} measures against these. This section contain the implementation of the \textit{SAXPY} computation for the CPU, \textit{CUDA}, \textit{YAGAL}, and \textit{Thrust} with the corresponding measurements. The section ends with a comparison between \textit{YAGAL} and \textit{Thrust} with the CPU and \textit{CUDA} measurements as a baseline.
 
-The general part of the comparison consists of:
+The measurements for each implementation consist of:
 \begin{description}
 \item[Performance]\hfill\\
-Compare the execution time of a demo application.
+The execution time of the demo application.
 \item[Lines of code]\hfill\\
-Count how many lines of code necessary for the implementation of the demo application.
+A count how many lines of code necessary for the implementation of the demo application.
 \item[Size of executable]\hfill\\
-Compare how much a given framework influences the size of the final executable.
+The size of the compiled executable.
 \end{description}
+
+\subsection{CPU}
+Listing \ref{code:cpuSaxpy} contain the implementation of \textit{SAXPY} executing on the CPU. The CPU implementation serve as a reference point for the overall comparison. The size of the vectors are set at line \ref{code:cpuSaxpy:size} by bit-shifting 1 by 29, and the constant \texttt{a} is set in the following line. The vectors are initialized beginning at line \ref{code:cpuSaxpy:alloc} and are filled with random values beginning at line \ref{code:cpuSaxpy:rand}. The computation is performed at line \ref{code:cpuSaxpy:saxpy}.
+
+\begin{lstlisting}[caption={CPU \textit{SAXPY} implementation.}, label={code:cpuSaxpy}]
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
+int main(void)
+{
+    size_t N = 1 << 29; ~\label{code:cpuSaxpy:size}~
+    float a = 11;
+
+    std::vector<float> x(N);~\label{code:cpuSaxpy:alloc}~
+    std::vector<float> y(N);
+
+    std::generate(x.begin(), x.end(), rand);~\label{code:cpuSaxpy:rand}~
+    std::generate(y.begin(), y.end(), rand);
+
+    std::transform(x.begin(), x.end(), y.begin(), x.begin(), [=](float x, float y)->float{return a * x + y;});~\label{code:cpuSaxpy:saxpy}~
+
+    return 0;
+}
+\end{lstlisting}
+
+The measurements for the CPU \textit{SAXPY} computation in listing \ref{code:cpuSaxpy}:
+\begin{description}
+    \item[Performance:] 12931,49 milliseconds
+    \item[Lines of code:] 7 
+    \item[Size of executable:] 24 kilobytes
+\end{description}
+
+\subsection{CUDA}
+Listing \ref{code:cudaSaxpy} contain the \textit{CUDA} implementation of the \textit{SAXPY}. The \textit{CUDA} implementation serve as a reference point for the overall comparison. The kernel function for \textit{SAXPY} is defined beginning at line \ref{code:cudaSaxpy:kernel}. The size of the vectors are set at line \ref{code:cudaSaxpy:size} by bit-shifting 1 by 29, and the constant \texttt{a} is set in the following line. The vectors are initialized beginning at line \ref{code:cudaSaxpy:init} and filled with random data beginning at line \ref{code:cudaSaxpy:rand}. Memory for the vectors are allocated on device beginning at line \ref{code:cudaSaxpy:cudamal} and the data are copied to device beginning at line \ref{code:cudaSaxpy:device}. The \textit{SAXPY} computation kernel is then performed at line \ref{code:cudaSaxpy:exec} and copied back to host beginning at line \ref{code:cudaSaxpy:host}.
+
+\begin{lstlisting}[caption={\textit{CUDA} \textit{SAXPY} Implementation.}, label={code:cudaSaxpy}]
+#include <iostream>
+
+__global__ void kernel(int n, float a, float* x, float* y){~\label{code:cudaSaxpy:kernel}~
+    for( int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x){
+        x[i] = a * x[i] + y[i];
+    }
+}
+
+int main(void){
+    int N = 1 << 29;~\label{code:cudaSaxpy:size}~
+    float a = 11.0;
+
+    float *x, *y, *d_x, *d_y;~\label{code:cudaSaxpy:init}~
+    x = (float*)malloc(N*sizeof(float));
+    y = (float*)malloc(N*sizeof(float));
+
+    for(int i = 0; i < N; i++){~\label{code:cudaSaxpy:rand}~
+        x[i] = 1;
+        y[i] = 2;
+    }
+
+    cudaMalloc(&d_x, N*sizeof(float));~\label{code:cudaSaxpy:cudamal}~
+    cudaMalloc(&d_y, N*sizeof(float));
+
+    cudaMemcpy(d_x, x, N*sizeof(float), cudaMemcpyHostToDevice);~\label{code:cudaSaxpy:device}~
+    cudaMemcpy(d_y, y, N*sizeof(float), cudaMemcpyHostToDevice);
+
+    kernel<<<128, 128>>>(N, a, d_x, d_y);~\label{code:cudaSaxpy:exec}~
+
+    cudaMemcpy(x, d_x, N*sizeof(float), cudaMemcpyDeviceToHost); ~\label{code:cudaSaxpy:host}~
+    cudaMemcpy(y, d_y, N*sizeof(float), cudaMemcpyDeviceToHost);
+}
+\end{lstlisting}
+\todo{Fix med rand}
+
+The measurements for the \textit{CUDA} \textit{SAXPY} computation in listing \ref{code:cudaSaxpy}:
+\begin{description}
+    \item[Performance:] 0,044 milliseconds
+    \item[Lines of code:] 19
+    \item[Size of executable:] 572 kilobytes
+\end{description}
+
+\subsection{YAGAL}
+Listing \ref{code:compYagal} shows \textit{SAXPY} implemented in \textit{YAGAL}. The size of the \texttt{yagal::vector}s are set at line \ref{code:compYagalShift} by bit-shifting 1 by 29, and the \texttt{yagal::vector}s are filled with random data at line \ref{code:compYagalFillBegin} and \ref{code:compYagalFillEnd} by utilizing \texttt{std::generate}. The \texttt{yagal::vector}s are then instantiated at line \ref{code:compYagalVecBegin} and \ref{code:compYagalVecEnd} based on the generated \texttt{std::vector}s.
+
+The \textit{SAXPY} computation is set up at line \ref{code:compYagalChain} by invoking a chain of functions on the \texttt{yagal::vector} called \texttt{d\_x}. The chained functions are \texttt{multiply()} with argument \texttt{a}, then an \texttt{add()} with the argument \texttt{d\_y}. Finally the kernel is constructed and executed by the final function in the chain; \textit{exec()}.
+
+\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY}.}, label={code:compYagal}]
+#include "yagal/vector.hpp"
+#include <vector>
+#include <iostream>
+
+int main(){
+    size_t N = 1 << 29;~\label{code:compYagalShift}~
+    float a = 11;
+
+    std::vector<float> h_x(N);
+    std::vector<float> h_y(N);
+
+    std::generate(h_x.begin(), h_x.end(), rand);~\label{code:compYagalFillBegin}~
+    std::generate(h_y.begin(), h_y.end(), rand);~\label{code:compYagalFillEnd}~
+
+    yagal::Vector<float> d_x(h_x);~\label{code:compYagalVecBegin}~
+    yagal::Vector<float> d_y(h_y);~\label{code:compYagalVecEnd}~
+    
+    d_x.multiply(a).add(d_y).exec();~\label{code:compYagalChain}~
+}
+\end{lstlisting}
+
+Listing \ref{code:compSaxpyYagalPtx} shows how \textit{YAGAL} can be used to generate and store \textit{PTX} code and utilize the \texttt{exec()} function to execute it upon the given collection.
+
+\begin{lstlisting}[caption={\textit{YAGAL} \textit{SAXPY} utilizing \textit{PTX} generation.}, label={code:compSaxpyYagalPtx}]
+//.. Omitted ..//
+
+int main(){
+    //.. Omitted ..//
+
+    auto ptx = d_x.multiply(a).add(d_y).exportPtx();
+
+    d_x.exec(ptx, {d_y.getDevicePtrPtr()});
+}
+\end{lstlisting}
+
+The measurements for the \textit{YAGAL} \textit{SAXPY} computation in listing \ref{code:cpuSaxpy}:
+\begin{description}
+    \item[Performance with PTX generation:] 57,933 ms
+    \item[Performance without PTX generation:] 35,011 ms
+    \item[Lines of code with PTX generation:] 9 
+    \item[Lines of code with PTX generation:] 10 
+    \item[Size of executable:] 48 megabyte
+\end{description}
+
+%\textit{SAXPY} has been achieved in \textit{YAGAL} with 9 lines of code if done with the simple kernel building and execution, and 10 lines if \textit{PTX} code is exported and used. Of these lines 8 are used to prepare the data.
+
+%The compilation of \textit{SAXPY} with \textit{YAGAL} results in an executable with size of 48 MB. The compilation time when including \textit{YAGAL} is 43 seconds.
+
+\subsection{Thrust}
+Listing \ref{code:thrustSaxpy} shows \textit{SAXPY} implemented in \textit{Thrust}. The vectors used for the computation are initialized as \texttt{host\_vector}s starting line \ref{code:thrustSaxpy:init} and they are filled with random data starting at line \ref{code:thrustSaxpy:fill}. The \texttt{host\_vectors} are then copied to device starting at line \ref{code:thrustSaxpy:copyDev} by initializing \texttt{device\_vector}s. The \textit{SAXPY} computation are then executed at line \ref{code:thrustSaxpy:execute} by using \textit{Thrust}'s \texttt{transform}, which takes iterators of the \texttt{device\_vector}s and an anonymous device function. Finally the result are copied back to host at line \ref{code:thrustSaxpy:copyHost}.
+
+\begin{lstlisting}[caption={\textit{Thrust} \textit{SAXPY} example.}, label={code:thrustSaxpy}]
+size_t N = 1 << 29;
+float a = 11;
+
+//initialize host vectors
+thrust::host_vector<float> h_x(N); ~\label{code:thrustSaxpy:init}~
+thrust::host_vector<float> h_y(N);
+
+//fill with random data
+std::generate(h_x.begin(), h_x.end(), rand);~\label{code:thrustSaxpy:fill}~
+std::generate(h_y.begin(), h_y.end(), rand);
+
+//copy to device
+thrust::device_vector<float> d_x = h_x;~\label{code:thrustSaxpy:copyDev}~
+thrust::device_vector<float> d_y = h_y;
+
+//perform saxpy
+thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_x.begin(), [=]__device__(float x, float y){return a * x + y;}); ~\label{code:thrustSaxpy:execute}~
+
+//copy results back to host vector
+h_x = d_x;~\label{code:thrustSaxpy:copyHost}~
+\end{lstlisting}
+
+The measurements for the \textit{Thrust} \textit{SAXPY} computation in listing \ref{code:cpuSaxpy}:
+\begin{description}
+    \item[Performance:] 0,103 ms
+    \item[Lines of code:] 10 
+    \item[Size of executable:] 860 kilobyte
+\end{description}
+
+\subsection{Comparison}
+
+\subsubsection[*]{Performance}
+The Highest execution time is the CPU implementation with 12931.49 milliseconds, and the lowest execution time is \textit{CUDA} with 0,044 milliseconds. \textit{Thrust}, with an execution time of 0.103 milliseconds, is 2.34 times slower than \textit{CUDA}.
+
+The two execution times of \textit{YAGAL}, which are 57.933 and 35,011 with and without \textit{PTX} generation respectively, are both multiple times slower than \textit{Thrust}, which is interesting, as it shows that there is some major difference between the \textit{PTX} we generate, and the code that get executed through \textit{Thrust}.
+
+\subsubsection[*]{Lines of code}
+There are no major differences in lines of code between the implementations. The CPU implementations is 7 lines and \textit{YAGAL} and \textit{Thrust} is 10 lines each. The only outlier are \textit{CUDA}, taking 19 lines of code. 
+
+\textit{CUDA} is, based on the measurement, more verbose the rest. This is due to that a kernel function must be explicitly defined. Both \textit{YAGAL} and \textit{Thrust} handles kernel construction implicitly.
+
+\subsubsection[*]{Size of executable}
+The smallest of the executeables are the CPU implementation at 24 kilobytes. The \textit{CUDA} and \textit{Thrust} executables are more even in size with the sizes of 572 kilobytes and 860 kilobyte respectively. The outlier in these measurements are \textit{YAGAL} with a size of 48 megabytes.
+
+The large size of \textit{YAGAL}'s executable is a result of including \textit{LLVM} headers, which even resulted in a ten times larger executable, when it was not stripped for debug symbols, after compilation. We do not consider the size of the executable a big problem, as a machine with a GPU, doing computation of a caliber where GPGPU can be useful, probably have the memory available. 
+

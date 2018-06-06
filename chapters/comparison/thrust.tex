@@ -3,63 +3,58 @@ The evaluation of \textit{Thrust} is contained in this section. First the code f
 
 \subsection{Code of demo application}
 
-\begin{lstlisting}[caption={\textit{Thrust} \textit{SAXPY} example.}, label={code:thrustSaxpy}]
-size_t N = 1024;
-float a = 10;
+%\subsection{General Evaluation}
+%In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{Thrust}. We interpret the results of the general evaluation as a part of the evaluation summary in section \ref{sec:thrustEvalSum}.
 
-//cuda classifier on lambda
-auto func = [=]__device__(float x, float y){return a * x + y;};
 
-//initialize host vectors
-thrust::host_vector<float> x(N);
-thrust::host_vector<float> y(N);
-thrust::host_vector<float> z(N);
+%\subsubsection[*]{Lines of code}
+%\textit{SAXPY} can be written in \textit{Thrust} with 10 lines of code, and the core computation can be written on a single line.
 
-//fill with random data
-std::generate(x.begin(), x.end(), rand);
-std::generate(y.begin(), y.end(), rand);
-
-//copy to device
-thrust::device_vector<float> d_x = x;
-thrust::device_vector<float> d_y = y;
-
-//perform saxpy
-thrust::transform(d_x.begin(), d_x.end(), d_y.begin(), d_y.begin(), func); ~\label{code:thrustSaxpy:execute}~
-
-//copy results back to host vector
-z = d_y;
-\end{lstlisting}
-
-\subsection{General Evaluation}
-
-Performance: 
-
-Lines of code: 
-
-Size of executable: 
+%\subsubsection[*]{Size of executable}
+%The resulting executable after compilation is of size 500 KB.
 
 \subsection{Usability Evaluation}
+In this section we consider the cognitive dimensions of notations presented in section \ref{sec:vocab}. The evaluation is based on our exposure to and experiences with \textit{Thrust}.
 
 \subsubsection[*]{Viscosity}
+\textit{Thrust} have low viscosity, as there are no barriers to change. A developer do not have to adjust the code in multiple places to adapt to changes. 
 
 \subsubsection[*]{Visibility}
+There are generally a high degree of visibility in \textit{Thrust}. Data management is intuitive since a developer is given explicit control in the form of \texttt{host\_vector}s and \texttt{device\_vector}s, and are made responsible for copying the data between host and device. 
+
+There are some constructions where specific internals are hard to infer such as the transform function, that applies a transformation on all elements of a vector. It is here difficult to determine how many threads are executed, and how different memory layers used.
 
 \subsubsection[*]{Premature Commitment}
+\textit{Thrust} enforces no order in which tasks must be completed. Anonymous functions for instance can be declared when it is needed or it can be prepared in advance. The only enforced task is that \textit{device\_vector}s must be prepared before use.
 
 \subsubsection[*]{Hidden Dependencies}
+The first call to the \texttt{Thrust} API involves that activity on device, also starts an instance of the \textit{CUDA Run-time API} causing a time overhead. Even though the overhead is negligible, it is important to keep in mind when timing tasks.
 
 \subsubsection[*]{Role-expressiveness and Consistency}
+\textit{Thrust} imitates \textit{STL} constructs, and a developer can therefore have expectations as to how things should be done. This impacts role-expressiveness and consistency both positively and negatively. Positive wise a developer will feel familiar with the constructs of \textit{Thrust}. Negative wise, it is not in every case that the constructs of \texttt{Thrust} behaves the same as in \textit{STL}, due to them being parallelized expectations of order of operations can fail.
 
 \subsubsection[*]{Error-proneness}
+Due to the similarity to to \textit{STL}, a developer might have expectation as to how the constructs function, which impacts error-proneness negatively.
+
+Due to the introduction of an extra set of vectors for each computation, the number of iterators required to perform tasks are also doubled and iterators are already a source for hard to debug problems.
 
 \subsubsection[*]{Abstraction}
+\textit{Thrust} provides various higher-order functions for general purpose algorithms. If a specific function is needed that can not be built using their abstractions, then it required by a developer to write kernel functions in \textit{CUDA C}. 
 
 \subsubsection[*]{Closeness of mapping}
+As \textit{Thrust} provide a higher abstraction level than \textit{CUDA}, it hides the underlying details, such as the execution model, and memory layers. This is significant step away from the underlying model.
 
 \subsubsection[*]{Diffuseness}
+Anonymous function can be verbose in Thrust, as they are defined in functors rather than \textit{C++} lambdas, unless the compiler have been passed the \texttt{--expt-extended-lambda} flag. This flag will allow it to pass \textit{C++} lambdas as shown in the \textit{Thrust} implementation in listing \ref{code:thrustSaxpy}.
 
 \subsubsection[*]{Hard Mental Operations}
+Since \textit{Thrust} manages the amount of threads and blocks, as well as memory allocations, there are fewer mental operations required when compared to working directly in \textit{CUDA}. 
 
 \subsubsection[*]{Progressive Evaluations}
+Unlike \textit{CUDA}, \textit{Thrust} does not support any print statements in kernels, making debugging more difficult. 
+\todo{SMURTE}
 
-\subsection{Summary}
+\subsection{Summary}\label{sec:thrustEvelSum}
+Based on the general comparison, thrust completes the \textit{SAXPY} compilation a STORT TAL times faster than the equivalent CPU implementation, and the \textit{SAXPY} computation can be expressed with a single line of code.
+
+\textit{Thrust} have, in terms of usability, mainly positive areas. The few negatives we have noted include \textit{Thrust}s similarity to \textit{STL}, which can raise false expectations for a developer, and that the expressions of \textit{Thrust} are not as expressive as kernels written directly in \textit{CUDA}. 

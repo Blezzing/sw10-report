@@ -18,8 +18,8 @@ Not all of the dimensions are equally interesting when used to evaluate an API, 
     Describes constraints for the order in which a developer must complete tasks. This includes whether the developer is forced to perform tasks in a certain order, make premature decisions before information is made available, and whether the decision of a developer can be reversed or changed at a later stage of the process.
     \item[Hidden dependencies]\hfill\\ % Nævn exec() for yagal
     Describes the dependencies between entities in the system where there is no transparent link for the developer. This includes whether changes in one part of the system lead to consequences in another, and whether dependencies between components are made clear to the developer.
-    \item[Role-expressiveness]\hfill\\
-    Describes to what degree a developer can infer the purpose of an entity in the system and if they are consistent with the rest of the system. 
+    \item[Role-expressiveness and Consistency]\hfill\\
+    Describes to what degree a developer can infer the purpose of an entity in the system and if they are consistent with the rest of the system. This includes how intuitive the API is, whether the API can be used in multiple ways, and whether a developer, that has learned one part of the API, can reliably figure other parts of the API. 
     \item[Error-proneness]\hfill\\
     Describes whether the system could invite a developer to make mistakes, and if some of the constructs of the system could lead to misuse and result in errors. It also describes how the system handles and prevents developer errors.
     \item[Abstraction]\hfill\\
@@ -28,8 +28,6 @@ Not all of the dimensions are equally interesting when used to evaluate an API, 
     %Describes whether a system supports means for secondary notations.
     \item[Closeness of mapping]\hfill\\
     Describes the closeness of the system representation and the domain it models. For this comparison, it describes how the system relates and maps to working directly with the programming model of GPUs.  
-    \item[Consistency]\hfill\\
-    Describes how the semantic forms of the system are expressed and how consistent it is. This includes how intuitive the API is, whether the API can be used in multiple ways, and whether a developer, that has learned one part of the API, can reliably figure other parts of the API. 
     \item[Diffuseness]\hfill\\
     Describes the degree of verbosity of the system. This includes the display space needed to express functionality. We interpret this as the amount of code.
     \item[Hard mental operations]\hfill\\
