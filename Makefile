@@ -2,7 +2,7 @@
 #get mupdf to preview
 
 report:
-	latexmk -pdf
+	latexmk master.tex -pdf
 	make clean
 
 clean:
@@ -13,7 +13,7 @@ clean:
 	rm -f master.dvi
 
 smart:
-	latexmk -pvc -pdf
+	latexmk master.tex -pvc -pdf
 
 setup:
 	rsync --recursive latexmkrc $(HOME)/.config/latexmk
