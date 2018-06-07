@@ -53,11 +53,6 @@ The actions of \textit{YAGAL} make the way a developer expresses and execute ker
 \subsubsection[*]{Hard mental operations}
 The API of \textit{YAGAL} is based on actions, that can be perceived as building blocks, which gives a developer a mental model of the kernel she is executing. Due to the separation of logic into small actions, the mental operations required to express the logic have also been divided into more digestible pieces.
 
-\subsubsection[*]{Progressive evaluations}
-\textit{YAGAL} is dependent upon the \textit{C++} type system to provide feedback in case of inappropriate use. In cases where the API is used correctly, but the results are not as the developer expects, \textit{YAGAL} does not provide any tools for assistance.
-
-As the compilation of a program using \textit{YAGAL} is time consuming, the development feedback loop is slow.
-
 \subsection{Summary} \label{sec:yagalEvalSum}
 Based on the general comparison, \textit{YAGAL} completes the \textit{SAXPY} computation about 350 times faster than the corresponding single core CPU implementation, and the \textit{SAXPY} computation can be expressed with 1 to 2 lines of code. 
 
