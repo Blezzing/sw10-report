@@ -1,26 +1,26 @@
 \section{Usability Comparison} \label{sec:comparisoncomparison}
 This section contains the comparison between the usability of \textit{YAGAL} and \textit{Thrust}. 
 
-In general \textit{YAGAL} and \textit{Thrust} have multiple design decisions in common, such as the use of a vector class to model memory allocations and functions that work on those, and there are design decisions that are different. We emphasize the differences of the two frameworks below, and discuss the consequences for \textit{YAGAL}.
+In general, \textit{YAGAL} and \textit{Thrust} have multiple design decisions in common, such as the use of a vector class to model memory allocations and functions that work on those. We emphasize the differences of the two frameworks below, and discuss the consequences for \textit{YAGAL}.
 
 The viscosity of \textit{YAGAL} and \textit{Thrust} are similar, with an exception in regards to changes to the compiler. If the developer of \textit{Thrust} need to change compiler, she would have to compile the thrust component isolated from the rest of the project, as it require a specific compiler, namely \textit{nvcc}, where with \textit{YAGAL} it would be possible to simply compile it with the new compiler.
 
-The visibility of \textit{YAGAL} and \textit{Thrust} are different in the level of abstraction, and as such the use of actions make it more difficult to infer the logic of the underlying system, compared to the code written in \textit{Thrust}. Access to threads and blocks model is not possible in \textit{Thrust}, as it is in \textit{YAGAL}, which is interesting, as that is a lower level model that could be expected available in \textit{Thrust}.
+The visibility of \textit{YAGAL} and \textit{Thrust} are different in the level of abstraction, and the use of actions make it more difficult to infer the logic of the underlying system, compared to the code written in \textit{Thrust}. Access to threads and blocks model is not possible in \textit{Thrust}, as it is in \textit{YAGAL}, which is interesting, as that is a lower level model that could be expected available in \textit{Thrust}.
 
-In regards to premature commitment, \textit{YAGAL} require more than \textit{Thrust}, as he strict order that the code most follow to use \textit{YAGAL} require the developer to perform a commitment to how he solves a problem earlier than \textit{Thrust}.
+In regards to premature commitment, \textit{YAGAL} require more than \textit{Thrust}, as the strict order the code most follow to use \textit{YAGAL}, require the developer to perform a commitment to how she solves a problem earlier than \textit{Thrust}.
 
 \textit{Thrust} and \textit{YAGAL} are similar in regards to hidden dependencies, as both introduce an overhead at the first activity on the GPU.
 
-Role expressiveness is a case of the two frameworks being very different, but achieving similar results. We consider both to be clear about what the different constructs do, but where \textit{YAGAL} have possibly unexpected method overloading, \textit{Thrust} have a \textit{STL} inspired API, that sometimes might have surprising deviations from \textit{STL}.
+Role expressiveness is a case of the two frameworks being different, but achieving similar results. We consider both to be clear about what the different constructs do, but where \textit{YAGAL} have possibly unexpected method overloading, \textit{Thrust} have a \textit{STL} inspired API, that sometimes might have surprising deviations from \textit{STL}.
 
-In regards to error-proneness both \textit{Thrust} and \textit{YAGAL} have issues. \textit{Thrust} uses iterators, which is easy to do wrong for the developer. \textit{YAGAL} do not use iterators to avoid this issue, but introduces the exec function, which must be used to do any transformation, which can be easy to forget. An argument can be made for keeping using iterators, as developers of \textit{C++} already are used to those.
+In regards to error-proneness, both \textit{Thrust} and \textit{YAGAL} have issues. \textit{Thrust} uses iterators, which is a source of errors. \textit{YAGAL} do not use iterators in order to avoid this issuei Instead \textit{YAGAL} introduces the exec function, which must be used to do any transformation, which can be easy to forget. An argument can be made for iterators having less impact, as developers of \textit{C++} already are used to those.
 
 The biggest difference of the frameworks are in regards to abstraction. Where \textit{Thrust} is limited to use a set of general purpose higher order functions, \textit{YAGAL} does not implement such a feature. This strictly limits the abstractions that can be build around \textit{YAGAL}.
 
 The closeness of mapping is different between the frameworks. In \textit{YAGAL} we introduce the action abstraction, which make it further from the underlying logic, compared to \textit{Thrust} where the content of the lambdas are written in \textit{CUDA C}.
 
-The diffuseness of the both frameworks is low, as it is possible to compactly define and use kernels. Without enabling lambda support in \textit{Thrust} it does get more verbose and less compact.
+The diffuseness of the both frameworks is low, as it is possible to compactly define and use kernels. Without enabling lambda support in \textit{Thrust}, it does get more verbose and less compact.
 
-In regards to mental operations, both provide abstraction over thread and block definitions, and allow the developer to focus on the logic. If the developer is comfortable with the \textit{YAGAL} actions is what decides whether it is more or less mentally straining.
+In regards to hard mental operations, both frameworks provide abstraction over thread and block definitions, and allow the developer to focus on the logic. Whether the developer is comfortable with the \textit{YAGAL} actions, is what decides whether it is more or less mentally straining.
 
-The usability of the frameworks are comparable, with the major differences being in regards to the action abstraction \textit{YAGAL} provides. It is not fair to conclude that \textit{Thrust} have lower usability due to its strictly better support for abstraction by supporting anonymous functions, but we do consider actions as a good usability abstraction as it gives a simple mental model for issuing changes on an object.
+The usability of the frameworks are comparable, with the major differences being in regard to the action abstraction \textit{YAGAL} provides. It is not fair to conclude that \textit{Thrust} have lower usability due to its strictly better support for abstraction by supporting anonymous functions. We do, however, consider actions as a good usability abstraction as it gives a simple mental model for issuing changes on an object.

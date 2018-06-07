@@ -1,5 +1,5 @@
 \section{Queuing Actions} \label{cha:queueingActions}
-To modify a \texttt{yagal::Vector} we create a concept of actions. These actions contain the necessary information for generating a kernel, that executes the corresponding logic.
+To modify a \texttt{yagal::Vector}, we create a concept of actions. These actions contain the necessary information for generating a kernel, that executes the corresponding logic.
 
 An action is an intended task to be performed on the \texttt{yagal::Vector}, and is constructed as a result of a developer calling a function on the \texttt{yagal::Vector}. For instance, calling \texttt{myVector.add(5)} will result in an \texttt{AddAction} being created with a copy of the parameters, \texttt{5} in this example, needed to perform the calculation. The developer must then call \texttt{myVector.exec()} to perform all applied actions. We use the actions as the source of our code generation, as we generate code to perform exactly the content of the action.
 
@@ -36,6 +36,6 @@ Figure \ref{fig:actionClassDiagram} contain a class diagram of the inheritance f
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.7\linewidth]{chapters/implementation/figs/actionClassDiagram.png}
-    \caption{Class diagram for \textit{Action}}
+    \caption{Class diagram for \textit{Action}.}
     \label{fig:actionClassDiagram}
 \end{figure}

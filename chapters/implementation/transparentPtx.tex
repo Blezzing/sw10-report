@@ -1,12 +1,12 @@
-\section{Making PTX use more transparent}
-In the design at chapter \ref{cha:design} we mention that we want to allow execution of external \textit{PTX} code. We want to follow up on that and at the same time enable the user to work with the \textit{PTX} source in general. 
+\section{More Accessible PTX}
+In the design at chapter \ref{cha:design} we mention that we want to allow execution of external \textit{PTX} code. To do this, we implement functionality to execute custom \textit{PTX} and export of generated \textit{PTX}.
 
-We provide \textit{PTX} management through two functions on the \texttt{yagal::Vector}. The first is an overload of the \texttt{exec} function that instead of generating \textit{PTX} and executing it, just executes a given string of ptx. The second is a function that generates the \textit{PTX} based on the actions on a vector, but instead of executing it, returns it in a string.
+We provide \textit{PTX} management through two functions on the \texttt{yagal::Vector}. The first function is an overload of the \texttt{exec} function that, instead of generating \textit{PTX} and executing it, executes a given string of \textit{PTX}. The second function generates the \textit{PTX} based on the actions on a vector, but instead of executing it, returns it as a string.
 
 \subsection{Overload of exec}
 The \texttt{exec} overload is shown in listing \ref{lst:execOverload}. The parameters to the function are in order:
 \begin{description}
-\item[ptxSource]\hfill\\The ptx to execute as a \textit{STL} string.
+\item[ptxSource]\hfill\\The \textit{PTX} to execute as a \textit{STL} string.
 \item[otherVectors]\hfill\\A vector of the other relevant vectors \texttt{CUdeviceptr}s.
 \item[blockDimensions \& gridDimensions]\hfill\\The parameters used to start the kernel, these are optional and defaults to the values mentioned in section \ref{cha:execPtx}.
 \end{description}
@@ -77,13 +77,13 @@ std::string exportPtx(bool clearActions = true){
 \subsection{PTX Posibilities}
 Using raw \textit{PTX} it is possible to work around the build time from \textit{YAGAL}. Allowing the developer to control when to generate the \textit{PTX} and when to execute it separately can be beneficial in some cases.
 
-We have made some time measurements on different methods of the different ways a kernel can be created and executed with \textit{YAGAL}. The code we measured is shown in listing \ref{lst:timeBuild}. The purpose of the logic is to take a vector, and increment all values by one. Any measurements noted in this section are done on a machine with a \textit{GTX 970} GPU running \textit{Ubuntu 17.10} as operating system. They are only intended comparison relative to each other and should not be compared to other results on other setups.
+We have made some time measurements on different methods of the different ways a kernel can be created and executed with \textit{YAGAL}. The code we measured is shown in listing \ref{lst:timeBuild}. The purpose of the logic is to take a vector, and increment all values by one. Any measurements noted in this section are done on a test machine described in section \ref{sec:comparisonProc}. They are only intended comparison relative to each other and should not be compared to other results on other setups.
 
-On line \ref{lst:timeBuild:simple} we use the simplest form; we enqueue the add action with the value 1, and immediately generate and execute the kernel. This was measured to take 22.20 milliseconds.
+On line \ref{lst:timeBuild:simple} we use the simplest form; we queue the add action with the value 1, and immediately generate and execute the kernel. This was measured to take 22.20 milliseconds.
 
-On line \ref{lst:timeBuild:build} we only construct the ptx; we enqueue the add action with the value 1, as previously, and output the string to a variable. This was measured to take 21.92 milliseconds.
+On line \ref{lst:timeBuild:build} we only construct the \textit{PTX}; we queue the add action with the value 1, as previously, and output the string to a variable. This was measured to take 21.92 milliseconds.
 
-On line \ref{lst:timeBuild:run} we execute the previously generated ptx. This was measured to take 0.16 milliseconds.
+On line \ref{lst:timeBuild:run} we execute the previously generated \textit{PTX}. This was measured to take 0.16 milliseconds.
 
 For this example generating the \textit{PTX} was about 137 times more time consuming than executing it, which mean that if the computation were to happen multiple times, it could be beneficial for the developer to only generate the kernel once and apply it multiple times later.
 

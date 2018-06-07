@@ -1,36 +1,36 @@
 \section{API Design}
-In this section we discuss the design of the API, and the reasoning that behind to these decisions.
+In this section we discuss the design of the API, and the reasoning behind the design decisions.
 
 \subsection{Goals}
-As it is stated in the motivation in Section \ref{cha:motivation}, we prioritize high abstraction over absolute performance. We avoid exposing kernel logic and put a layer of abstraction upon the general GPU model by handling kernel function setup and setup of blocks and threads for the developer.
+As it is stated in the motivation in section \ref{cha:motivation}, we prioritize high abstraction over absolute performance. We avoid exposing kernel logic and put a layer of abstraction upon the general GPU model by managing kernel function setup and setup of blocks and threads for the developer.
 
-In the following sections we discuss some of the options and decisions taken in designing \textit{YAGAL}.
+In the following sections we discuss some of the options and decisions taken while designing \textit{YAGAL}.
 
-\subsection{Data types}
-We want to provide a developer with types that makes it convenient to work with the GPU. It is difficult to define what makes types accessible and easy to work with since there are multiple factors in play, such as the context of the programming language, the context of application, and what an individual developer sees as convenient. In this section and subsections, we explore some of these factors in the form of memory model, the actual data types, how types are accessed, and compatibility degree for CUDA, in order to determine how the types of \textit{YAGAL} should be designed.
+\subsection{Data Types}
+We want to provide a developer with types that makes it convenient to work with the GPU. It is difficult to define what makes types accessible and easy to work with since there are multiple factors in play, such as the context of the programming language, the context of application, and what an individual developer sees as convenient. In this section and subsections, we explore some of these factors in the form of memory model, the actual data types, and how types are accessed, in order to determine how the types of \textit{YAGAL} should be designed.
 
 \subsubsection{Memory Model} \label{memoryModelDesign}
 % where is the data
-Two general directions of handling the underlying memory of \textit{YAGAL}s data types. One is that the data types represent a unified memory layout, where the actual location of the data is handled by \textit{YAGAL}, involving any data transfers required to perform computations. The other is to provide methods for a developer to control the location of the data, giving her more work, but more explicit control. 
+We consider two general methods for managing the underlying memory of \textit{YAGAL}s data types. One is that the data types represent a unified memory layout, where the actual location of the data is handled by \textit{YAGAL}, involving any data transfers required to perform computations. The other is to provide methods for a developer to control the location of the data, giving her more work, but more explicit control. 
 
 % Handle memory implicitly - Bolt and PACXX
-In the case of \textit{YAGAL} being able to handle memory transfers between host and device implicitly, data should be available and behave as regular \textit{STL} data types when used on host, and be available for use on device. \textit{Bolt} and \textit{PACXX} handle memory this way, as seen in Chapter \ref{cha:relatedWorks}. An advantage of this approach is that a developer does not need to be concerned about memory when working with \textit{YAGAL}. A downside is that the developer loses control of when transfers are happening, which can come at a high performance cost. It may also create difficulties for a developer when she want to replace \textit{YAGAL} with \textit{CUDA}.
+In the case of \textit{YAGAL} being able to manage memory transfers between host and device implicitly, data should be available and behave as regular \textit{STL} data types when used on host, and be available for use on device. \textit{Bolt} and \textit{PACXX} manage memory this way, as seen in related works in chapter \ref{cha:relatedWorks}. An advantage of this approach is that a developer does not need to be concerned about memory when working with \textit{YAGAL}. A downside is that the developer loses control of when transfers are happening, which can come at a high performance cost. It may also create difficulties for a developer when she want to replace \textit{YAGAL} with \textit{CUDA}.
 
 % Provide methods for memory handling - Thrust, AMP, and SkelCL
-Memory in \textit{C++} is handled explicitly, and an experienced \textit{C++} developer is used to know and be in control of how and where data is stored. As \textit{YAGAL} is a \textit{C++} library, it makes sense to let developers handle memory themselves. Based on this we decided that \textit{YAGAL} will facilitate ways to manually manage where data is allocated and be able to control transfers between host and device. In Chapter \ref{cha:relatedWorks} we saw that \textit{Thrust}, \textit{C++ AMP}, and \textit{SkelCL} handles memory this way.
+Memory in \textit{C++} is managed explicitly, and an experienced \textit{C++} developer is used to know and be in control of how and where data is stored. As \textit{YAGAL} is a \textit{C++} library, it makes sense to let developers manage memory themselves. Based on this we decided that \textit{YAGAL} will facilitate ways to manually manage where data is allocated and be able to control transfers between host and device. In related works in chapter \ref{cha:relatedWorks} we saw that \textit{Thrust}, \textit{C++ AMP}, and \textit{SkelCL} manages memory this way.
 
 % The decision
 We decided that \textit{YAGAL} will provide developers with the means to manage allocation and transfers of data between host and device themselves, instead of handling it implicitly.
 
 \subsubsection{Supported Types}
 % Introduction to considered types
-There are many types that \textit{YAGAL} potentially can provide. To stay within the time frame of this project, we decide to keep the current amount of provided types to a minimum, and extend \textit{YAGAL} with additional types depending on the deadline. The types we have considered are \texttt{arrays}, \texttt{vectors}, and \texttt{maps}.
+There are many types that \textit{YAGAL} can potentially provide. To stay within the time frame of this thesis, we decide to keep the current amount of provided types to a minimum. The types we have considered are \texttt{arrays}, \texttt{vectors}, and \texttt{maps}.
 
 % We would like vectors, but arrays if it fails
-\texttt{vectors} are contiguous memory that can be used as arrays with the possibility of being dynamically resized, in contrast to \texttt{arrays} which are contiguous memory with a static size. The frameworks in Chapter \ref{cha:relatedWorks} all provide \texttt{vectors} with the exception of \textit{C++ AMP} that uses \texttt{arrays} and \texttt{array\_views}. Based on this, we want \textit{YAGAL} to support \texttt{vectors}, but it is unclear to what degree of complications the implementation of \texttt{vectors} would introduce, due to their dynamic functionality. \texttt{arrays} on the other hand, appear to be more simple to implement due to them being statically sized. We will therefore focus on implementing \texttt{vectors} and have \texttt{arrays} as fallback solution, as the possibility of being able to dynamically resize a data collection is a quality that makes it easier for developers to use.
+\texttt{vectors} are contiguous memory that can be used as arrays with the possibility of being dynamically resized, in contrast to \texttt{arrays} which are contiguous memory with a static size. The frameworks in chapter \ref{cha:relatedWorks} all provide \texttt{vectors} with the exception of \textit{C++ AMP} that uses \texttt{arrays} and \texttt{array\_views}. Based on this, we want \textit{YAGAL} to support \texttt{vectors}, but it is unclear to what degree of complications the implementation of \texttt{vectors} would introduce, due to their dynamic functionality. \texttt{arrays} on the other hand, appear to be more simple to implement due to them being statically sized. We will therefore focus on implementing \texttt{vectors} and have \texttt{arrays} as fallback solution, as the possibility of being able to dynamically resize a data collection is a quality that makes it easier for developers to use.
 
 % Multi dim support
-In regard to multidimensional support for \texttt{vectors} and/or \texttt{arrays}, it is convenient to have as it makes some tasks easier to implement, but it is of low priority as it is a more specialized feature, that is not needed by all developers, in contrast to single dimension arrays or vectors. We would useful for \textit{YAGAL} to support it, but it will not be prioritized.
+In regard to multidimensional support for \texttt{vectors} and/or \texttt{arrays}, it is convenient to have as it makes some tasks easier to implement, but it is of low priority as it is a more specialized feature, that is not needed by all developers, in contrast to single dimension arrays or vectors. It would be useful for \textit{YAGAL} to support it, but it will not be prioritized.
 
 % No support for maps
 The \texttt{map} data container is an interesting option, since the GPU could be utilized to perform lookups. This however does not contribute to the overall goal of \textit{YAGAL}, as we have not observed this feature in any of the tools covered in chapter \ref{cha:relatedWorks} and the introduction of this feature does not contribute to \textit{YAGAL} being replaceable. \texttt{map} will therefore not be supported.
@@ -54,14 +54,14 @@ It is more problematic when more than a single element is needed. There are mult
 \end{itemize}
 We chose to provide a developer with the device pointer to the data, and the number of elements contained, giving the developer information enough to use the single element accessors. This also allow direct access to the memory for other frameworks if multiple frameworks are used together.
 
-Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector with a copy of the device data, which will provide iterators for the copy. The copy can then be copied back to the device, and as such only need two transfers, which compared to two transfers per element is more convenient.
+Providing iterators is problematic as it motivates the developer to make many small copies back and forth between device and host. Instead we chose to provide a method to create a \textit{STL} vector containing a copy of the device data, which can provide iterators for the device data copy. The device data copy can then be copied back to the device. This results in only two transfers per collection being required, which is to prefer compared to two transfers per element in a collection.
 
 \subsection{Functions}
-To let a developer use \textit{YAGAL} we need some functions to provide the needed functionality. We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then apply it to a collection, we want to build the kernel on the collection to make the kernel definition appear as methods on the collection.
+We chose to experiment with a different function structure compared to the related works in chapter \ref{cha:relatedWorks}. Where the related works generally define some kind of kernel function, and then apply it to a collection, we want to build the kernel on the collection to make the kernel definition appear as methods on the collection.
 
-\subsubsection{Calling execute on a collection}
+\subsubsection{Calling Execute on a Collection}
 % Principle
-To achieve building a kernel upon a collection we do it lazily. A developer can build up kernel functionality by appending functions upon the collection. When the function are applied to the collection, the actual kernel function will be generated and executed based on the stored functions, when she calls execute on the collection.
+We build a kernel on a collection lazily, when a developer use an execute method. She can build up kernel functionality by appending method calls on the collection. The methods represent actions that the developer want to perform on the collection. The actual kernel function will be generated and executed based on the stored actions, when she calls the execute method on the collection that have actions queued.
 
 % Pros
 An advantage of this approach is that it could prevent unnecessary data transfers between host and device since it might be possible to bundle necessary logic within a single kernel function. 
@@ -72,14 +72,14 @@ A disadvantage of this approach is that it could be a cause for confusion for th
 \subsubsection{Function Chaining}
 We want to make a single kernel able to execute multiple actions, such as adding and multiplying a value in sequence. To enable this each function call must return a reference to the collection object so that multiple actions can be queued before the final execute call.
 
-This will allow a program, that adds 5 to all elements of a collection before multiplying them with 2, to be written as \texttt{collection.add(5).multiply(2).exec()}, which we find to be very intuitive to read in comparison to the define kernel and apply kernel form of the other frameworks.
+This will allow a program, that adds 5 to all elements of a collection, before multiplying them with 2, to be written as \texttt{collection.add(5).multiply(2).exec()}, which we find to be intuitive to read in comparison to the definition and usage separation of kernels from the related works.
 
-Allowing chaining of functions also allows the framework to determine how to split kernels, so that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
+Allowing chaining of functions also allow the framework to determine how, and if, kernels should be split, such that the example above would result in executing a single kernel doing both actions, rather than executing an add kernel and a multiply kernel in sequence.
 
 \subsubsection{Primitive Functions}
-A baseline of simplistic regular functions could be provided to give developers a baseline of functionality to append to collections. A such function could be \texttt{collection.add(X)} which will add \texttt{X} to each member of the collection. 
+Functions should be provided to give developers a baseline of functionality. These functions represent simple action to append to collections. Such a function could be \texttt{collection.add(X)} which will add \texttt{X} to each member of the collection. 
 
-Here are some primitive functions that each take either a single value or a collection: 
+Here are some primitive functions representing actions that each take either a single value or a collection: 
 \begin{description}
 \item[\texttt{collection.add(X)}]\hfill\\
 Add a value \texttt{X} to each element of the collection or add entries of a given collection \texttt{X} to the corresponding entries of the collection.
@@ -91,9 +91,9 @@ Divide each element in the collection by value \texttt{X} or divide each entry b
 Multiply each value of the collection by the value \texttt{X} or multiply each entry of the collection by each corresponding entry of the collection \texttt{X}.
 \end{description}
 
-These functions also serve as a way for us to get started experimenting with code generation since the operations involved are relatively simple. We implement these primitive functions to provide some base functionality.
+These functions also serve as a way for us to get started experimenting with code generation since the operations involved are relatively simple. We implement these primitive functions to provide base functionality.
 
-\subsubsection{Higher order functions}
+\subsubsection{Higher Order Functions}
 We implement higher order functions in order to allow us to experiment with different methods of passing one function to another. Higher order functions provide an additional layer of abstractions for the developer.
 
 %One such function is transform, which takes a function that describes how to transform each element in the collection. It is a simple higher order function to implement as it can use any method of traversing the collection, and it can reuse some of the logic from the primitive functions and allow the development to focus on the function passing.
@@ -103,11 +103,11 @@ Here is a list of higher order functions that have been considered for implement
 \item[Transform]\hfill\\
 Takes a function that describes how to transform each element in the collection.
 \item[Sort] \hfill \\ 
-Sorting a collection requires another way of traversing the collection compared to a transform.
+Sorting a collection requires another collection traversal strategy compared to a transform.
 \item[Contains] \hfill \\ 
-Checking if a collection contains an element that satisfies a predicate require the ability to return a value.
+Checking whether a collection contains an element that satisfies some predicate require the ability to return a value.
 \item[Filter] \hfill \\ 
 Creating a new collection with some elements from the original collection requires the ability to dynamically share where potential elements should be inserted between threads.
 \end{description}
 
-The list above is not an exhaustive list as there are other higher order functions that can be relevant. We prioritize working on transform, as it is a simple function that allow us to focus on function passing. If successfully implemented we can revisit other higher order functions.
+The list above is not an exhaustive list as there are other higher order functions that can be relevant. We prioritize working on transform, as it is a function that allow us to focus on function passing, while reusing the collection traversal strategy of the primitive functions. If successfully implemented we can revisit other higher-order functions.

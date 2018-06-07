@@ -1,11 +1,11 @@
 \section{C++ AMP} \label{cha:cppAmpRelWork}
-\textit{AMP} stands for Accelerated Massive Parallelism, and is a runtime library that allows a developer to write code to be executed on data-parallel hardware and is built upon \textit{DirectX 11}. \textit{C++ AMP} is developed by \textit{Microsoft} as a library and as an open standard for implementing parallelism in \textit{C++}. Their choice of \textit{DirectX 11} is interesting since \textit{OpenCl} and \textit{CUDA} existed at the time. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
+\textit{C++ AMP} stands for Accelerated Massive Parallelism, and is a framework that allows a developer to write code to be executed on data-parallel hardware, and is built upon \textit{Direct3D}. \textit{C++ AMP} is developed by \textit{Microsoft} as a framework and as an open standard for implementing parallelism in \textit{C++}. Their choice of \textit{Direct3D} is interesting since \textit{OpenCl} and \textit{CUDA} existed at the time. The information discussed in this section was gained from \textit{Microsoft}'s \textit{C++ AMP} page \cite{microsoftCppAMP}.
 
 % The commented text describes an implementation outputting OpenCL
 % which have led to the announcement from the \textit{HSA Foundation} about an AMP compiler built with \textit{Clang}\cite{clang} and \textit{LLVM}\cite{llvm} that outputs to \textit{OpenCL} instead of DirectX11.
 
 \subsection{Goals}
-The aim of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the specification based upon \textit{DirectX 11}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
+The goal of the \textit{C++ AMP} specification is to provide a way of writing code for data parallel hardware directly within the \textit{C++} language. \textit{Microsoft} implemented the specification based upon \textit{Direct3D}, and the \textit{HSA Foundation} later did it for \textit{OpenCL}.
 
 \subsection{Programming model}
 A feature of \textit{C++ AMP} is that kernel functions is here expressed in \textit{C++} as restricted lambdas, meaning that a subset of \textit{C++} is available. 
@@ -22,7 +22,7 @@ Here the \texttt{<float, 2>} specifies that the \texttt{mat} matrix consist of f
 
 Listing \ref{code:cppampSaxpy} shows \textit{SAXPY} implemented in \textit{C++ AMP}. The \texttt{array\_view}s are constructed at line \ref{code:cppampSaxpy:viewsStart} to \ref{code:cppampSaxpy:viewsEnd}. It is still needed to specify the views, even though this example only utilize one dimension. The \texttt{z\_v} \texttt{array\_view} is at line \ref{code:cppampSaxpy:discard} marked with the \texttt{discard\_data()} function. This is done to indicate that \texttt{z\_v} is used purely as an output container, and to avoid wasting resources transferring it to device since the contents will be overwritten.
 At line \ref{code:cppampSaxpy:forEach} the function \texttt{parallel\_for\_each()} method is called and given two arguments. \texttt{z\_v.extend} indicates the compute domain. The lambda at line \ref{code:cppampSaxpy:lambda} are marked with \texttt{restrict(amp)} which states that the lambda should be executed on device and that only a subset \textit{C++} functionality is available for execution.
-\begin{lstlisting}[caption={\textit{C++ AMP} \textit{SAXPY} example.}, label={code:cppampSaxpy}]
+\begin{lstlisting}[caption={\textit{SAXPY} computation in \textit{C++ AMP}.}, label={code:cppampSaxpy}]
 const size_t N = 1024;
 float a = 10;
 
@@ -50,7 +50,7 @@ parallel_for_each( ~\label{code:cppampSaxpy:forEach}~
 \subsection{Implementation}
 
 % Intro / Overview
-\textit{C++ AMP} is a library that enables simple manipulation of large dimensional arrays by introducing a new language feature called \texttt{restricted} for \textit{C++}. 
+\textit{C++ AMP} is a framework that enables simple manipulation of large dimensional arrays by introducing a new language feature called \texttt{restricted} for \textit{C++}. 
 
 % Memory / Types
 Data is managed within regular \texttt{std::array}s. \texttt{array\_view}s can be constructed to represent these arrays as matrices on the GPU and is used to manipulate them.
@@ -61,7 +61,7 @@ Lambdas are used to construct the logic of a kernel for execution on the GPU. Th
 To execute a kernel, the kernel defining lambda is given to the \texttt{parallel\_for\_each} function which also manages copies to and from the device of the data described by the \texttt{array\_views}.
 
 % Comp / Figref
-The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampCompilation}. Here the \textit{C++ AMP} headers are included within the user code, and is compiled by the \textit{Microsoft Visual C++} compiler (\textit{MSVC}). The result is an executable file that utilizes \textit{Direct3D} to execute on the GPU. In addition to being a library that must be included in the code, \textit{C++ AMP} adds an additional keyword to the language and is therefore tied to any compiler that implements the specification, such as the \textit{MSVC} compiler for \textit{windows}. The \textit{C++ AMP} specification is however open such that other compiler vendors could support it in the future.
+The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampCompilation}. Here the \textit{C++ AMP} headers are included within the user code, and is compiled by the \textit{Microsoft Visual C++} compiler (\textit{MSVC}). The result is an executable file that utilizes \textit{Direct3D} to execute on the GPU. In addition to providing a library that must be included in the code, \textit{C++ AMP} adds an additional keyword to the language and therefore requires a compiler that implements the specification, such as the \textit{MSVC} compiler for \textit{windows}. The \textit{C++ AMP} specification is however open such that other compiler vendors could support it in the future.
 
 \begin{figure}[H]
 \center
@@ -71,7 +71,7 @@ The compilation chain of \textit{C++} AMP can be seen in Figure \ref{fig:cppampC
 \end{figure}
 
 \subsection{Key Points}
-A unique feature of \textit{C++ AMP} is that it outputs to \textit{DirectX11}. We assume that this decision might have been made due to DirectX11 being developed and maintained by \textit{Microsoft} as well.
+A unique feature of \textit{C++ AMP} is that it outputs to \textit{Direct3D}. We assume that this decision might have been made due to \textit{Direct3D} being developed and maintained by \textit{Microsoft} as well.
 
 \textit{C++ AMP} is meant to extend \textit{C++} with parallelism, but using arrays on the GPU requires that they are wrapped within an \textit{array\_view}, and lambdas are restricted. 
 

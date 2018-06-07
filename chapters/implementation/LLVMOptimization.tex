@@ -4,24 +4,31 @@
 The use of \textit{LLVM} have provided advantages for \textit{YAGAL}, such as \textit{LLVM IR} and optimizations of generated code. This section contains some examples of where \textit{YAGAL} have made use of these advantages.
 
 % optLevel
-The \textit{LLVM} code generation tools have multiple optimization levels for the generated code. We have made use of it for the conversion of \textit{LLVM IR} to \textit{PTX}. This is done by setting the code generation optimization flag with \texttt{CodeGenOpt::Level optLevel(CodeGenOpt::Aggressive)}. To show an example we have the code in Listing \ref{code::chainedAdds} where a \texttt{yagal::vector} is made and two \texttt{add} functions are chained upon it. When equivalent \textit{PTX} code is generated without optimizations, it will result in the code shown on listing \ref{code:unoptiPtx}. With the aggressive flag set, the resulting \textit{PTX} code results in what can be see on listing \ref{code:optiPtx}. 
+The \textit{LLVM} code generation tools have multiple optimization levels for the generated code. We have made use of it for the conversion of \textit{LLVM IR} to \textit{PTX}. This is done by setting the code generation optimization flag with \texttt{CodeGenOpt::Level optLevel(CodeGenOpt::Aggressive)}. To show an example we have the code in Listing \ref{code::chainedAdds} where a \texttt{yagal::vector} is made and two \texttt{add} functions chained on it. When equivalent \textit{PTX} code is generated without optimizations, it will result in the code shown on listing \ref{code:unoptiPtx}. With the aggressive flag set, the resulting \textit{PTX} code results in what can be see on listing \ref{code:optiPtx}. 
 What can be seen here is that the non-optimized version consists of more labels and have multiple unnecessary instructions. The optimized version have rearranged the code by having the add instructions happen under the same label at lines \ref{code:optiPtx:add1} and \ref{code:optiPtx:add2}, and having only a single store to global instruction at line \ref{code:optiPtx:store}. These kind of optimizations would have been difficult to make if we were generating \textit{PTX} directly and not utilizing \textit{LLVM IR}.
 
 % High-level IR
 Another major advantage of utilizing \textit{LLVM IR} is that it have a higher level of abstraction that \textit{PTX}. \textit{LLVM IR} allows function definitions with return types and provide unlimited amount of registers. This means that we do not need to take platform and hardware specifics into account since we let \textit{LLVM} handle it during code generation.
 
-\begin{lstlisting}[caption={Chained \texttt{yagal::vector::add}.}, label={code::chainedAdds}]
+\begin{lstlisting}[caption={Chained \texttt{yagal::Vector::add}.}, label={code::chainedAdds}]
 yagal::Vector<float> v({1.0, 2.0, 3.0});
 
 v.add(5).add(5).exec();
 \end{lstlisting}
 
 \begin{figure}
-  \hspace*{-.12\textwidth}%
+  \vspace*{-.05\textheight}
+  \hspace*{-.15\textwidth}
   \begin{minipage}{0.6\textwidth}
-    \centering
-    \begin{lstlisting}[caption=Non-optimized generated PTX., label=code:unoptiPtx, frame=tlrb]{Name}
-	.visible .entry kernel(
+	\centering
+	\begin{lstlisting}[caption=Non-optimized generated PTX., label=code:unoptiPtx, frame=tlrb]{Name}
+.version 3.2
+.target sm_20
+.address_size 64
+
+	// .globl	kernel
+
+.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
@@ -30,25 +37,31 @@ v.add(5).add(5).exec();
 	.reg .b64 	%SPL;
 	.reg .pred 	%p<2>;
 	.reg .f32 	%f<5>;
-	.reg .b32 	%r<6>;
+	.reg .b32 	%r<12>;
 	.reg .b64 	%rd<8>;
 
 	mov.u64 	%SPL, __local_depot0;
 	cvta.local.u64 	%SP, %SPL;
 	ld.param.u64 	%rd1, [kernel_param_0];
-	mov.u32 	%r1, 0;
-	st.u32 	[%SP+0], %r1;
+	mov.u32 	%r1, %ntid.x;
+	mov.u32 	%r2, %tid.x;
+	mov.u32 	%r3, %ctaid.x;
+	mul.lo.s32 	%r4, %r3, %r1;
+	add.s32 	%r5, %r2, %r4;
+	st.u32 	[%SP+0], %r5;
 	bra.uni 	LBB0_1;
 LBB0_1:
-	ld.u32 	%r2, [%SP+0];
-	setp.lt.u32 	%p1, %r2, 3;
+	ld.u32 	%r6, [%SP+0];
+	setp.lt.u32 	%p1, %r6, 100;
 	@%p1 bra 	LBB0_4;
 	bra.uni 	LBB0_3;
 LBB0_2:
-	mov.u32 	%r3, %nctaid.x;
-	ld.u32 	%r4, [%SP+0];
-	add.s32 	%r5, %r4, %r3;
-	st.u32 	[%SP+0], %r5;
+	mov.u32 	%r7, %ntid.x;
+	mov.u32 	%r8, %nctaid.x;
+	mul.lo.s32 	%r9, %r7, %r8;
+	ld.u32 	%r10, [%SP+0];
+	add.s32 	%r11, %r10, %r9;
+	st.u32 	[%SP+0], %r11;
 	bra.uni 	LBB0_1;
 LBB0_3:
 	ret;
@@ -65,46 +78,55 @@ LBB0_5:
 	shl.b64 	%rd6, %rd5, 2;
 	add.s64 	%rd7, %rd1, %rd6;
 	ld.global.f32 	%f3, [%rd7];
-	add.rn.f32 	%f4, %f3, 0f40800000;
+	add.rn.f32 	%f4, %f3, 0f40A00000;
 	st.global.f32 	[%rd7], %f4;
 	bra.uni 	LBB0_2;
 }
 	\end{lstlisting}
-  \end{minipage}%
-  \qquad
-  \quad
-  \begin{minipage}{0.6\textwidth}
-    \centering
+	\end{minipage}%
+	\qquad
+	\quad
+	\begin{minipage}{0.6\textwidth}
+	\centering
 	\begin{lstlisting}[caption=Optimized generated PTX., label=code:optiPtx, frame=tlrb, firstnumber=1]{Name}
-	.visible .entry kernel(
+.version 3.2
+.target sm_20
+.address_size 64
+
+	// .globl	kernel
+
+.visible .entry kernel(
 	.param .u64 kernel_param_0
 )
 {
 	.reg .pred 	%p<2>;
 	.reg .f32 	%f<4>;
-	.reg .b32 	%r<6>;
+	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<4>;
 
-	mov.u32 	%r5, 0;
 	ld.param.u64 	%rd1, [kernel_param_0];
-	mov.u32 	%r4, %nctaid.x;
-	setp.lt.u32 	%p1, %r5, 3;
+	mov.u32 	%r1, %ntid.x;
+	mov.u32 	%r5, %tid.x;
+	mov.u32 	%r6, %ctaid.x;
+	mad.lo.s32 	%r8, %r6, %r1, %r5;
+	mov.u32 	%r7, %nctaid.x;
+	setp.lt.u32 	%p1, %r8, 100;
 	@%p1 bra 	LBB0_3;
 	bra.uni 	LBB0_2;
-LBB0_3: ~\label{code:optiPtx:lbbo3}~
-	mul.wide.s32 	%rd2, %r5, 4;
+LBB0_3:
+	mul.wide.s32 	%rd2, %r8, 4;
 	add.s64 	%rd3, %rd1, %rd2;
 	ld.global.f32 	%f1, [%rd3];
 	add.rn.f32 	%f2, %f1, 0f40A00000; ~\label{code:optiPtx:add1}~
-	add.rn.f32 	%f3, %f2, 0f40800000; ~\label{code:optiPtx:add2}~
-	st.global.f32 	[%rd3], %f3;~\label{code:optiPtx:store}~
-	add.s32 	%r5, %r5, %r4;
-	setp.lt.u32 	%p1, %r5, 3;
+	add.rn.f32 	%f3, %f2, 0f40A00000; ~\label{code:optiPtx:add2}~
+	st.global.f32 	[%rd3], %f3; ~\label{code:optiPtx:store}~
+	mad.lo.s32 	%r8, %r1, %r7, %r8;
+	setp.lt.u32 	%p1, %r8, 100;
 	@%p1 bra 	LBB0_3;
 LBB0_2:
 	ret;
 }
 	\end{lstlisting}
-  \end{minipage}%
-  \hspace*{-.1\textwidth}%
+	\end{minipage}%
+	\hspace*{-.1\textwidth}%
 \end{figure}

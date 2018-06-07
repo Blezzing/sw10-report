@@ -1,7 +1,7 @@
 \section{Thrust}
-The evaluation of \textit{Thrust} is contained in this section. First the code for the demo application is shown and explained, followed by the general evaluation and the usability evaluation. The last subsection is a summary of the evaluation of \textit{Thrust} which will be used in the comparison in section \ref{sec:comparisoncomparison}.
+The usability evaluation of \textit{Thrust} is contained in this section.
 
-\subsection{Code of demo application}
+%\subsection{Code of demo application}
 
 %\subsection{General Evaluation}
 %In this section we provide the general part of the evaluation, and provide the measured metrics for \textit{Thrust}. We interpret the results of the general evaluation as a part of the evaluation summary in section \ref{sec:thrustEvalSum}.
@@ -51,6 +51,6 @@ Anonymous function can be verbose in Thrust, as they are defined in functors rat
 Since \textit{Thrust} manages the amount of threads and blocks, as well as memory allocations, there are fewer mental operations required when compared to working directly in \textit{CUDA}. 
 
 \subsection{Summary}\label{sec:thrustEvelSum}
-Based on the general comparison, thrust completes the \textit{SAXPY} compilation a STORT TAL times faster than the equivalent CPU implementation, and the \textit{SAXPY} computation can be expressed with a single line of code.
+Based on the general comparison, thrust completes the \textit{SAXPY} compilation about 290 thousand times faster than the equivalent CPU implementation. This number seem extreme, but there are a few factors to remedy them; the CPU implementation was done at a default level of optimization, without considering how much CPU time the operating system provided it. The \textit{SAXPY} computation can be expressed with a single line of code.
 
 \textit{Thrust} have, in terms of usability, mainly positive areas. The few negatives we have noted include \textit{Thrust}s similarity to \textit{STL}, which can raise false expectations for a developer, and that the expressions of \textit{Thrust} are not as expressive as kernels written directly in \textit{CUDA}. 

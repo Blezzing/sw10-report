@@ -6,7 +6,7 @@ We implemented a subset of \textit{LLVM LLC}, as described in section \ref{sec:l
 We have two proposals to how to overcome the compilation time impact for compilation of programs using \textit{YAGAL}. We could further strip the included \textit{LLVM} headers, or we could bundle pre-compiled binaries of our reimplementation of {LLVM LLC} with \textit{YAGAL}, requiring the developer to link to these at compile time.
 
 \subsection{Stripped Headers}
-The reimplementation of \textit{LLVM LLC} was stripped of anything unrelated to the conversion of \textit{LLVM IR} to \textit{PTX} code, but there are still significant overhead. This is due to the \textit{LLVM LLC}'s dependency to the rest of \textit{LLVM}. To further reduce the impact compilation time, a step deeper could be taken in order to investigate the headers used by \textit{LLVM LLC} and strip those of any unneeded functionality. This would be a lot of work, and as such, if other approaches are available they would be preferable compared to this.
+The reimplementation of \textit{LLVM LLC} was stripped of anything unrelated to the conversion of \textit{LLVM IR} to \textit{PTX} code, but there are still significant overhead. This is due to the \textit{LLVM LLC}'s dependency to the rest of \textit{LLVM}. To further reduce the impact compilation time, a step deeper could be taken in order to investigate the headers used by \textit{LLVM LLC} and strip those of any unneeded functionality. This would be a lot of work, and would be very difficult to maintain, as updates get released for \textit{LLVM}. If other approaches are available they would be preferable compared to this.
 
 %We do not know extend this could go, blablabla.. skiv noget mere om hvorfor det er dumt, men det hele er nu contained eller noget.
 
@@ -14,4 +14,4 @@ The reimplementation of \textit{LLVM LLC} was stripped of anything unrelated to 
 Our reimplementation of \textit{LLVM LLC} could be pre-compiled and bundled with \textit{YAGAL}. This would severely cut down the compilation time, since there is no longer a need for a developer to compile it every time she compiles a \textit{YAGAL} program. This would however require a developer to link to the library binaries when compiling a \textit{YAGAL} program.
 
 \subsection{What Is Implemented in YAGAL}
-In \textit{YAGAL} we have not implemented pre-compiled headers, even though it is our preferred approach. We chose to prioritize implementing features higher than this, and as such it was not done. Before this would be ready for a developer to use, it is definitely a point that should be addressed.
+In \textit{YAGAL} we have not implemented pre-compiled headers, even though it is our preferred approach. We chose to prioritize implementing features higher, and as such it was not done. Before this would be ready for a developer to use, it is definitely a point that should be addressed.

@@ -1,5 +1,5 @@
 \section{Anonymous Functions} \label{sec:lambdaProblem}
-We consider anonymous functions as an important part of a framework that allows construction of other functions, which in the case of \textit{YAGAL} refers to the construction of GPU kernels. Implementing support for anonymous functions in \textit{YAGAL} to enable developers to extend functionality is not a straightforward task, and different approaches are discussed in this section. The code examples shown in this section are not supported by \textit{YAGAL}, but show how anonymous functions could look as a result of each of our proposed approaches. The examples present a predicate, checking whether a squared value of a vector element is above 1000, which should be given to other non-existant \textit{YAGAL} functions such as \texttt{filter} to provide their logic.
+We consider anonymous functions as an important part of a framework that allows construction of other functions, which in the context of this thesis refers to the construction of GPU kernels. Implementing support for anonymous functions in \textit{YAGAL} to enable developers to extend functionality is not a straightforward task, and different approaches are discussed in this section. The code examples shown in this section are not supported by \textit{YAGAL}, but show how anonymous functions could look as a result of each of our proposed approaches. The examples present a predicate, checking whether a squared value of a vector element is above 1000, which should be given to other non-existant \textit{YAGAL} functions such as \texttt{filter} to provide their logic.
 
 \subsection{Known Approaches}
 %c++ lambdas
@@ -17,13 +17,13 @@ To work around this problem we have tried to rethink the way kernel logic can be
 \subsubsection{Creating Meta Types}
 A function body could be represented by objects representing the expected syntax. An example of what this could look like is shown in listing \ref{code:metaBuildExampleC} as being represented with meta types in listing \ref{code:metaBuildExampleBuild}. The different components of the kernel can be constructed like the current action implementation described in chapter \ref{cha:frameworkImplementation}, allowing \textit{LLVM Intermediate Representation} to be generated. 
 
-\begin{lstlisting}[caption={Pseudo C code showing a kernel function.}, label={code:metaBuildExampleC}]
+\begin{lstlisting}[caption={Pseudo \textit{C} code showing a device function.}, label={code:metaBuildExampleC}]
 bool pred(float element){
     return element * element > 1000f;
 }
 \end{lstlisting}
 
-\begin{lstlisting}[caption={Code showing how construction of kernel function in a meta type solution could be done.}, label={code:metaBuildExampleBuild}]
+\begin{lstlisting}[caption={Code showing how construction of device function in a meta type solution could be done.}, label={code:metaBuildExampleBuild}]
 auto builder = KernelBuilder.New<bool, float>();
 builder.addParameter(Parameter<float>("element"));
 builder.addStatement(ReturnStatement<bool>(
@@ -46,7 +46,7 @@ The meta types presented in the previous section in listing \ref{code:metaBuildE
 
 A function that performs the same calculation as the above meta type example, could with such a solution look like listing \ref{code:metaBuildString}. It is similar to the example shown in \ref{code:metaBuildExampleC}, which is what makes it attractive. 
 
-\begin{lstlisting}[caption={Code showing possible construction of kernel with string interpretation.}, label={code:metaBuildString}]
+\begin{lstlisting}[caption={Code showing possible construction of device function with string interpretation.}, label={code:metaBuildString}]
 auto pred = yagal::predicateFromString<bool, float>(
     "bool pred(float element){
         return element * element > 1000f;
@@ -57,9 +57,9 @@ auto pred = yagal::predicateFromString<bool, float>(
 Even though the solution in listing \ref{code:metaBuildString} looks more write- and readable than the example shown in listing \ref{code:metaBuildExampleBuild} it is not a solution without problems. Requiring compilation of the string to be done at run-time will make it more difficult to get errors or warnings presented to the developer, when compared to static compilation. There is also the minor annoyance of having strings in user code that provide functionality, as it generally makes it difficult for tools, such as an IDE, to assist the developer in writing and checking code, e.g. by providing syntax highlighting or error detection.
 
 \subsubsection{Wrapping by C-Style Macros}
-Bolt, targeting \textit{OpenCL}, uses \textit{C} macros to wrap function objects. This allows it to have the function, after the macros interaction, syntactically checked by the compiler, as the result would still be code. It also allows it to generate an \textit{OpenCL} code string based upon this function. As \textit{C++} and \textit{OpenCL} are syntactically similar in how a function is constructed, the major part of code generation is done by copying the content of the macro to a string constant. If such a solution should work for \textit{YAGAL}, it could be done by targeting one of the other approaches, such as the previously mentioned string interpreter, by constructing a string for that.
+\textit{Bolt}, targeting \textit{OpenCL}, uses \textit{C} macros to wrap function objects. This allows it to have the function, after the macros interaction, syntactically checked by the compiler, as the result would still be code. It also allows it to generate an \textit{OpenCL} code string based upon this function. As \textit{C++} and \textit{OpenCL} are syntactically similar in how a function is constructed, the major part of code generation is done by copying the content of the macro to a string constant. If such a solution should work for \textit{YAGAL}, it could be done by targeting one of the other approaches, such as the previously mentioned string interpreter, by constructing a string for that.
 
-\begin{lstlisting}[caption={Code showing possible construction of kernel with macro, named YAGALIFY, and \textit{C++} lambda.}, label={code:metaBuildMacro}]
+\begin{lstlisting}[caption={Code showing possible construction of device function with macro, named YAGALIFY, and \textit{C++} lambda.}, label={code:metaBuildMacro}]
 auto pred = YAGALIFY(
     bool pred(float element){
         return element * element > 1000f;
@@ -74,7 +74,7 @@ A different approach, compared to the previously mentioned approaches, is to let
 
 Example usage can is shown in listing \ref{code:metaBuildNvrtc}. Notable is the lack of \textit{CUDA} keywords, such as \texttt{\_\_DEVICE\_\_} to declare that it is a device function. This can be inserted by the library before parsing it to \textit{nvrtc}, along with replacing other keywords we could introduce with intrinsics. This would relieve the user of having to learn some of the \textit{CUDA} specifics involved when writing kernels.
 
-\begin{lstlisting}[caption={Code showing a possible construction of a kernel based on a string. The string is being sent to the library, where it get extended to correct \textit{CUDA C}, before being sent to \textit{nvrtc}.}, label={code:metaBuildNvrtc}]
+\begin{lstlisting}[caption={Code showing a possible construction of a device function based on a string. The string is being sent to the library, where it get extended to correct \textit{CUDA C}, before being sent to \textit{nvrtc}.}, label={code:metaBuildNvrtc}]
 auto myKernel = yagal::ptxFromCudaString(
     "bool pred(float element){
         return element * element > 1000f;

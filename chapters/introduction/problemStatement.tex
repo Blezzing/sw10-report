@@ -10,7 +10,7 @@ how does it compare to other frameworks that do?}
 %\textit{How can we create and evaluate a framework, that allows developers without GPGPU development experience to gain initial benefit from GPU acceleration, before learning about a low level GPGPU programming model?}
 
 \subsection{Tasks} \label{cha:tasks}
-To reach the goal described in our problem statement we have defined the following tasks:
+We have defined the following tasks to reach the goal described in our problem statement:
 
 %old
 %\begin{description}
@@ -36,17 +36,15 @@ To reach the goal described in our problem statement we have defined the followi
 \item[Create overview of related works] \hfill \\
 As others have made attempts at making GPGPU development simpler, we can learn from their design choices and results.
 \item[Research framework design principles] \hfill \\
-Identify vocabulary and good practices for developing frameworks.
+Identify good practices for developing frameworks.
 \item[Design framework] \hfill \\
 Design the architecture and API of the framework.
-\item[Setup for implementation of framework] \hfill \\
-Configuring environment and performing necessary preliminary tasks for implementation.
 \item[Implement framework] \hfill \\
-Attempting to achieve the design and experiencing what problems, and possible solutions, that arise from limitations.
+Implement the design and discuss the challenges, and possible solutions, that arise from limitations.
 \item[Develop demo applications] \hfill \\
-To showcase features what is possible in the framework, and to compare with implementations in related works.
+Showcase features what is possible in the framework, and to compare with implementations in related works.
 \item[Evaluation of our framework] \hfill \\
-To review how our framework compares to the related works, and what the costs of the limitations are.
+Review how our framework compares to the related works.
 \end{description}
 
 \subsection{Delimitation}
@@ -62,7 +60,7 @@ The problem can be approached in various ways, but the following are not the pri
 
 \begin{description}
 \item[Outperforming CUDA/OpenCL] \hfill \\
-While we want the framework to perform well, we do not attempt to reach better performance than CUDA and OpenCL, as this would be unfeasible due to costs of abstraction.
+While we want the framework to perform well, we do not attempt to reach better performance than CUDA and OpenCL, as this would be unfeasible due to cost of abstractions.
 \item[Being "Complete"] \hfill \\
-While we want to provide the functionality to allow a developer to develop GPGPU applications, we prioritize investigating approaches to work around not using a special purpose compiler, and as such the development efforts will not be focused on the completeness of the framework, but rather experimentation.
+While we want to provide the functionality for a developer to develop GPGPU applications, we prioritize experimentation over being complete, as we want to experiment with which abstractions can work.
 \end{description}

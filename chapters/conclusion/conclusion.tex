@@ -1,17 +1,17 @@
-\todo{genetabler problem og hvad vi vil}
+%\todo{genetabler problem og hvad vi vil}
 GPGPU development is not an easy task, and presents a steep learning curve for a developer getting into it. There are multiple frameworks that attempt to solve this, and they do this by providing various higher level constructs. These frameworks have different dependencies and requirements that the developer must fulfill, including compiler and run-time requirements. 
 
 In this project we perform an experimental design and implementation of \textit{YAGAL}, with the aim of being compiler-independent with a comprehensible programming model with design decisions not covered by related work.
 
 The project started based on the problem statement:
 
-\todo{paste problemformulering}
+%\todo{paste problemformulering}
 \textit{Can a GPGPU framework to abstract the underlying programming model be created, as a library that does not limit the developers choice of compiler, and how does it compare to other frameworks that do?}
 
-\todo{hvilke opageaver vi skulle løse for den}
+%\todo{hvilke opageaver vi skulle løse for den}
 Throughout the project we have worked with the following tasks, which have been derived from the problem statement:
 
-\todo{gå gennem hvert løst punkt}
+%\todo{gå gennem hvert løst punkt}
 \begin{description}
 \item[Create an overview of related works]\hfill \\
 We have identified a set of frameworks that provide abstractions for GPGPU development, and analyzed their qualities.
@@ -23,11 +23,11 @@ We have designed \textit{YAGAL} with a novelty not found in the related works. \
 We have implemented a major subset of the design, and provided a discussion about methods of proceeding regarding the discovered problems. 
 \item[Implement demo application]\hfill \\
 We have implemented an algorithm to show the features of \textit{YAGAL}, and to provide material for evaluating and comparing \textit{YAGAL} to the related works.
-\item[Evaluate the design and implementation of the framework compared to related works]\hfill \\
+\item[Evaluate the design and implementation of the framework]\hfill \\
 We have evaluated \textit{YAGAL} in regards to measured performance and usability, using the cognitive dimensions of notations, and compared it to the related works.
 \end{description}
 
-\todo{praleblock}
+%\todo{praleblock}
 %yagal drømmen, compilerfriiiiiii, fucking unikum
 We have designed \textit{YAGAL} to be an compiler-independent framework, with a run-time based on the \textit{CUDA Driver API}. None of the related works that utilize \textit{CUDA} are compiler independent, which is what inspired this combination.
 
@@ -35,10 +35,10 @@ We have designed \textit{YAGAL} to be an compiler-independent framework, with a 
 We have provided abstractions for both the memory management in the form of a vector construction, and the construction of kernels in the form of actions. A developer does not have to perform manual allocation and copies on the device, our vector construction handles those tasks for her. A developer also does not have to learn the kernel abstraction of a lower level framework such as \textit{CUDA} or \textit{OpenCL}, as she can apply transformations on \textit{YAGAL} vectors using the actions as building blocks to express the kernel logic.
 
 %llvm smadder brug
-We have utilized the \textit{LLVM} library to provide an intermediate representation, for our generated kernels. For our run-time \textit{PTX} code generation, we have made a single purpose re-implementation of \textit{LLVM llc}, which gets packaged in the final executable.
+We have utilized the \textit{LLVM} library to provide an intermediate representation, for our generated kernels. For our run-time \textit{PTX} code generation, we have made a single purpose re-implementation of \textit{LLVM LLC}, which gets packaged in the final executable.
 
 %hvilke problemer opdagede vi? og vi præsenterer løsningsforslag
 We have discovered that targeting a language that is not \textit{OpenCL} without introducing a compiler results in anonymous functions being problematic to implement. We have proposed a set of possible solution strategies for this problem, including the expected difficulty and implications.
 
-\todo{konkluder betragtninger}
+%\todo{konkluder betragtninger}
 Finally we conclude that it is indeed possible to create a compiler-independent framework that utilizes the \textit{CUDA Driver API}, but when high level abstractions are needed, those require significantly more work to implement compared to other designs.

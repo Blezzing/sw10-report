@@ -1,12 +1,12 @@
-\section{Comparison Process}
+\section{Comparison Process}\label{sec:comparisonProc}
 % Comparison categories?
 We want to investigate how \textit{YAGAL} performs against the related works and how usable it is. To do this we have split the comparison in two parts; the first part covers the superficial qualities, being those that are easy to measure and compare, and the second part cover the use of \textit{Cognitive Dimensions of Notations} to construct a vocabulary for evaluation of the usability.
 
 % How will we do it
-The evaluation and comparison will be done based on a demo application that is implemented in each of the frameworks. First the superficial qualities are recorded and compared to an equivalent implementation in \textit{CUDA} and on for the \textit{CPU}, then the usability is evaluated which is done for each of the implementations. The findings of the evaluations are then compared to each other in the final section of this chapter.
+The evaluation and comparison will be done based on a demo application that is implemented in each of the frameworks. First the superficial qualities are recorded and compared to an equivalent implementations in \textit{CUDA} for the GPU and in plain \textit{C++} for the CPU. Then the usability is evaluated. This is done for each of the implementations. The findings of the evaluations are then compared to each other in the final section of this chapter.
 
 % What we will compare
-\textit{YAGAL} does not support anonymous functions, as explained in section \ref{sec:lambdaProblem}. As a consequence; \textit{YAGAL} is limited in terms of what can be achieved with it compared to the related works. Because of this, we have chosen to implement a simple demo application, that can be implemented in \textit{YAGAL}. 
+\textit{YAGAL} does not support anonymous functions, as explained in section \ref{sec:lambdaProblem}. As a consequence; \textit{YAGAL} is limited in terms of what can be achieved with it compared to the related works. Because of this, we have chosen to implement a demo application, that can be implemented in \textit{YAGAL}. 
 
 The demo application is SAXPY, as it was presented for each of the related works in chapter \ref{cha:relatedWorks}. The application calculated SAXPY with vectors of size 536870912, which is the largest possible allocation size to have twice on our testing device.
 
@@ -22,11 +22,8 @@ Software:
 \item[OS] Ubuntu Server 17.10
 \item[LLVM] LLVM version  7.0.0svn
 \item[C++ Compiler] g++ from gcc 7.2.0
-\item[PACXX Compiler] XXX
 \item[CUDA Driver] nvidia-384
 \item[CUDA Compiler] nvcc 8.0.61
 \end{description}
 
-\todo{doublecheck specs}
-
-The comparison is limited to only two of the related works, which are \textit{Thrust} and \textit{PACXX}, due to our choice of platform. \textit{C++ AMP} is dependent upon the \textit{msvc}, which is only supported on \textit{Windows} platforms. \textit{SkelCL} is supported on \textit{Unix} systems, but requires an \textit{AMD} GPU due to \textit{Nvidia} drivers not supporting the \textit{C++} extension for \textit{OpenCL}.
+The comparison is limited to only one of the related works, which is \textit{Thrust}, due to our choice of platform. \textit{C++ AMP} is dependent upon the \textit{msvc}, which is only supported on \textit{Windows} platforms. \textit{SkelCL} is supported on \textit{Unix} systems, but requires an \textit{AMD} GPU due to \textit{Nvidia} drivers not supporting the \textit{C++} extension for \textit{OpenCL}. We had issues compiling \textit{PACXX}, as the build script did not generate one of the necessary files for linking the compiler.

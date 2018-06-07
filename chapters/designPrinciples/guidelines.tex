@@ -1,14 +1,14 @@
-\section{API Design Guidelines}
-As we are inexperienced in writing and documenting \textit{C++} libraries and APIs, we need to identify some guidelines to consult during our development process. The guidelines are presented in this section along with the knowledge we gain as a result. This knowledge is utilized in the framework design chapter. 
+As we are inexperienced in writing and documenting \textit{C++} libraries and APIs, we need to identify some guidelines to consult during our development process. The guidelines are presented in this section along with the knowledge we gain as a result. This knowledge is utilized for designing the framework in chapter \ref{cha:design}. 
+
 We consider \textit{The Little Manual of API Design}\cite{apiDesignManual}, as it is written by \textit{Jasmin Blancehette}, who have experience from \textit{The Qt Company} in creating \textit{C++} APIs. We also consider the \textit{Standard Library Guidelines}\cite{isoLibDesign} from \textit{isocpp.org}, as guidelines for the standard library of \textit{C++} can be relevant to us as well.
 
-\subsection{The Little Manual of API Design}
+\section{The Little Manual of API Design}
 \textit{The Little Manual of API Design} is written by \textit{Jasmin Blancehette}, and contains key insights into API design that were discovered during development of the \textit{Qt application development framework} by \textit{Trolltech}, which later became \textit{The Qt Company}. It provides some core API design principles which can assist us in our framework design phase. The principles cover good characteristics of APIs, the design process, to guidelines. We focus mostly on the characteristics since the design process is focused on collecting information and extending existing APIs.
 
 \textit{The Little Manual of API Design} describes good characteristics of an API as follows:
 \begin{description}
 \item[Easy to learn and memorize] \hfill \\
-The API should use meaningful naming conventions that are consistent throughout the entirety of the library. The API should be minimal such that it is easy to memorize and consistent such that the developer can reapply the knowledge gained in one area of the API in another.
+The API should use meaningful naming conventions that are consistent throughout the entirety of the library. The API should be minimal such that it is easy to memorize, and consistent, such that the developer can reapply the knowledge gained in one area of the API in another.
 \item[Leads to readable code] \hfill \\
 The API should lead the developer towards readable code. The API should not force a developer to write excess of boilerplate code nor specify irrelevant information.
 \item[Hard to misuse] \hfill \\
@@ -19,10 +19,10 @@ Frameworks and libraries can be extended over time, and this should be kept in m
 This is an ideal to pursue. Since it might be impossible to create a \textit{complete} API, it should allow developers to extend it or customize it to fit their needs.
 \end{description}
 
-\subsection{Standard Library Guidelines}
+\section{Standard Library Guidelines}
 The \textit{Standard Library Guidelines} are a refined version of a set of ideas from the ISO standards committee members from 2012. The guidelines have been assembled in order to assist the \textit{C++} community in getting libraries accepted and included in the standard. The guidelines cover writing documentation and examples, designing library components and public interfaces, and coding conventions. The guidelines are very general, and gives an idea about what a \textit{C++} developer would expect of a library.
 
-\subsection{Strategy for use of guidelines}
+\section{Strategy for use of guidelines}
 We consider the points of \textit{The Little Manual of API Design} to be principles worth considering when making general decisions regarding the API design. The points of the \textit{Standard Library Guidelines} is much more specific to some implementation details, and as such we use those to look up specific things, such as naming conventions.
 
 %The use of these guidelines is reflected upon in Chapter \ref{designReflection}.

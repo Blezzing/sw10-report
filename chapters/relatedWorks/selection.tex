@@ -3,22 +3,22 @@
 
 %The goal of this project is to make a framework, that offers short implementation time and is replaceable by a low-level programming model, when the developer need more explicit control. We focus on frameworks supporting the host language of \textit{CUDA} and \textit{OpenCL}, being \textit{C} and \textit{C++}, as frameworks in these languages do not require the developer to learn a new language before transitioning to the low-level programming models. 
 
-To direct the content of this chapter we here go through the frameworks we want to cover, and why we chose them. We then describe what we examine for each framework.
+To direct the content of this chapter we go through the frameworks we want to cover, and why we chose them. We then describe our examination of each framework.
 
 The frameworks we examine in this chapter are:
 \begin{description}
 \item[Thrust] \hfill \\
-Thrust is promoted by \textit{NVIDIA}, who is the developers of \textit{CUDA}, as a high level interface to GPU Programming, it is interesting to us\cite{thrustNvidia}.
+Thrust is promoted by \textit{NVIDIA}, who are the developers of \textit{CUDA}, as a high level interface to GPU Programming\cite{thrustNvidia}.
 \item[C++ AMP] \hfill \\
-C++ AMP is promoted by \textit{Microsoft}, who is the developers of \textit{DirectX}, as a \textit{C++} language extension to enable data-parallel acceleration, it is interesting to us\cite{microsoftCppAMP}.
+C++ AMP is promoted by \textit{Microsoft}, who is the developers of \textit{DirectX}, as a \textit{C++} language extension to enable data-parallel acceleration\cite{microsoftCppAMP}.
 %\item[SYCL] \hfill \\
 %SYCL is promoted by \textit{Khronos Group}, who is the developer of \textit{OpenCL}, as a abstraction layer that allow use of \textit{OpenCL} as a platform with standard \textit{C++} on both host and device\cite{khronosSYCL}.
 \item[Bolt] \hfill \\
-Bolt is developed by the \textit{HSA Foundation} to provide a high level library to provide abstractions on top of low level programming models. The goal of simplifying GPGPU development is similar to ours\cite{boltDoc}.
+Bolt is developed by the \textit{HSA Foundation} to provide a high level library to provide abstractions on top of low level programming models.\cite{boltDoc}.
 \item[SkelCL] \hfill \\
-SkelCL is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons. The goal of simplifying GPGPU development is similar to ours\cite{skelclPaper}.
+SkelCL is a research project that attempts to make GPU development easier with a concept called algorithmic skeletons.\cite{skelclPaper}.
 \item[PACXX] \hfill \\
-PACXX is a research project that attempts to make GPU development easier by combining host and device code in standard \textit{C++}. The goal of simplifying GPGPU development is similar to ours\cite{pacxxPaper}.
+PACXX is a research project that attempts to make GPU development easier by combining host and device code in standard \textit{C++}.\cite{pacxxPaper}.
 \end{description}
 
 We consider the frameworks in regard to:
@@ -29,7 +29,7 @@ Understanding the goals of a framework help us identify the motivation behind it
 \item[Programming Model] \hfill \\
 Understanding the programming model of a framework helps us form an overview of which approaches have been tried, and what is currently possible. 
 
-To give a demonstration of the programming model, we implement the Single-Precision A * X plus Y, \textit{SAXPY}, algorithm. It is a simple calculation where the iterations of the main loop can be executed in any order, or parallel. \textit{SAXPY} is seen in listing \ref{code:saxpyInC}.
+To give a demonstration of the programming model, we implement the Single-Precision A * X plus Y, \textit{SAXPY}, computation. It is a calculation where the iterations of the main loop can be executed in any order. \textit{SAXPY} is seen in listing \ref{code:saxpyInC}.
 \begin{lstlisting}[caption={The \textit{SAXPY} computation in C.}, label=code:saxpyInC] 
 for (int i = 0; i < N; i++){
     result[i] = a * x[i] + y[i];
@@ -37,8 +37,8 @@ for (int i = 0; i < N; i++){
 \end{lstlisting}
 
 \item[Implementation] \hfill \\
-Understanding the implementation helps us understand how the programming model have been facilitated, and can give us insight of different approaches. While not all related works are open source, we can still get an architectural overview of their process.
+Investigating the implementation helps us to understand how the programming model have been facilitated, and can give us insight of different approaches. While not all related works are open source, we are still able to get an architectural overview of their process.
 
 \item[Key Points] \hfill \\
-We put emphasis on the most critical points of the frameworks from our perspective, giving us some points to keep in mind when we design our own framework.
+We put an emphasis on the most critical points of the frameworks, from our perspective, giving us some points to keep in mind when we design our own framework.
 \end{description}

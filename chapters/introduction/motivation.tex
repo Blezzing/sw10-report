@@ -1,13 +1,13 @@
 \section{Motivation}\label{cha:motivation}
 %Hvorfor er gpgpu fedt
-With the development in GPU acceleration it have been shown, that some heavy computational problems can be solved drastically faster using GPUs as accelerators. This have led to the development of multiple frameworks and tools to enable development on this platform.
+It have been shown, that some heavy computational problems can be solved drastically faster using GPUs as accelerators, compared to traditional CPU execution. This have led to the development of multiple frameworks and tools to enable development on this platform.
 %\todo{source på at det er godt!}
 
 %Hvad lavede vi sidste semester, og hvad fandt vi ud af
-In our previous semester project\cite{sw9Report}, we analyzed existing languages enabling GPGPU development. The goal of that project was to find representatives of different language groups, and compare the development experiences of using them. We concluded that GPGPU development generally is very difficult, as it requires the adaption of a new programming model, which gives a very steep learning curve for the developer. This leads to a lot of time spent learning the programming model, rather than solving problems. In some cases GPU acceleration is not the solution to performance issues, which means that a developer potentially wastes her time learning this programming model.
+In a previous project\cite{sw9Report}, we analyzed existing languages enabling GPGPU development. The goal of that project was to find representatives of different language groups, and compare the development experiences of using them. We concluded that GPGPU development generally is very difficult, as it requires the adaption of a new programming model, which gives a very steep learning curve for a developer. This leads to a lot of time spent learning the programming model, rather than solving problems. In some cases GPU acceleration is not the solution to performance issues, which means that a developer potentially wastes her time learning this programming model.
 
 %problemstillingen med compilers
-We found that frameworks for GPGPU development in compiled languages generally require a very specific compilation process, often by forcing the developer to use a compiler developed as a piece of the framework. This means that developers who already depend on some specific compiler for some feature might be unable to also incorporate the GPGPU framework.
+We found that frameworks for GPGPU development in compiled languages generally require a very specific compilation process, often by forcing the developer to use a custom compiler developed as a piece of the framework. This means that developers who already depend on some specific compiler for some feature might be unable to also incorporate the GPGPU framework.
 
 %brug dette når vi argumenterer for c++
 %Another conclusion made in the previous project, was that when absolute performance was the goal, the best option seemed to be using CUDA or OpenCL. The higher abstractions provided by the other languages generally had a performance cost. 
