@@ -1,11 +1,13 @@
-General purpose GPU(GPGPU) programming require a developer to learn how to program in a new programming model to be effective. There are already related work addressing GPGPU, but they either utilize a custom compiler, and thereby enforcing the choice of compiler for the developer, or they utilize \textit{OpenCL} as a target language.
+General purpose GPU (GPGPU) programming requires a developer to learn how to program in a new programming model to be effective. There are already related works addressing GPGPU, but they either utilize a custom compiler, and thereby enforcing the choice of compiler for the developer, or they utilize \textit{OpenCL} as a target language.
 
-This report documents the development of \textit{YAGAL}, a GPGPU abstraction library, that utilize the \textit{CUDA Driver API} for device management, and \textit{LLVM} for \textit{PTX} code generation at run-time, to be compiler independent without relying on \textit{OpenCL}.
+This thesis documents the development of \textit{YAGAL}, a GPGPU abstraction framework, that utilizes the \textit{CUDA Driver API} for device management, and \textit{LLVM} for \textit{PTX} code generation at run-time, to be compiler independent without relying on \textit{OpenCL}.
 
-With the library, we explore the option of building kernels though an action abstraction that allow chaining of function invocations on a vector object to generate and execute a kernel on the GPU.
+With the library, we explore the option of building kernels through an action abstraction that allows chaining of function invocations on a vector object to generate and execute a kernel on the GPU.
 
-We compare the framework to the state of the art, in terms of both static measurements, and usability by using Cognitive Dimensions of Notations.
+We compare the framework to the state of the art, in terms of both static measurements, and usability by using Cognitive Dimensions of Notations. \todo{smak  ind}
 
-We reflect upon our thesis work in terms of technology choice, selected related works, framework implementation and comparison process.
+understanding how advanced the state of the art is.
 
-We conclude that development of a GPGPU framework is indeed possible with the configuration used, but that it might not be worth the development effort involved, when other options appear as equally good options with simpler development.
+We reflect upon our thesis work in terms of technology choice, selected related works, framework implementation, and comparison.
+
+We conclude that the development of a GPGPU framework is indeed possible with the configuration used, but there appear to exist other options that are equally performant and expressive with simpler development.
