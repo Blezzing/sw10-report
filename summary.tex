@@ -1,0 +1,25 @@
+\input{misc/preamble.tex}
+\begin{document}
+
+\chapter*{Executive Summary}
+\section*{YAGAL: Yet Another GPGPU Abstraction Library}
+% First paragraph: State what the thesis is about, give a simple statement of aims and methods.
+This master thesis document the development of a \textit{C++} GPGPU framework. This framework is named \textit{YAGAL}, and it stands for Yet Another GPGPU Abstraction Library. \textit{YAGAL} is an attempt at constructing a framework that utilize the \textit{CUDA Driver API} for device management, and \textit{LLVM} for code generation at run-time, to be compiler independent without relying on \textit{OpenCL}. \textit{YAGAL} provides abstractions for the developer, without knowledge of the GPGPU programming model, to describe logic through \textit{YAGAL} Vectors for memory management, and \textit{YAGAL} Actions for kernel building blocks.
+
+% Second paragraph: Explain the structure of the thesis and say something about the content.
+The initial thesis work revolves around investigating already existing frameworks. These frameworks serve as a baseline for our understanding of the problem domain, and an inspiration source for our design choices. These frameworks are presented as related works, which include well established frameworks and ongoing research projects. The related works consist of \textit{Thrust}, \textit{C++} \textit{AMP}, \textit{Bolt}, \textit{SkelCL}, and \textit{PACXX}. 
+
+The design of \textit{YAGAL} was done by first identifying design principles for API design, and then designing the API and architecture separately. The API is designed first, covering data types and functions, by discussing possible approaches. The architecture is then designed to provide the features needed by the API, and introduces the technologies used by \textit{YAGAL}, namely \textit{LLVM}, the \textit{CUDA Driver API}, and \textit{PTX}.
+
+The implementation documentation of \textit{YAGAL} covers the process from design to implementation, and highlights the technically interesting parts. It walks through the development in incremental steps, starting with management of \textit{CUDA} device and memory, execution model, the action abstraction, the utilization of \textit{LLVM Intermediate Representation} and the features it provides us with, how threads are organized according to the amount of vector elements, and how we enable the use of \textit{PTX} for the developer. 
+
+During implementation of \textit{YAGAL}, technical challenges were discovered. The first challenge is, that implementation of anonymous functions in a framework that does not build on \textit{OpenCL} and that does not provide a compiler is technically difficult, and none of the related works has an implementation that does this. The second challenge is, that the inclusion of \textit{LLVM} in \textit{YAGAL} severely impacted compilation time, and the development-debug loop. We discuss the reason and impact of these challenges, and propose approaches to how they can be achieved.
+
+An evaluation and comparison methodology is defined and used to evaluate \textit{YAGAL} and compare it to the related works. The methodology is split into two parts; a general comparison, which consists of  measurable metrics, and a usability evaluation that is based on Cognitive Dimensions of Notations. 
+
+We discover that \textit{YAGAL} is slower than Thrust while being more sparse on features. This means that there is no incentive to use YAAL instead of Thrust in regards to performance. In terms of usability, the abstractions of \textit{YAGAL} are intuitive simple mental model for building kernels, and this might be worth investigating further, possibly in other less performance oriented contexts.
+
+% Third paragraph: Give a concluding statement, including a short summary of the results.
+We finally conclude that development of a GPGPU framework using the \textit{CUDA Driver API} while being compiler-independant is indeed possible, but when high level abstraction is needed, this design impacts the required amount of implementation work in a negative direction compared to other designs. 
+
+\end{document}
